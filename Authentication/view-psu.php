@@ -1,12 +1,6 @@
-<?php
-if ($loggedUserName == 'admin') {
-    $qryCompnay = "SELECT id, CompanyName FROM dataownercompany";
-    $rsQryCompany = $app->getDBConnection()->fetchAll($qryCompnay);
-} else {
-    $qryCompnay = "SELECT id, CompanyName FROM dataownercompany WHERE id = ?";
-    $rsQryCompany = $app->getDBConnection()->fetchAll($qryCompnay, $loggedUserCompanyID);
-}
-?>
+<script src="https://cdn.jsdelivr.net/gh/StephanWagner/jBox@v1.3.2/dist/jBox.all.min.js"></script>
+<link href="https://cdn.jsdelivr.net/gh/StephanWagner/jBox@v1.3.2/dist/jBox.all.min.css" rel="stylesheet">
+
 <div class="inner-wrapper">
     <section role="main" class="content-body">
         <header class="page-header">
@@ -21,22 +15,65 @@ if ($loggedUserName == 'admin') {
                 <section class="card">
                     <div class="card-body">
                         <form class="form-horizontal form-bordered" action="" method="post">
-                            <div class="form-group row pb-3">
-                                <label class="col-lg-3 control-label text-sm-end pt-2">Company<span
-                                            class="required">*</span></label>
+                            <div class="form-group row pb-3" id="userDiv">
+                                <label class="col-lg-3 control-label text-sm-end pt-2">User Select
+                                    <?php if (strpos($loggedUserName, 'cs') !== false) { ?><span
+                                            class="required">*</span><?php } ?></label>
                                 <div class="col-lg-6">
-                                    <select data-plugin-selectTwo id="company" name="company"
-                                            class="form-control populate" title="Please select a company" required>
-                                        <optgroup label="Select company">
+                                    <select data-plugin-selectTwo class="form-control populate"
+                                            name="SelectedUserID"
+                                        <?php if (strpos($loggedUserName, 'cs') !== false) { ?>
+                                            required
+                                        <?php } ?>
+                                            id="SelectedUserID" title="Please select user">
+                                        <option value="">Choose user</option>
                                         <?PHP
-                                        foreach ($rsQryCompany as $row) {
-                                            echo '<option value="' . $row->id . '">' . $row->CompanyName . '</option>';
+                                        if ($loggedUserName == 'admin') {
+                                            $qryDistUser = "SELECT id, UserName, FullName FROM userinfo WHERE IsActive = 1 AND UserName LIKE '$dataCollectorNamePrefix%' ORDER BY UserName ASC";
+                                            $resQryDistUser = $app->getDBConnection()->fetchAll($qryDistUser);
+                                        } else if (strpos($loggedUserName, 'admin') !== false) {
+                                            $qryDistUser = "SELECT id, UserName, FullName FROM userinfo WHERE IsActive = 1 AND UserName LIKE '$dataCollectorNamePrefix%' AND CompanyID = ? ORDER BY UserName ASC";
+                                            $resQryDistUser = $app->getDBConnection()->fetchAll($qryDistUser, $loggedUserCompanyID);
+                                        } else if ($SuperID) {
+                                            $qryDistUser = "SELECT u.id, u.UserName, u.FullName FROM assignsupervisor as a JOIN userinfo as u ON a.UserID = u.id WHERE u.IsActive = 1 AND u.UserName LIKE '$dataCollectorNamePrefix%' AND a.SupervisorID = ?";
+                                            $resQryDistUser = $app->getDBConnection()->fetchAll($qryDistUser, $loggedUserID);
+                                        } else if (strpos($loggedUserName, 'dist') !== false) {
+                                            $qryDistUser = "SELECT u.id, u.UserName, u.FullName FROM assignsupervisor as a JOIN userinfo as u ON a.UserID = u.id WHERE u.IsActive = 1 AND u.UserName LIKE '$dataCollectorNamePrefix%' AND a.DistCoordinatorID = ?";
+                                            $resQryDistUser = $app->getDBConnection()->fetchAll($qryDistUser, $loggedUserID);
+                                        } else if (strpos($loggedUserName, 'cs') !== false) {
+                                            $qryDistUser = "SELECT u.id, u.UserName, u.FullName FROM assignsupervisor as a JOIN userinfo as u ON a.UserID = u.id WHERE u.IsActive = 1 AND u.UserName LIKE '$dataCollectorNamePrefix%' AND a.SupervisorID = ?";
+                                            $resQryDistUser = $app->getDBConnection()->fetchAll($qryDistUser, $loggedUserID);
+                                        } else {
+                                            $qryDistUser = "SELECT id, UserName, FullName FROM userinfo WHERE IsActive = 1 AND UserName LIKE '$dataCollectorNamePrefix%' AND CompanyID = ? and UserName = ? ORDER BY UserName ASC";
+                                            $resQryDistUser = $app->getDBConnection()->fetchAll($qryDistUser, $loggedUserCompanyID, $loggedUserName);
+                                        }
+
+                                        foreach ($resQryDistUser as $row) {
+                                            echo '<option value="' . $row->id . '"' . (isset($SelectedUserID) && !empty($SelectedUserID) && $row->id == $SelectedUserID ? ' selected' : '') . '>' . $row->UserName . ' | ' . substr($row->FullName, 0, 102) . '</option>';
                                         }
                                         ?>
-                                        </optgroup>
                                     </select>
                                 </div>
                             </div>
+
+
+                            <?php
+                            if (strpos($loggedUserName, 'admin')) {
+                                ?>
+
+                                <div class="form-group row pb-3">
+                                    <label class="col-lg-3 control-label text-sm-end pt-2"></label>
+                                    <div class="col-lg-6">
+                                        <div class="checkbox-custom checkbox-warning">
+                                            <input id="chkAll" value="chkAll" type="checkbox"
+                                                   name="chkAll" <?php echo isset($checkAll) && $checkAll == 'chkAll' ? 'checked' : ''; ?> />
+                                            <label for="chkAll">All Users</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <?php
+                            }
+                            ?>
 
                             <footer class="card-footer">
                                 <div class="row justify-content-end">
@@ -50,92 +87,86 @@ if ($loggedUserName == 'admin') {
                     </div>
                 </section>
                 <?php
-
                 if ($_REQUEST['show'] === 'Show') {
-                    $SelectedCompanyID = $_REQUEST['company'];
-                    $SelectedCompanyName = getValue('dataownercompany', 'CompanyName', "id = $SelectedCompanyID");
+                    $SelectedUserID = $_REQUEST['SelectedUserID'];
+                    $checkAll = $_REQUEST['chkAll'];
 
-                    $dataURL = $baseURL . "Authentication/ajax-data/psu-list-ajax-data.php?ci=$SelectedCompanyID&lu=$loggedUserID&un=$loggedUserName";
+                    if ($checkAll == 'chkAll') {
+                        $SelectedCheckAll = 1;
+                    } else {
+                        $SelectedCheckAll = 0;
+                    }
 
-                    ?>
-                    <section class="card">
-                        <div class="card-header">
-                            <div class="card-title">Project : <?php echo $SelectedCompanyName; ?></div>
-                            <div class="card-subtitle"></div>
-                        </div>
-                        <div class="card-body">
-                            <table class="table table-bordered table-striped" id="datatable-ajax"
-                                   data-url="<?php echo $dataURL; ?>">
-                                <thead>
-                                <tr>
-                                    <th>PSU</th>
-                                    <th>Division</th>
-                                    <th>District</th>
-                                    <th>City Corp.</th>
-                                    <th>Upazila</th>
-                                    <th>Municipality</th>
-                                    <th>Union/Ward</th>
-                                    <th>Mauza</th>
-                                    <th>Village</th>
-                                    <th>User</th>
-									<th>Mobile</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                </tbody>
-                            </table>
-                        </div>
-                    </section>
-                    <!-- end: page -->
-                    <?php
+                    //echo "$SelectedUserID | $SelectedCheckAll";
+                    //exit();
+
+                    if (empty($SelectedUserID) && empty($checkAll)) {
+                        MsgBox('Please select All Users or a specific User.');
+                        ReloadPage();
+                    } else {
+                        ?>
+                        <input type="hidden" id="DataUserID" value="<?php echo $SelectedUserID; ?>">
+                        <input type="hidden" id="DataChkAll" value="<?php echo $SelectedCheckAll; ?>">
+
+                        <br>
+                        <section class="card">
+                            <div class="card-body">
+                                <table class="table table-bordered table-striped" id="tblViewData">
+                                    <thead>
+                                    <tr>
+                                        <th>Actions</th>
+                                        <th>ID</th>
+                                        <th>Division Name</th>
+                                        <th>District Name</th>
+                                        <th>BSIC Code</th>
+                                        <th>BSIC Detail</th>
+                                        <th>Institute Name</th>
+                                        <th>Address</th>
+                                        <th>Mobile No</th>
+                                        <th>Assigned User</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                        <?php
+                    }
                 }
                 ?>
             </div>
         </div>
-        <!-- end: page -->
     </section>
 </div>
 
 <script type="text/javascript">
-    function EditItem(id, pApprove, pEdit, pDelete, data) {
-        if (confirm("Are you sure to update this data?")) {
-            $.ajax({
-                url: "Authentication/user-to-supervisor-status-edit.php",
-                method: "GET",
-                datatype: "json",
-                data: {
-                    id: id,
-                    pApprove: pApprove,
-                    pEdit: pEdit,
-                    pDelete: pDelete
-                },
-                success: function (response) {
-                    alert(response);
-                    window.location.reload();
-                }
-            });
-        }
-        return false;
-    }
-</script>
+    $(document).ready(function () {
+        var body = $('body');
 
-<script type="text/javascript">
-    function DeleteItem(id, data) {
-        if (confirm("Are you sure to delete this data?")) {
-            $.ajax({
-                url: "Authentication/user-to-supervisor-status-delete.php",
-                method: "GET",
-                datatype: "json",
+        var DataUserID = body.find('#DataUserID').val(),
+            DataChkAll = body.find('#DataChkAll').val();
+
+        var dataTable = $('#tblViewData').DataTable({
+            "aLengthMenu": [
+                [20, 10, 50, 100, 500, 1000, 5000, 100000000],
+                [20, 10, 50, 100, 500, 1000, 5000, "All"]
+            ],
+            "processing": true,
+            "serverSide": true,
+            "ajax": {
                 data: {
-                    id: id,
-                    tbl: 'assignsupervisor'
+                    DataUserID: DataUserID,
+                    DataChkAll: DataChkAll
                 },
-                success: function (response) {
-                    alert(response);
-                    window.location.reload();
+                url: "<?php echo $dataURL = $baseURL . "Authentication/ajax-data/view-psu-data-ajax-data.php"; ?>",
+                type: "POST"
+            },
+            "fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+                if (aData[13] > 0) {
+                    $('td', nRow).css('background-color', '#FBC6C2');
                 }
-            });
-        }
-        return false;
-    }
+            }
+        });
+    });
 </script>

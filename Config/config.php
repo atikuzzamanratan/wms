@@ -24,6 +24,7 @@ $unAuthorizedMsg = "Unauthorized Access!";
 
 $sampleHHColumnName = 'A_01';
 
+$btnViewDetailTitle = 'View Detail';
 $btnTitleView = 'View Data';
 $btnTitleEdit = 'Edit Data';
 $btnTitleDelete = 'Delete Data';
@@ -83,7 +84,7 @@ $baseURL = get_base_url();
 
 function getDBMain(): string
 {
-    return "SAS_3";
+    return "WMS";
 }
 
 function ConnectDB()
