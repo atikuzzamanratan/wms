@@ -9,9 +9,13 @@ function get_base_url()
     return env('APP_URL');
 }
 
-$projectName = 'Sustainable Agriculture Statistics';
-$projectDescription= 'Sustainable Agriculture Statistics (SAS) - 2026';
-$projectDescription2= 'টেকসই কৃষি পরিসংখ্যান (এসএএস) ২০২৬';
+$projectName = "Waste Management Survey (WMS)";
+$projectDescription= "পরিবেশ সংরক্ষণ ব্যয়, সম্পদ এবং বর্জ্য ব্যবস্থাপনা (প্রতিষ্ঠান) জরিপ ২০২6<br>
+Environmental Protection Expenditure, Resources & Waste Management-EPER&WM (Establishment) Survey 2026 
+";
+$projectDescription2= "বর্জ্য ব্যবস্থাপনা জরিপ (সিটি কর্পোরেশন ও পৌরসভা) ২০২6<br>
+Municipal Waste Management (MWM) Survey 2026
+";
 
 $adminUserID = '2';
 
