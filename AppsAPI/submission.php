@@ -112,13 +112,13 @@ if ($ActualFileName != NULL) {
             $NameArray[] = "PSU";
             $ValueArray[] = "N'" . $PSU . "'";
 						
-			/*$NameArray[] = "list_no";
-            $ValueArray[] = "N'" . $list_no . "'";*/
+			$NameArray[] = "list_no";
+            $ValueArray[] = "N'" . $list_no . "'";
 						
-			if($FormID==2){
-			  $NameArray[] = "SampleHHNo";
-              $ValueArray[] = "N'" . $SampleHHNo . "'";			
-			}
+
+              $NameArray[] = "SampleHHNo";
+              $ValueArray[] = "N'" . $SampleHHNo . "'";
+
 			
 
             $db_file_path = "SendForms/$UserID/$FormID/$ActualFileName";
