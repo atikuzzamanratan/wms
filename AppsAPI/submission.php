@@ -12,7 +12,7 @@ $app = new Application();
 require_once '../Config/config.php';
 require_once '../Lib/lib.php';
 
-//https://sasbbsbd.com/AppsAPI/submission.php?deviceID=nWhaiFJYuZLz6C7l&UserID=69&FormID=2&DataName=SAS%20Listing_PSU_801_HH_1&SampleHHNo=1&PSUNo=801
+//https://scempbbs.com/AppsAPI/submission.php?deviceID=nWhaiFJYuZLz6C7l&UserID=69&FormID=2&DataName=MWM%20Survey_ID_123_Name_Tungipara Pourashava
 
 $baseURL = get_base_url();
 
@@ -49,13 +49,15 @@ $PSU = $_GET['PSUNo'];
 }*/
 
 //3-Main form
-if($FormID==$formIdMainData){
+/*if($FormID==$formIdMainData){
     //list_no
     $list_no=getValue('SampleMapping', 'SampleHHNumber', "PSU = $PSU and UserID = $UserID and MainHHNumber = $SampleHHNo");
 }else{
     //list_no
     $list_no=$SampleHHNo;
-}
+}*/
+
+$list_no=$SampleHHNo;
 
 if (($UserID == NULL) || ($UserID == "")) {
     $UserID = "9999";
@@ -206,10 +208,10 @@ if ($ActualFileName != NULL) {
 				//$attr = json_decode(json_encode($xml->meta->instanceID), true);
 				//$instanceID = substr($attr[0],5);
 				
-				if($FormID==$formIdSamplingData){
+				/*if($FormID==$formIdSamplingData){
 			       $StatusUpdateQuery = "UPDATE [dbo].[xformrecord] SET [IsApproved] = 1 WHERE FormId=$formIdSamplingData AND id='$xFormRecordID'";
                    $conn->query($StatusUpdateQuery);				   
-			    }
+			    }*/
 				
 				/*
 				//Start of ODK Server Code
