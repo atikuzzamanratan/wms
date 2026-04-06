@@ -21,6 +21,15 @@ $data = [];
 
 foreach ($resQry as $row) {
     $id = $row->id;
+
+    $isCollected = "";
+    $hasInXformRecord = getValue('xformrecord', 'COUNT(*)', "SampleHHNo = $id");
+    if($hasInXformRecord > 0){
+        $isCollected = "<b style='color: green'>Collected</b>";
+    }else{
+        $isCollected = "<b style='color: red'>Not Collected</b>";
+    }
+
     $DIVISION_CODE = $row->DIVISION_CODE;
     $DIVISION_NAME = $row->DIVISION_NAME;
     $DISTRICT_CODE = $row->DISTRICT_CODE;
@@ -174,6 +183,7 @@ foreach ($resQry as $row) {
 
     $SubData = array();
     $SubData[] = $actions;
+    $SubData[] = $isCollected;
     $SubData[] = $id;
     $SubData[] = $DIVISION_NAME;
     $SubData[] = $DISTRICT_NAME;

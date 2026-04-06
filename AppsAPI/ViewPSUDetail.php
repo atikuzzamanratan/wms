@@ -35,6 +35,7 @@ include_once '../Components/header-includes.php';
                     <thead>
                     <tr>
                         <th>Actions</th>
+                        <th>Status</th>
                         <th>ID</th>
                         <th>Division</th>
                         <th>Disctict</th>
