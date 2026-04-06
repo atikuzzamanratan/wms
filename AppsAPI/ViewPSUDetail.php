@@ -21,6 +21,8 @@ if ($AuthToken != $AuthTokenValue) {
     exit();
 }
 
+echo 'This is show institute page';
+
 $MasterDataQuery = "SELECT  id, PSU, DivisionName, DivisionCode, DistrictName, DistrictCode, CityCorporationName, CityCorporationCode, UpazilaName, UpazilaCode, MunicipalityName,  MunicipalityCode, UnionWardName, UnionWardCode, RMO, MauzaName, MauzaCode, VillageName, VillageCode, PSUUserID, NumberOfRecord, NumberOfRecordForMainSurvey, CompanyID,EnumerationArea, EnumerationCode, FarmName FROM PSUList WHERE PSU = ? AND PSUUserID = ?";
 $MDRrow = $app->getDBConnection()->fetch($MasterDataQuery, $PSU, $UserID);
 
