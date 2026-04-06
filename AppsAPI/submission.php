@@ -112,8 +112,8 @@ if ($ActualFileName != NULL) {
             $NameArray[] = "PSU";
             $ValueArray[] = "N'" . $PSU . "'";
 						
-			$NameArray[] = "list_no";
-            $ValueArray[] = "N'" . $list_no . "'";			
+			/*$NameArray[] = "list_no";
+            $ValueArray[] = "N'" . $list_no . "'";*/
 						
 			if($FormID==2){
 			  $NameArray[] = "SampleHHNo";
