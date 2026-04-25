@@ -21,13 +21,14 @@ if (!empty($loggedUserId)) {
 // ✅ Fixed logic for "All Users" and specific users
 if ($param === '1') {
     // All users case
-    if ($loggedUserName === 'admin' || $loggedUserName === 'sasadmin' || $loggedUserName === 'cpsadmin') {
+    if ($loggedUserName === 'admin' || $loggedUserName === 'sasadmin' || $loggedUserName === 'wmsadmin') {
         // Superusers see all records
         $qry = "SELECT * FROM assignformtoagent WHERE FormID IN(SELECT id FROM datacollectionform WHERE Status = '$formActiveStatus')";
         $params = [];
     } else {
         // Regular users see all forms within their company
-        $qry = "SELECT * FROM assignformtoagent WHERE CompanyID = $loggedUserCompanyID AND FormID IN(SELECT id FROM datacollectionform WHERE Status = '$formActiveStatus')";
+        /*$qry = "SELECT * FROM assignformtoagent WHERE CompanyID = $loggedUserCompanyID AND FormID IN(SELECT id FROM datacollectionform WHERE Status = '$formActiveStatus')";*/
+        $qry = "SELECT * FROM assignformtoagent WHERE CompanyID = $projectCompanyID AND FormID IN(SELECT id FROM datacollectionform WHERE Status = '$formActiveStatus')";
     }
 } else {
     // Specific user selected

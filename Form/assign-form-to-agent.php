@@ -26,7 +26,7 @@ if ($loggedUserName == 'admin') {
                                 <label class="col-lg-3 control-label text-sm-end pt-2">Project<span
                                             class="required">*</span></label>
                                 <div class="col-lg-6">
-                                    <select data-plugin-selectTwo id="company" name="Project"
+                                    <select data-plugin-selectTwo id="company" name="company"
                                             class="form-control populate" title="Please select a Project" required>
                                         <optgroup label="Choose a Project">
                                             <?PHP
@@ -87,13 +87,13 @@ if ($loggedUserName == 'admin') {
                     $UserID = $_REQUEST['SelectedUserID'];
                     $GroupID = $_REQUEST['FormGroupId'];
                     $CompanyID = $_REQUEST['company'];
-
+                    
                     $perMenu = $_REQUEST["MP"];
                     $cond = "UserID = '$UserID' AND FormGroupId = '$GroupID'";
 
                     if (DeleteAgentForm('assignformtoagent', $cond)) {
 
-                        if (Edit_MenuPerr($perMenu, $GroupID, $CompanyID, $UserID, $loggedUserName, $xFormDefaultProvisionDate)) {
+                        if (Edit_MenuPerr($perMenu, $GroupID, $projectCompanyID, $UserID, $loggedUserName, $xFormDefaultProvisionDate)) {
                             MsgBox("Data saved successfully.");
                         } else {
                             MsgBox("Failed to save data!");
