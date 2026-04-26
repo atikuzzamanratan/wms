@@ -87,7 +87,7 @@ if ($loggedUserName == 'admin') {
                     $UserID = $_REQUEST['SelectedUserID'];
                     $GroupID = $_REQUEST['FormGroupId'];
                     $CompanyID = $_REQUEST['company'];
-                    
+
                     $perMenu = $_REQUEST["MP"];
                     $cond = "UserID = '$UserID' AND FormGroupId = '$GroupID'";
 
