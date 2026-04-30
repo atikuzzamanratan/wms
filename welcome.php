@@ -16,12 +16,14 @@
                     <div class="card-body" style="text-align: center; height: 100vh">
                         <!-- <div><h3>Welcome to the project</h3></div>-->
 
-                        <div><img src="img/bbs_logo.png" alt="WMS Logo" height="300px"></div>
+                        <div><img src="img/bbs_logo.png" alt="WMS Logo" height="200px"></div>
 
                         <div>
                             <b style="font-size: 17px; line-height: 2"><?php echo $projectDescription; ?></b><br>
                             <hr style="width:100%;text-align:left;margin-left:0;height: 2px">
                             <b style="font-size: 17px; line-height: 2"><?php echo $projectDescription2; ?></b>
+                            <hr style="width:100%;text-align:left;margin-left:0;height: 2px">
+                            <b style="font-size: 13px; line-height: 1.5"><?php echo $projectDescription3; ?></b>
                             <!--<b style="font-size: 19px; line-height: 2">জমির মালিকানা এবং নিরাপদ দখলিস্বত্ব নিরূপণ জরিপ-২০২৬</b>
                             <p style="font-size: 18px; line-height: 2; color: #0a0a0a;">টেকসই কৃষি পরিসংখ্যান প্রকল্প (৩য় জরিপ)</p>-->
                         </div>

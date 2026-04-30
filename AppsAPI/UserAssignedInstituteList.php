@@ -24,8 +24,13 @@ SELECT id, BSIC_CODE, MOBILE_NO, RTRIM(LTRIM(Q4A)) InstName FROM InstituteInfo W
 AND id NOT IN (SELECT SampleHHNo FROM xformrecord WHERE FormId='$formId' AND UserID = '$UserId') ORDER BY id ASC;";
 $app->getDBConnection()->Query($query);
 
-$query2 = "Declare @InstList AS nvarchar(max);
+/*$query2 = "Declare @InstList AS nvarchar(max);
 SELECT @InstList = COALESCE(@InstList + '~~~', '') + CONCAT('ID_', ID, '_BSICCODE_', Bsic_Code, '_MOBILE_', MobileNo, '_NAME_', InstName) 
+FROM ##TempInstData ORDER BY ID ASC; 
+select @InstList as InstNumbers";*/
+
+$query2 = "Declare @InstList AS nvarchar(max);
+SELECT @InstList = COALESCE(@InstList + '~~~', '') + CONCAT('Name_', InstName, '_MOBILE_', MobileNo, '_BSICCODE_', Bsic_Code, '_ID_', ID) 
 FROM ##TempInstData ORDER BY ID ASC; 
 select @InstList as InstNumbers";
 

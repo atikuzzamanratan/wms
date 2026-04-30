@@ -138,11 +138,6 @@ foreach ($resQry as $row) {
                                       </div>
                                       
                                       <div class='form-group'>
-                                        <label>BSIC Code</label>
-                                        <input type='text' class='form-control bg-light' value='$BSIC_CODE' readonly>
-                                      </div>
-                                      
-                                      <div class='form-group'>
                                         <label>BSIC Detail</label>
                                         <input type='text' class='form-control bg-light' value='$BSIC_DETAIL' readonly>
                                       </div>

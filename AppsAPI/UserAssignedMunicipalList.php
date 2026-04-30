@@ -24,8 +24,13 @@ SELECT id, DIVISION_NAME, DISTRICT_NAME, RTRIM(LTRIM(Q4A)) InstName FROM Institu
 AND id NOT IN (SELECT SampleHHNo FROM xformrecord WHERE FormId='$formId' AND UserID = '$UserId') ORDER BY id ASC;";
 $app->getDBConnection()->Query($query);
 
-$query2 = "Declare @MunList AS nvarchar(max);
+/*$query2 = "Declare @MunList AS nvarchar(max);
 SELECT @MunList = COALESCE(@MunList + '~~~', '') + CONCAT('ID_', ID, '_DIV_', Division, '_DIST_', District, '_NAME_', InstName) 
+FROM ##TempMunData ORDER BY ID ASC; 
+select @MunList as MunNumbers";*/
+
+$query2 = "Declare @MunList AS nvarchar(max);
+SELECT @MunList = COALESCE(@MunList + '~~~', '') + CONCAT('NAME_', InstName, '_DIV_', Division, '_DIST_', District, '_ID_', ID) 
 FROM ##TempMunData ORDER BY ID ASC; 
 select @MunList as MunNumbers";
 $MunList = $app->getDBConnection()->query($query2);
