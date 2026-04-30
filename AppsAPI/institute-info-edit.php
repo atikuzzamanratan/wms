@@ -77,6 +77,8 @@ if ($isCollected > 0) {
                                     $InstMobile = $row->MOBILE_NO;
                                     $InstAddress = $row->ADDRESS;
 
+                                    $InstType = $row->Type;
+
                                     $Division = $row->DIVISION_NAME;
                                     $District = $row->DISTRICT_NAME;
                                 }
@@ -91,18 +93,39 @@ if ($isCollected > 0) {
                                     <input type="text" class="form-control" name="name" id="name"
                                            value="<?php echo $InstName; ?>" required>
                                 </div>
+
+                                <?php
+                                if($InstType == "Establishment")
+                                {
+                                ?>
                                 <div class="form-group">
                                     <label for="mobile">Mobile No<span class="required">*</span></label>
                                     <input type="number" placeholder="01*********" minlength="11" maxlength="11"
                                            class="form-control" name="mobile" id="mobile"
                                            value="<?php echo $InstMobile; ?>" required>
                                 </div>
-
-                                <div class="form-group">
-                                    <label for="address">Address<span class="required">*</span></label>
-                                    <input type="text" class="form-control" name="address" id="address"
-                                           value="<?php echo $InstName; ?>" required>
-                                </div>
+                                    <div class="form-group">
+                                        <label for="address">Address<span class="required">*</span></label>
+                                        <input type="text" class="form-control" name="address" id="address"
+                                               value="<?php echo $InstAddress; ?>" required>
+                                    </div>
+                                    <?php
+                                }else{
+                                    ?>
+                                    <div class="form-group">
+                                        <label for="mobile">Mobile No</label>
+                                        <input type="number" placeholder="01*********" minlength="11" maxlength="11"
+                                               class="form-control" name="mobile" id="mobile"
+                                               value="<?php echo $InstMobile; ?>">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="address">Address</label>
+                                        <input type="text" class="form-control" name="address" id="address"
+                                               value="<?php echo $InstAddress; ?>">
+                                    </div>
+                                    <?php
+                                }
+                                    ?>
 
                                 <div class="form-group">
                                     <label for="Division">Division</label>
@@ -151,8 +174,8 @@ if ($isCollected > 0) {
 
                         //exit();
 
-                        if (empty($Name) || empty($Mobile) || empty($Address)) {
-                            echo 'Sorry, some information are missing!';
+                        if (empty($Name)) {
+                            echo 'Sorry, information are missing!';
                         } else {
                             if (Edit('InstituteInfo', $param, $cond)) {
                                 MsgBox2('Data updated successfully.');

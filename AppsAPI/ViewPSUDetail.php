@@ -38,10 +38,10 @@ include_once '../Components/header-includes.php';
                             <th>Status</th>
                             <th>ID</th>
                             <th>Institute Name</th>
+                            <th>Mobile No</th>
                             <th>Address</th>
                             <th>BSIC Code</th>
                             <th>BSIC Detail</th>
-                            <th>Mobile No</th>
                             <th>Division</th>
                             <th>Disctict</th>
                         </tr>

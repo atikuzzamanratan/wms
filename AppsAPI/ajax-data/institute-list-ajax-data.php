@@ -253,8 +253,8 @@ foreach ($resQry as $row) {
     $SubData[] = $isCollected;
     $SubData[] = $id;
     $SubData[] = $Q4A;
-    $SubData[] = $ADDRESS;
     $SubData[] = $MOBILE_NO;
+    $SubData[] = $ADDRESS;
     $SubData[] = $BSIC_CODE;
     $SubData[] = $BSIC_DETAIL;
     $SubData[] = $DIVISION_NAME;
