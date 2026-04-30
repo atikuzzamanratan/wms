@@ -26,34 +26,62 @@ $dataURL = $baseURL . "AppsAPI/ajax-data/institute-list-ajax-data.php?ui=$UserID
 include_once '../Components/header-includes.php';
 ?>
 
-<div class="inner-wrapper">
-    <section role="main" class="content-body">
-        <section class="card">
-            <div class="card-body">
-                <table class="table table-bordered table-striped" id="datatable-ajax"
-                       data-url="<?php echo $dataURL; ?>">
-                    <thead>
-                    <tr>
-                        <th>Actions</th>
-                        <th>Status</th>
-                        <th>ID</th>
-                        <th>Division</th>
-                        <th>Disctict</th>
-                        <th>BSIC Code</th>
-                        <th>BSIC Detail</th>
-                        <th>Institute Name</th>
-                        <th>Address</th>
-                        <th>Mobile No</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-            </div>
+    <div class="inner-wrapper">
+        <section role="main" class="content-body">
+            <section class="card">
+                <div class="card-body">
+                    <table class="table table-bordered table-striped" id="datatable-ajax"
+                           data-url="<?php echo $dataURL; ?>">
+                        <thead>
+                        <tr>
+                            <th>Actions</th>
+                            <th>Status</th>
+                            <th>ID</th>
+                            <th>Institute Name</th>
+                            <th>Address</th>
+                            <th>BSIC Code</th>
+                            <th>BSIC Detail</th>
+                            <th>Mobile No</th>
+                            <th>Division</th>
+                            <th>Disctict</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
         </section>
-    </section>
-</div>
+    </div>
+
+
 
 <?php
 include_once '../Components/footer-includes.php';
 ?>
+
+<script type="text/javascript">
+    function EditItem(userID, instID, instName, instAddress, instMobileNo, data) {
+
+        if (confirm("Are you sure to update this data?")) {
+            //alert(instID + '|' + instName + '|' + instAddress + '|' + instMobileNo)
+            $.ajax({
+                url: "AppsAPI/institute-info-edit.php",
+                method: "GET",
+                datatype: "json",
+                data: {
+                    userID: userID,
+                    instID: instID,
+                    instName: instName,
+                    instAddress: instAddress,
+                    instMobileNo: instMobileNo
+                },
+                success: function (response) {
+                    alert(response);
+                    window.location.reload();
+                }
+            });
+        }
+        return false;
+    }
+</script>

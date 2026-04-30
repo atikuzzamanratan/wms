@@ -60,14 +60,15 @@ foreach ($resQry as $row) {
     $STATUS = $row->STATUS;
 
     $actions = $actions = "<div style= \"display: flex; align-items: center; justify-content: center;\">
-                               <button title=\"$btnViewDetailTitle\" type=\"button\" class=\"simple-ajax-modal btn btn-outline-primary\" style=\"display: inline-block;margin: 0 1px;\" data-bs-toggle=\"modal\" data-bs-target=\"#viewDataModal$id\"><i class=\"fas fa-eye\"></i></button>
+                               
+                                    <button title=\"$btnViewDetailTitle\" type=\"button\" class=\"simple-ajax-modal btn btn-outline-primary\" style=\"display: inline-block;margin: 0 1px;\" data-bs-toggle=\"modal\" data-bs-target=\"#viewDataModal$id\"><i class=\"fas fa-eye\"></i></button>
                             </div>         
                             <!-- View Data Modal-->
-                            <div class='modal fade' id='viewDataModal$id' tabindex='-1' aria-labelledby='editDataModalLabel' aria-hidden='true'>
+                            <div class='modal fade' id='viewDataModal$id' tabindex='-1' aria-labelledby='viewDataModalLabel' aria-hidden='true'>
                               <div class='modal-dialog'>
                                 <div class='modal-content'>
                                   <div class='modal-header'>
-                                    <h5 class='modal-title' id='editDataModalLabel'>Institute Detail</h5>
+                                    <h5 class='modal-title' id='viewDataModalLabel'>View Institute Detail</h5>
                                     <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
                                   </div>
                                   <div class='modal-body'>
@@ -79,42 +80,42 @@ foreach ($resQry as $row) {
                                       
                                       <div class='form-group'>
                                         <label>Division</label>
-                                        <input type='text' class='form-control bg-light' value=\"$DIVISION_NAME ($DIVISION_CODE)\" readonly>
+                                        <input type='text' class='form-control bg-light' value='$DIVISION_NAME ($DIVISION_CODE)' readonly>
                                       </div>
                                       
                                       <div class='form-group'>
                                         <label>District</label>
-                                        <input type='text' class='form-control bg-light' value=\"$DISTRICT_NAME ($DISTRICT_CODE)\" readonly>
+                                        <input type='text' class='form-control bg-light' value='$DISTRICT_NAME ($DISTRICT_CODE)' readonly>
                                       </div>
                                       
                                       <div class='form-group'>
                                         <label>City Corporation</label>
-                                        <input type='text' class='form-control bg-light' value=\"$CITY_CORPORATION_NAME ($CITY_CORPORATION_CODE)\" readonly>
+                                        <input type='text' class='form-control bg-light' value='$CITY_CORPORATION_NAME ($CITY_CORPORATION_CODE)' readonly>
                                       </div>
                                       
                                       <div class='form-group'>
                                         <label>Upazila</label>
-                                        <input type='text' class='form-control bg-light' value=\"$UPAZILA_NAME ($UPAZILA_CODE)\" readonly>
+                                        <input type='text' class='form-control bg-light' value='$UPAZILA_NAME ($UPAZILA_CODE)' readonly>
                                       </div>
                                       
                                       <div class='form-group'>
                                         <label>Municipal</label>
-                                        <input type='text' class='form-control bg-light' value=\"$MUNICIPAL_NAME ($MUNICIPAL_CODE)\" readonly>
+                                        <input type='text' class='form-control bg-light' value='$MUNICIPAL_NAME ($MUNICIPAL_CODE)' readonly>
                                       </div>
                                       
                                       <div class='form-group'>
                                         <label>Union</label>
-                                        <input type='text' class='form-control bg-light' value=\"$UNION_NAME ($UNION_CODE)\" readonly>
+                                        <input type='text' class='form-control bg-light' value='$UNION_NAME ($UNION_CODE)' readonly>
                                       </div>
                                       
                                       <div class='form-group'>
                                         <label>Mouza</label>
-                                        <input type='text' class='form-control bg-light' value=\"$MOUZA_NAME ($MOUZA_CODE)\" readonly>
+                                        <input type='text' class='form-control bg-light' value='$MOUZA_NAME ($MOUZA_CODE)' readonly>
                                       </div>
                                       
                                       <div class='form-group'>
                                         <label>Village</label>
-                                        <input type='text' class='form-control bg-light' value=\"$VILLAGE_NAME ($VILLAGE_CODE)\" readonly>
+                                        <input type='text' class='form-control bg-light' value='$VILLAGE_NAME ($VILLAGE_CODE)' readonly>
                                       </div>
                                       
                                       <div class='form-group'>
@@ -169,24 +170,95 @@ foreach ($resQry as $row) {
                                      
                                       <div class='modal-footer'>
                                         <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Close</button>
+                                        <button type=\"button\" class=\"btn btn-primary\" name=\"Save\" id=\"Save\" value=\"Update\" data-bs-dismiss=\"modal\" 
+                                        onClick='NewWindow(\"institute-info-edit.php?instID=$id&userID=$UserID\", \"name\", \"600\", \"600\", \"Yes\"); return false;'>
+                                        Edit
+                                        </button>
                                       </div>
                                     </form>
                                   </div>
                                 </div>
                               </div>
-                            </div>";;
+                            </div>
+                            
+                            <div class='modal fade' id='editDataModal$id' tabindex='-1' aria-labelledby='editDataModalLabel' aria-hidden='true'>
+                                <div class='modal-dialog'>
+                                    <div class='modal-content'>
+                                      <div class='modal-header'>
+                                        <h5 class='modal-title' id='viewDataModalLabel'>Update Institute Detail</h5>
+                                        <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+                                      </div>
+                                        <div class='modal-body'>
+                                        <form name='frmInstEdit' id='frmInstEdit'>
+                                            <div class='form-group'>
+                                                <label>ID</label>
+                                                <input id='instID$id' type='text' class='form-control bg-light' value='$id' readonly>
+                                            </div>
+                                            <div class='form-group'>
+                                                <label>Division</label>
+                                                <input type='text' class='form-control bg-light' value='$DIVISION_NAME ($DIVISION_CODE)' readonly>
+                                            </div>
+                                            <div class='form-group'>
+                                                <label>District</label>
+                                                <input type='text' class='form-control bg-light' value='$DISTRICT_NAME ($DISTRICT_CODE)' readonly>
+                                            </div>
+                                            
+                                            <div class='form-group'>
+                                                <label style='color:red'>Institute Name (Q4A)</label>
+                                                <input id='instName$id' type='text' class='form-control bg-light' value='$Q4A' required>
+                                            </div>
+                                              
+                                            <div class='form-group'>
+                                                <label style='color:red'>Address</label>
+                                                <input id='instAddress$id' type='text' class='form-control bg-light' value='$ADDRESS' required>
+                                            </div>
+                                              
+                                            <div class='form-group'>
+                                                <label style='color:red'>Mobile No</label>
+                                                <input id='instMobileNo$id' type='number' pattern='01[0-9]{9}' title='Number must start with 01 and be exactly 11 digits long' maxlength='11' minlength='11' class='form-control bg-light' value='$MOBILE_NO' required>
+                                            </div>
+                                            <div class='modal-footer'>
+                                            <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Close</button>
+                                            <button type='button' class='btn btn-primary' onclick=\"
+                                            const nameInput = document.getElementById('instName$id').value;
+                                            const phoneInput = document.getElementById('instMobileNo$id').value;
+                                            const addressInput = document.getElementById('instAddress$id').value;
+                                            
+                                            if(!nameInput || !phoneInput || !addressInput){
+                                                alert('All required fields must be filled.');
+                                            }else if (phoneInput.length !== 11) {
+                                                alert('Mobile number must be exactly 11 digits.');
+                                             }
+                                             else if (!phoneInput.startsWith('01')) {
+                                                alert('Mobile number must be starting with 01.');
+                                             }else{
+                                             //alert('ok to go');
+                                             const editParam = 'userID=$UserID' + '&instID=$id' + '&instName=' + nameInput + '&instAddress=' + addressInput + '&instMobileNo=' + phoneInput
+                                             alert(editParam)
+                                           
+                                              //EditItem('$UserID', '$id', nameInput, addressInput, phoneInput);
+                                              }
+                                              
+                                            \">Save changes</button>
+                                          </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            ";
 
     $SubData = array();
     $SubData[] = $actions;
     $SubData[] = $isCollected;
     $SubData[] = $id;
-    $SubData[] = $DIVISION_NAME;
-    $SubData[] = $DISTRICT_NAME;
-    $SubData[] = $BSIC_CODE;
-    $SubData[] = $BSIC_DETAIL;
     $SubData[] = $Q4A;
     $SubData[] = $ADDRESS;
     $SubData[] = $MOBILE_NO;
+    $SubData[] = $BSIC_CODE;
+    $SubData[] = $BSIC_DETAIL;
+    $SubData[] = $DIVISION_NAME;
+    $SubData[] = $DISTRICT_NAME;
 
     $data[] = $SubData;
 }
