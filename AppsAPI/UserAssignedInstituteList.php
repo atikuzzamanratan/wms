@@ -30,7 +30,7 @@ FROM ##TempInstData ORDER BY ID ASC;
 select @InstList as InstNumbers";*/
 
 $query2 = "Declare @InstList AS nvarchar(max);
-SELECT @InstList = COALESCE(@InstList + '~~~', '') + CONCAT('Name_', InstName, '_MOBILE_', MobileNo, '_BSICCODE_', Bsic_Code, '_ID_', ID) 
+SELECT @InstList = COALESCE(@InstList + '~~~', '') + CONCAT('NAME_', InstName, '_MOBILE_', MobileNo, '_BSICCODE_', Bsic_Code, '_ID_', ID) 
 FROM ##TempInstData ORDER BY ID ASC; 
 select @InstList as InstNumbers";
 
