@@ -16,7 +16,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 ini_set('log_errors', 1);
-ini_set('error_log', 'D:\wwwroot\SAS_2\AppsAPI\php_errors.log');
+ini_set('error_log', 'D:\wwwroot\WMS\AppsAPI\php_errors.log');
 
 // Verify PHP is executing
 if (!defined('PHP_VERSION')) {
@@ -27,18 +27,18 @@ if (!defined('PHP_VERSION')) {
 }
 
 // Validate query parameters
-if (!isset($_REQUEST['userid'], $_REQUEST['psuNo'])) {
+if (!isset($_REQUEST['userid'])) {
     header('Content-Type: application/json');
     http_response_code(400);
-    echo json_encode(['error' => 'Missing required parameters: userid, psuNo']);
+    echo json_encode(['error' => 'Missing required parameters: userid']);
     exit;
 }
 
 // Sanitize inputs
 $userID = xss_clean($_REQUEST['userid']);
-$psuNo = xss_clean($_REQUEST['psuNo']);
+//$psuNo = xss_clean($_REQUEST['psuNo']);
 
-if (!$userID || !$psuNo) {
+if (!$userID) {
     header('Content-Type: application/json');
     http_response_code(400);
     echo json_encode(['error' => 'Invalid parameter values']);
@@ -46,13 +46,11 @@ if (!$userID || !$psuNo) {
 }
 
 // Query to fetch rows
-$query = "SELECT PSU, UserID, HHeadName, MobileNumber, HHAddress, MainHHNumber, SampleHHNumber, geopoint 
-          FROM SampleMapping 
-          WHERE UserID = ? AND PSU = ?";
+$query = "SELECT id, Q4A, MOBILE_NO, DIVISION_CODE, DIVISION_NAME, DISTRICT_CODE, DISTRICT_NAME, UPAZILA_CODE, UPAZILA_NAME FROM InstituteInfo WHERE Type='Establishment' AND UserID = ?";
 
 try {
     // Execute query using Nette Database
-    $result = $app->getDBConnection()->query($query, $userID, $psuNo)->fetchAll();
+    $result = $app->getDBConnection()->query($query, $userID)->fetchAll();
 
     // Temporary directory for CSVs
     $tempDir = sys_get_temp_dir() . '/csv_export_' . uniqid();
@@ -65,18 +63,18 @@ try {
     }
 
     $csvFiles = [];
-    $headers = ['SL', 'PSU', 'UserID', 'HHeadName', 'MobileNumber', 'HHAddress', 'MainHHNumber', 'SampleHHNumber', 'geopoint'];
+    $headers = ['SL', 'InstID', 'InstName', 'InstMobileNo', 'DivCode', 'DivName', 'DistCode', 'DistName', 'UpazilaCode', 'UpazilaName'];
     $sl = 1;
 
     // Generate one CSV per row
     foreach ($result as $row) {
-        $mainHHNumber = filter_var($row->MainHHNumber, FILTER_SANITIZE_NUMBER_INT);
+        $mainHHNumber = filter_var($row->id, FILTER_SANITIZE_NUMBER_INT);
         if (!$mainHHNumber) {
             error_log('Invalid MainHHNumber for row: ' . json_encode($row));
             continue;
         }
 
-        $csvFileName = "downloaded_hh_info_$mainHHNumber.csv";
+        $csvFileName = "downloaded_inst_info_$mainHHNumber.csv";
         $csvFilePath = $tempDir . '/' . $csvFileName;
         $output = fopen($csvFilePath, 'w');
         if ($output === false) {
@@ -93,14 +91,15 @@ try {
         // Write row with SL
         $data = [
             $sl,
-            $row->PSU,
-            $row->UserID,
-            $row->HHeadName,
-            $row->MobileNumber,
-            $row->HHAddress,
-            $row->MainHHNumber,
-            $row->SampleHHNumber,
-            $row->geopoint
+            $row->id,
+            $row->Q4A,
+            $row->MOBILE_NO,
+            $row->DIVISION_CODE,
+            $row->DIVISION_NAME,
+            $row->DISTRICT_CODE,
+            $row->DISTRICT_NAME,
+            $row->UPAZILA_CODE,
+            $row->UPAZILA_NAME
         ];
         fputcsv($output, $data);
 
