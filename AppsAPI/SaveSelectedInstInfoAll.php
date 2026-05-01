@@ -46,7 +46,7 @@ if (!$userID) {
 }
 
 // Query to fetch rows
-$query = "SELECT id, Q4A, MOBILE_NO, DIVISION_CODE, DIVISION_NAME, DISTRICT_CODE, DISTRICT_NAME, UPAZILA_CODE, UPAZILA_NAME FROM InstituteInfo WHERE Type='Establishment' AND UserID = ?";
+$query = "SELECT id, Q4A, MOBILE_NO, BSIC_CODE, DIVISION_CODE, DIVISION_NAME, DISTRICT_CODE, DISTRICT_NAME, UPAZILA_CODE, UPAZILA_NAME FROM InstituteInfo WHERE Type='Establishment' AND UserID = ?";
 
 try {
     // Execute query using Nette Database
@@ -63,7 +63,7 @@ try {
     }
 
     $csvFiles = [];
-    $headers = ['SL', 'InstID', 'InstName', 'InstMobileNo', 'DivCode', 'DivName', 'DistCode', 'DistName', 'UpazilaCode', 'UpazilaName'];
+    $headers = ['SL', 'InstID', 'InstName', 'BSICCode', 'InstMobileNo', 'DivCode', 'DivName', 'DistCode', 'DistName', 'UpazilaCode', 'UpazilaName'];
     $sl = 1;
 
     // Generate one CSV per row
@@ -94,6 +94,7 @@ try {
             $row->id,
             $row->Q4A,
             $row->MOBILE_NO,
+            $row->BSIC_CODE,
             $row->DIVISION_CODE,
             $row->DIVISION_NAME,
             $row->DISTRICT_CODE,
