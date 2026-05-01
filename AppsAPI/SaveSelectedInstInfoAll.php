@@ -63,7 +63,7 @@ try {
     }
 
     $csvFiles = [];
-    $headers = ['SL', 'InstID', 'InstName', 'BSICCode', 'InstMobileNo', 'DivCode', 'DivName', 'DistCode', 'DistName', 'UpazilaCode', 'UpazilaName'];
+    $headers = ['SL', 'InstID', 'InstName', 'InstMobileNo', 'BSICCode', 'DivCode', 'DivName', 'DistCode', 'DistName', 'UpazilaCode', 'UpazilaName'];
     $sl = 1;
 
     // Generate one CSV per row
