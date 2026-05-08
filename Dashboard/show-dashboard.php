@@ -8,13 +8,13 @@ $rsSupervisor = $app->getDBConnection()->fetch($qrySupervisor, $loggedUserID);
 $SuperID = $rsSupervisor->id;
 
 if (strpos($loggedUserName, 'dist') !== false) {
-    $divQuery = "SELECT DISTINCT p.DivisionName, p.DivisionCode FROM PSUList AS p 
-    JOIN assignsupervisor AS a ON p.PSUUserID = a.UserID 
-    WHERE  p.CompanyID = $loggedUserCompanyID AND a.DistCoordinatorID = $loggedUserID";
+    $divQuery = "SELECT DISTINCT p.Division_Name as DivisionName, p.Division_Code as DivisionCode FROM InstituteInfo AS p 
+    JOIN assignsupervisor AS a ON p.UserID = a.UserID 
+    WHERE a.DistCoordinatorID = $loggedUserID";
     $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery);
 } else {
-    $divQuery = "SELECT DISTINCT DivisionName , DivisionCode FROM PSUList WHERE CompanyID = ? ORDER BY DivisionName ASC";
-    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery, $loggedUserCompanyID);
+    $divQuery = "SELECT DISTINCT Division_Name as DivisionName, Division_Code as DivisionCode FROM InstituteInfo ORDER BY Division_Name ASC";
+    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery);
 }
 
 if($_REQUEST['show'] === 'Show'){
@@ -64,10 +64,10 @@ if($_REQUEST['show'] === 'Show'){
                             </div>
                             <div id="geoDiv" style="display: none">
                                 <div class="form-group row pb-3" id="DistrictDiv"></div>
-                                <div class="form-group row pb-3" id="UpazilaDiv"></div>
-                                <div class="form-group row pb-3" id="UnionWardDiv"></div>
+                                <!--<div class="form-group row pb-3" id="UpazilaDiv"></div>-->
+                                <!--<div class="form-group row pb-3" id="UnionWardDiv"></div>
                                 <div class="form-group row pb-3" id="MauzaDiv"></div>
-                                <div class="form-group row pb-3" id="VillageDiv"></div>
+                                <div class="form-group row pb-3" id="VillageDiv"></div>-->
 
                                 <footer class="card-footer">
                                     <div class="row justify-content-end">
@@ -94,22 +94,22 @@ if($_REQUEST['show'] === 'Show'){
         if ($_REQUEST['show'] === 'Show') {
             $DivisionCode = xss_clean($_REQUEST['DivisionCode']);
             $DistrictCode = xss_clean($_REQUEST['DistrictCode']);
-            $UpazilaCode = xss_clean($_REQUEST['UpazilaCode']);
+            /*$UpazilaCode = xss_clean($_REQUEST['UpazilaCode']);
             $UnionWardCode = xss_clean($_REQUEST['UnionWardCode']);
             $MauzaCode = xss_clean($_REQUEST['MauzaCode']);
-            $VillageCode = xss_clean($_REQUEST['VillageCode']);
+            $VillageCode = xss_clean($_REQUEST['VillageCode']);*/
 
 
             if (!empty($DivisionCode)) {
-                $DivisionName = getValue('PSUList', 'DivisionName', "DivisionCode = $DivisionCode");
+                $DivisionName = getValue('InstituteInfo', 'Division_Name', "Division_Code = $DivisionCode");
             }
 
             if (!empty($DistrictCode)) {
-                $DistrictName = getValue('PSUList', 'DistrictName', "DivisionCode = $DivisionCode AND DistrictCode = $DistrictCode");
+                $DistrictName = getValue('InstituteInfo', 'District_Name', "Division_Code = $DivisionCode AND District_Code = $DistrictCode");
                 $DistrictName = ' > ' . $DistrictName;
             }
 
-            if (!empty($UpazilaCode)) {
+            /*if (!empty($UpazilaCode)) {
                 $UpazilaName = getValue('PSUList', 'UpazilaName',
                     "DivisionCode = $DivisionCode AND DistrictCode = $DistrictCode AND UpazilaCode = $UpazilaCode");
                 $UpazilaName = ' > ' . $UpazilaName;
@@ -131,16 +131,16 @@ if($_REQUEST['show'] === 'Show'){
                 $VillageName = getValue('PSUList', 'VillageName',
                     "DivisionCode = $DivisionCode AND DistrictCode = $DistrictCode AND UpazilaCode = $UpazilaCode AND UnionWardCode = $UnionWardCode AND MauzaCode = $MauzaCode AND VillageCode = $VillageCode");
                 $VillageName = ' > ' . $VillageName;
-            }
+            }*/
 
             function getQryCreate($userParam): string
             {
                 if (!empty($DivisionCode)) {
-                    $qryCreate .= " AND $userParam IN (SELECT PSUUserID FROM PSUList WHERE DivisionCode = $DivisionCode";
+                    $qryCreate .= " AND $userParam IN (SELECT UserID FROM InstituteInfo WHERE Division_Code = $DivisionCode";
                     if (!empty($DistrictCode)) {
-                        $qryCreate .= " AND DistrictCode = $DistrictCode";
+                        $qryCreate .= " AND District_Code = $DistrictCode";
                     }
-                    if (!empty($UpazilaCode)) {
+                    /*if (!empty($UpazilaCode)) {
                         $qryCreate .= " AND UpazilaCode = $UpazilaCode";
                     }
                     if (!empty($UnionWardCode)) {
@@ -151,7 +151,7 @@ if($_REQUEST['show'] === 'Show'){
                     }
                     if (!empty($VillageCode)) {
                         $qryCreate .= " AND VillageCode = $VillageCode";
-                    }
+                    }*/
                     $qryCreate .= ")";
                 }
                 return $qryCreate;
@@ -159,11 +159,11 @@ if($_REQUEST['show'] === 'Show'){
 
             //qryCreate
             if (!empty($DivisionCode)) {
-                $qryCreate .= " AND UserID IN (SELECT PSUUserID FROM PSUList WHERE DivisionCode = $DivisionCode";
+                $qryCreate .= " AND UserID IN (SELECT UserID FROM InstituteInfo WHERE Division_Code = $DivisionCode";
                 if (!empty($DistrictCode)) {
-                    $qryCreate .= " AND DistrictCode = $DistrictCode";
+                    $qryCreate .= " AND District_Code = $DistrictCode";
                 }
-                if (!empty($UpazilaCode)) {
+                /*if (!empty($UpazilaCode)) {
                     $qryCreate .= " AND UpazilaCode = $UpazilaCode";
                 }
                 if (!empty($UnionWardCode)) {
@@ -174,17 +174,17 @@ if($_REQUEST['show'] === 'Show'){
                 }
                 if (!empty($VillageCode)) {
                     $qryCreate .= " AND VillageCode = $VillageCode";
-                }
+                }*/
                 $qryCreate .= ")";
             }
 
             //qryCreate2
             if (!empty($DivisionCode)) {
-                $qryCreate2 .= " AND PSUUserID IN (SELECT PSUUserID FROM PSUList WHERE DivisionCode = $DivisionCode";
+                $qryCreate2 .= " AND UserID IN (SELECT UserID FROM InstituteInfo WHERE Division_Code = $DivisionCode";
                 if (!empty($DistrictCode)) {
-                    $qryCreate2 .= " AND DistrictCode = $DistrictCode";
+                    $qryCreate2 .= " AND District_Code = $DistrictCode";
                 }
-                if (!empty($UpazilaCode)) {
+                /*if (!empty($UpazilaCode)) {
                     $qryCreate2 .= " AND UpazilaCode = $UpazilaCode";
                 }
                 if (!empty($UnionWardCode)) {
@@ -195,17 +195,17 @@ if($_REQUEST['show'] === 'Show'){
                 }
                 if (!empty($VillageCode)) {
                     $qryCreate2 .= " AND VillageCode = $VillageCode";
-                }
+                }*/
                 $qryCreate2 .= ")";
             }
 
             //qryCreate3
             if (!empty($DivisionCode)) {
-                $qryCreate3 .= " AND id IN (SELECT PSUUserID FROM PSUList WHERE DivisionCode = $DivisionCode";
+                $qryCreate3 .= " AND id IN (SELECT UserID FROM InstituteInfo WHERE Division_Code = $DivisionCode";
                 if (!empty($DistrictCode)) {
-                    $qryCreate3 .= " AND DistrictCode = $DistrictCode";
+                    $qryCreate3 .= " AND District_Code = $DistrictCode";
                 }
-                if (!empty($UpazilaCode)) {
+                /*if (!empty($UpazilaCode)) {
                     $qryCreate3 .= " AND UpazilaCode = $UpazilaCode";
                 }
                 if (!empty($UnionWardCode)) {
@@ -216,17 +216,17 @@ if($_REQUEST['show'] === 'Show'){
                 }
                 if (!empty($VillageCode)) {
                     $qryCreate3 .= " AND VillageCode = $VillageCode";
-                }
+                }*/
                 $qryCreate3 .= ")";
             }
 
             //qryCreate4
             if (!empty($DivisionCode)) {
-                $qryCreate4 .= " AND userinfo.id IN (SELECT PSUUserID FROM PSUList WHERE DivisionCode = $DivisionCode";
+                $qryCreate4 .= " AND userinfo.id IN (SELECT UserID FROM InstituteInfo WHERE Division_Code = $DivisionCode";
                 if (!empty($DistrictCode)) {
-                    $qryCreate4 .= " AND DistrictCode = $DistrictCode";
+                    $qryCreate4 .= " AND District_Code = $DistrictCode";
                 }
-                if (!empty($UpazilaCode)) {
+                /*if (!empty($UpazilaCode)) {
                     $qryCreate4 .= " AND UpazilaCode = $UpazilaCode";
                 }
                 if (!empty($UnionWardCode)) {
@@ -237,7 +237,7 @@ if($_REQUEST['show'] === 'Show'){
                 }
                 if (!empty($VillageCode)) {
                     $qryCreate4 .= " AND VillageCode = $VillageCode";
-                }
+                }*/
                 $qryCreate4 .= ")";
             }
         }
@@ -270,7 +270,7 @@ if($_REQUEST['show'] === 'Show'){
             $PendingData = $result_TotalDataQry->Pending;
 
             if ($FormID == $formIdSamplingData) {
-                $TotalTergetQry = "SELECT SUM(NumberOfRecord) as TotalTerget FROM PSUList where PSUUserID $distUserIdSelectCodition AND CompanyID = ? and PSUUserID <>'' and FarmName='' and PSUUserID>0";
+                $TotalTergetQry = "SELECT COUNT(id) as TotalTerget FROM InstituteInfo where UserID $distUserIdSelectCodition AND UserID <>'' and UserID>0  and Type = '$InstType'";
                 $TotalTergetQry .= $qryCreate2;
 
                 $TotalDataTodayQry = "SELECT COUNT(*) AS TotalData FROM xformrecord WHERE UserID $distUserIdSelectCodition AND FormId = ? AND CompanyId = ? AND (EntryDate BETWEEN '$todayDate 00:00:00' AND '$todayDate 23:59:59')";
@@ -282,7 +282,7 @@ if($_REQUEST['show'] === 'Show'){
                 $result_TotalDataLast7DaysQry = $app->getDBConnection()->fetch($TotalDataLast7DaysQry, $formIdSamplingData, $loggedUserCompanyID);
 
             } else if ($FormID == $formIdMainData) {
-                $TotalTergetQry = "SELECT SUM(NumberOfRecordForMainSurvey) as TotalTerget FROM PSUList where PSUUserID $distUserIdSelectCodition AND CompanyID = ? and PSUUserID <>'' and FarmName='' and PSUUserID>0";
+                $TotalTergetQry = "SELECT COUNT(id) as TotalTerget FROM InstituteInfo where UserID $distUserIdSelectCodition AND UserID <>'' and UserID>0  and Type = '$MunType'";
                 $TotalTergetQry .= $qryCreate2;
 
                 $TotalDataTodayQry = "SELECT COUNT(*) AS TotalData FROM xformrecord WHERE UserID $distUserIdSelectCodition AND FormId = ? AND CompanyId = ? AND (EntryDate BETWEEN '$todayDate 00:00:00' AND '$todayDate 23:59:59')";
@@ -313,7 +313,7 @@ if($_REQUEST['show'] === 'Show'){
             $TotalDataToday = $result_TotalDataTodayQry->TotalData;
             $TotalDataLast7Days = $result_TotalDataLast7DaysQry->TotalData;
 
-            $result_TotalTergetQry = $app->getDBConnection()->fetch($TotalTergetQry, $loggedUserCompanyID);
+            $result_TotalTergetQry = $app->getDBConnection()->fetch($TotalTergetQry);
             $TotalTerget = $result_TotalTergetQry->TotalTerget;
 
             $DataCollectionPercentage = Ratio($NumberOfRecord, $TotalTerget);
@@ -343,6 +343,49 @@ if($_REQUEST['show'] === 'Show'){
             $TotalSupervisorOnlineQry .= $qryCreate4;
             $result_TotalSupervisorOnlineQry = $app->getDBConnection()->fetch($TotalSupervisorOnlineQry, $loggedUserCompanyID, 1);
             $TotalSupervisorOnline = $result_TotalSupervisorOnlineQry->SupervisorOnline;
+
+
+            $TypeString = "";
+            if ($FormID == $formIdMainData) {
+                $TypeString = "Type='$MunType'";
+            } elseif ($FormID == $formIdSamplingData) {
+                $TypeString = "Type='$InstType'";
+            }
+
+
+
+            $LastSenderQuery = "SELECT TOP 10
+                                xfr.UserID,
+                                ui.UserName,
+                                COUNT(*) AS Collected,
+                                ISNULL(pl.SumTarget, 0) AS Target,
+                                CAST(
+                                    ROUND(
+                                        100.0 * COUNT(*) / NULLIF(pl.SumTarget, 0),
+                                        2
+                                    ) AS DECIMAL(5,2)
+                                ) AS Ratio
+                            FROM xformrecord xfr
+                            JOIN userinfo ui ON xfr.UserID = ui.id
+                            LEFT JOIN (
+                                SELECT 
+                                    UserID,
+                                    COUNT(id) AS SumTarget
+                                FROM InstituteInfo WHERE $TypeString
+                                GROUP BY UserID
+                            ) pl ON xfr.UserID = pl.UserID
+                            WHERE xfr.CompanyId = ?
+                              AND xfr.UserID $distUserIdSelectCodition
+                              AND xfr.FormId = ?
+                              AND ui.id NOT IN $testingUserIDs
+                            GROUP BY 
+                                xfr.UserID,
+                                ui.UserName,
+                                pl.SumTarget
+                            ORDER BY 
+                                Ratio ASC;";
+
+
 
             $TopSenderQuery = "SELECT top 10 xfr.UserID, ui.UserName, COUNT(*) AS Number FROM xformrecord xfr JOIN userinfo ui ON xfr.UserID = ui.id WHERE xfr.UserID $distUserIdSelectCodition AND  xfr.CompanyId = ?  AND xfr.FormId = ? AND ui.id NOT IN(68, 69)";
             $TopSenderQuery .= $qryCreate;
@@ -391,8 +434,9 @@ if($_REQUEST['show'] === 'Show'){
             $PendingData = $result_TotalDataQry->Pending;
 
             if ($FormID == $formIdSamplingData) {
-                $TotalTergetQry = "SELECT SUM(NumberOfRecord) as TotalTerget FROM PSUList where CompanyID = ? and PSUUserID <>'' and FarmName='' and PSUUserID>0";
+                $TotalTergetQry = "SELECT COUNT(ID) as TotalTerget FROM InstituteInfo where UserID <>'' and UserID>0 and Type = '$InstType'";
                 $TotalTergetQry .= $qryCreate2;
+                //echo $TotalTergetQry;
 
                 $TotalDataTodayQry = "SELECT COUNT(*) AS TotalData FROM xformrecord WHERE FormId = ? AND CompanyId = ? AND (EntryDate BETWEEN '$todayDate 00:00:00' AND '$todayDate 23:59:59')";
                 $TotalDataTodayQry .= $qryCreate;
@@ -403,7 +447,7 @@ if($_REQUEST['show'] === 'Show'){
                 $result_TotalDataLast7DaysQry = $app->getDBConnection()->fetch($TotalDataLast7DaysQry, $formIdSamplingData, $loggedUserCompanyID);
 
             } else if ($FormID == $formIdMainData) {
-                $TotalTergetQry = "SELECT SUM(NumberOfRecordForMainSurvey) as TotalTerget FROM PSUList where CompanyID = ? and PSUUserID <>'' and FarmName='' and PSUUserID>0";
+                $TotalTergetQry = "SELECT COUNT(ID) as TotalTerget FROM InstituteInfo where UserID <>'' and UserID>0 and Type = '$MunType'";
                 $TotalTergetQry .= $qryCreate2;
 
                 $TotalDataTodayQry = "SELECT COUNT(*) AS TotalData FROM xformrecord WHERE FormId = ? AND CompanyId = ? AND (EntryDate BETWEEN '$todayDate 00:00:00' AND '$todayDate 23:59:59')";
@@ -435,7 +479,7 @@ if($_REQUEST['show'] === 'Show'){
             $TotalDataToday = $result_TotalDataTodayQry->TotalData;
             $TotalDataLast7Days = $result_TotalDataLast7DaysQry->TotalData;
 
-            $result_TotalTergetQry = $app->getDBConnection()->fetch($TotalTergetQry, $loggedUserCompanyID);
+            $result_TotalTergetQry = $app->getDBConnection()->fetch($TotalTergetQry);
             $TotalTerget = $result_TotalTergetQry->TotalTerget;
 
             $DataCollectionPercentage = Ratio($NumberOfRecord, $TotalTerget);
@@ -445,9 +489,10 @@ if($_REQUEST['show'] === 'Show'){
             $result_TotalRejectQry = $app->getDBConnection()->fetch($TotalRejectQry, $loggedUserCompanyID, $FormID);
             $TotalReject = $result_TotalRejectQry->TotalReject;
 
-            $TotalDataCollectorQry = "SELECT COUNT(id) AS TotalUser FROM userinfo WHERE IsActive = ? AND CompanyID = ? AND UserName LIKE '%$dataCollectorNamePrefix%' ";
+            //$TotalDataCollectorQry = "SELECT COUNT(id) AS TotalUser FROM userinfo WHERE IsActive = ? AND CompanyID = ? AND UserName LIKE '%$dataCollectorNamePrefix%' ";
+            $TotalDataCollectorQry = "SELECT COUNT(Distinct(UserID)) AS TotalUser FROM InstituteInfo WHERE UserID NOT IN $testingUserIDs ";
             $TotalDataCollectorQry .= $qryCreate3;
-            $result_TotalDataCollectorQry = $app->getDBConnection()->fetch($TotalDataCollectorQry, 1, $loggedUserCompanyID);
+            $result_TotalDataCollectorQry = $app->getDBConnection()->fetch($TotalDataCollectorQry);
             $TotalUser = $result_TotalDataCollectorQry->TotalUser;
 
             $TotalDataCollectorOnlineQry = "SELECT COUNT(id) AS TotalUser FROM userinfo WHERE IsActive = ? AND IsOnline = ? AND CompanyID = ? AND UserName LIKE '%$dataCollectorNamePrefix%' ";
@@ -455,9 +500,11 @@ if($_REQUEST['show'] === 'Show'){
             $result_TotalDataCollectorOnlineQry = $app->getDBConnection()->fetch($TotalDataCollectorOnlineQry, 1, 1, $loggedUserCompanyID);
             $TotalUserOnline = $result_TotalDataCollectorOnlineQry->TotalUser;
 
-            $TotalSupervisorQry = "SELECT COUNT( DISTINCT SupervisorID) Supervisor FROM assignsupervisor WHERE CompanyID = ?";
+            //$TotalSupervisorQry = "SELECT COUNT( DISTINCT SupervisorID) Supervisor FROM assignsupervisor WHERE CompanyID = ?";
+            $TotalSupervisorQry = "SELECT COUNT(DISTINCT(SupervisorID)) 'Supervisor' FROM assignsupervisor WHERE UserID IN (SELECT DISTINCT(UserID) FROM InstituteInfo WHERE UserID NOT IN $testingUserIDs)";
+
             $TotalSupervisorQry .= $qryCreate;
-            $result_TotalSupervisorQry = $app->getDBConnection()->fetch($TotalSupervisorQry, $loggedUserCompanyID);
+            $result_TotalSupervisorQry = $app->getDBConnection()->fetch($TotalSupervisorQry);
             $TotalSupervisor = $result_TotalSupervisorQry->Supervisor;
 
             $TotalSupervisorOnlineQry = "SELECT COUNT( DISTINCT assignsupervisor.SupervisorID) SupervisorOnline FROM assignsupervisor join userinfo on assignsupervisor.SupervisorID = userinfo.id WHERE assignsupervisor.CompanyID = ? AND userinfo.IsOnline = ?";
@@ -480,17 +527,11 @@ if($_REQUEST['show'] === 'Show'){
             $result_LastSender = $app->getDBConnection()->fetchAll($LastSenderQuery, $loggedUserCompanyID, $FormID);
             */
 
-            $FarmString = "";
-            $CountParam = "";
+            $TypeString = "";
             if ($FormID == $formIdMainData) {
-                $FarmString = "FarmName=''";
-                $CountParam = "NumberOfRecordForMainSurvey";
+                $TypeString = "Type='$MunType'";
             } elseif ($FormID == $formIdSamplingData) {
-                $FarmString = "FarmName=''";
-                $CountParam = "NumberOfRecord";
-            } elseif ($FormID == $formIdFarmData) {
-                $FarmString = "FarmName<>''";
-                $CountParam = "NumberOfRecord";
+                $TypeString = "Type='$InstType'";
             }
 
 
@@ -510,11 +551,11 @@ if($_REQUEST['show'] === 'Show'){
                             JOIN userinfo ui ON xfr.UserID = ui.id
                             LEFT JOIN (
                                 SELECT 
-                                    PSUUserID,
-                                    SUM($CountParam) AS SumTarget
-                                FROM PSUList WHERE $FarmString
-                                GROUP BY PSUUserID
-                            ) pl ON xfr.UserID = pl.PSUUserID
+                                    UserID,
+                                    COUNT(id) AS SumTarget
+                                FROM InstituteInfo WHERE $TypeString
+                                GROUP BY UserID
+                            ) pl ON xfr.UserID = pl.UserID
                             WHERE xfr.CompanyId = ?
                               AND xfr.FormId = ?
                               AND ui.id NOT IN $testingUserIDs
@@ -739,11 +780,9 @@ if($_REQUEST['show'] === 'Show'){
                                 $NumberOfTopData = $row->Number;
 
                                 if ($FormID == $formIdMainData) {
-                                    $NumberOfTargetData = getValue("PSUList", "SUM(NumberOfRecordForMainSurvey)", "FarmName='' AND PSUUserID = $UserIDVal");
+                                    $NumberOfTargetData = getValue("InstituteInfo", "COUNT(id)", "UserID = $UserIDVal AND Type = '$MunType'");
                                 } elseif ($FormID == $formIdSamplingData) {
-                                    $NumberOfTargetData = getValue("PSUList", "SUM(NumberOfRecord)", "FarmName='' AND PSUUserID = $UserIDVal");
-                                } elseif ($FormID == $formIdFarmData) {
-                                    $NumberOfTargetData = getValue("PSUList", "SUM(NumberOfRecord)", "FarmName<>'' AND PSUUserID = $UserIDVal");
+                                    $NumberOfTargetData = getValue("InstituteInfo", "COUNT(id)", "UserID = $UserIDVal AND Type = '$InstType'");
                                 }
 
                                 $UserDataCollectionRatio = Ratio($NumberOfTopData, $NumberOfTargetData);

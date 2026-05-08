@@ -3,7 +3,7 @@
     $FormID = $app->cleanInput($_GET['FormID']);
 }*/
 
-$FormID = $formIdMainData;
+$FormID = $formIdSamplingData;
 
 if (is_null($FormID)) {
     ?>

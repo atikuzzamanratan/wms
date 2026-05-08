@@ -57,6 +57,10 @@ $formIdSamplingData = 2;
 $formIdMainData = 3;
 $formIdFarmData = 4;
 
+$InstType = "Establishment";
+$MunType = "Municipal";
+
+
 $projectCompanyID = 2;
 
 $formActiveStatus = 'Active';

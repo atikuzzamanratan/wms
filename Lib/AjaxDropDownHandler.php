@@ -148,22 +148,22 @@ function ShowDistrict($app, $RequestingValue, $NextCallFunction, $UserID, $Selec
 {
     $loggedUserName = getValue('userinfo', 'UserName', "id = $UserID");
     if (strpos($loggedUserName, 'dist') !== false) {
-        $query = "SELECT DISTINCT p.DistrictName, p.DistrictCode FROM PSUList as p JOIN assignsupervisor as a ON p.PSUUserID = a.UserID WHERE a.DistCoordinatorID = ?";
+        $query = "SELECT DISTINCT p.District_Name as DistrictName, p.District_Code as DistrictCode FROM InstituteInfo as p JOIN assignsupervisor as a ON p.UserID = a.UserID WHERE a.DistCoordinatorID = ?";
         $rsQuery = $app->getDBConnection()->fetchAll($query, $UserID);
     } else if (strpos($loggedUserName, 'div') !== false) {
-        $query = "SELECT DISTINCT p.DistrictName, p.DistrictCode FROM PSUList as p JOIN assignsupervisor as a ON p.PSUUserID = a.UserID WHERE a.DivCoordinatorID = ? AND p.DivisionCode = ?";
+        $query = "SELECT DISTINCT p.District_Name as DistrictName, p.District_Code as DistrictCode FROM InstituteInfo as p JOIN assignsupervisor as a ON p.UserID = a.UserID WHERE a.DivCoordinatorID = ? AND p.Division_Code = ?";
 //die("User Id: ".$RequestingValue);        
 		$rsQuery = $app->getDBConnection()->fetchAll($query, $UserID, $RequestingValue);
     } else if (strpos($loggedUserName, 'val') !== false) {
 		if (strpos($loggedUserName, 'cval') === false) {
-			$query = "SELECT DISTINCT p.DistrictName, p.DistrictCode FROM PSUList as p JOIN assignsupervisor as a ON p.PSUUserID = a.UserID WHERE a.ValidatorID = ? AND p.DivisionCode = ?";
+			$query = "SELECT DISTINCT p.District_Name as DistrictName, p.District_Code as DistrictCode FROM InstituteInfo as p JOIN assignsupervisor as a ON p.UserID = a.UserID WHERE a.ValidatorID = ? AND p.Division_Code = ?";
 			$rsQuery = $app->getDBConnection()->fetchAll($query, $UserID, $RequestingValue);
 		} else {
-			$query = "SELECT DISTINCT p.DistrictName, p.DistrictCode FROM PSUList as p JOIN assignsupervisor as a ON p.PSUUserID = a.UserID WHERE p.DivisionCode = ?";
+			$query = "SELECT DISTINCT p.District_Name as DistrictName, p.District_Code as DistrictCode FROM InstituteInfo as p JOIN assignsupervisor as a ON p.UserID = a.UserID WHERE p.Division_Code = ?";
 			$rsQuery = $app->getDBConnection()->fetchAll($query, $RequestingValue);
 		}
     } else {
-        $query = "SELECT DISTINCT DistrictName, DistrictCode FROM PSUList WHERE DivisionCode = $RequestingValue order by DistrictName asc";
+        $query = "SELECT DISTINCT TRIM(p.District_Name) AS DistrictName, TRY_CAST(p.District_Code AS INT) AS DistrictCode FROM InstituteInfo p WHERE p.Division_Code = $RequestingValue ORDER BY DistrictCode ASC";
         $rsQuery = $app->getDBConnection()->fetchAll($query);
     }
     //echo $loggedUserName;
@@ -241,7 +241,7 @@ function ShowDistrictRec($app, $RequestingValue, $NextCallFunction, $UserID, $Se
 
 function ShowUpazila($app, $RequestingValue, $SelectedValue)
 {
-    $query = "SELECT DISTINCT UpazilaName, UpazilaCode FROM PSUList WHERE DistrictCode = ? order by UpazilaName asc";
+    $query = "SELECT DISTINCT TRIM(Upazila_Name) AS UpazilaName, TRY_CAST(Upazila_Code AS INT) AS UpazilaCode FROM InstituteInfo WHERE District_Code = ? AND Upazila_Name IS NOT NULL AND TRIM(Upazila_Name) <> '' AND TRIM(Upazila_Name) <> 'NULL' AND Upazila_Code IS NOT NULL ORDER BY UpazilaName ASC;";
     $rsQuery = $app->getDBConnection()->fetchAll($query, $RequestingValue);
 
     $NextCallFunction = "ShowDropDown1('DistrictCode','UpazilaCode','DivisionCode','UnionWardDiv','ShowUnionWard','ShowMauza')";
@@ -268,8 +268,8 @@ function ShowUnionWard($app, $RequestingValue, $SelectedValue)
     $RequestingValue1 = $requestValueArray[0];
     $RequestingValue2 = $requestValueArray[1];
     //echo "$RequestingValue1 || $RequestingValue2";
-    $query = "SELECT DISTINCT UnionWardName, UnionWardCode FROM PSUList WHERE DistrictCode = $RequestingValue1 AND UpazilaCode = $RequestingValue2 order by UnionWardName asc";
-    $rsQuery = $app->getDBConnection()->fetchAll($query);
+    $query = "SELECT DISTINCT UnionWardName, UnionWardCode FROM PSUList WHERE DistrictCode = ? AND UpazilaCode = ? order by UnionWardName asc";
+    $rsQuery = $app->getDBConnection()->fetchAll($query, $RequestingValue1, $RequestingValue2);
 
     $NextCallFunction = "ShowDropDown1('DistrictCode','UpazilaCode','UnionWardCode','MauzaDiv','ShowMauza')";
     ?>

@@ -29,17 +29,14 @@ $Collected = $resQryDataCollection->Collected;
 $NotCollectedData = $NumberOfRecordForMainSurvey - $Collected;
 
 if ($FormID == $formIdMainData) {
-    $QueryDataCollectionStatus = "SELECT DISTINCT PSUList.PSUUserID, PSUList.PSU, userinfo.FullName, PSUList.NumberOfRecordForMainSurvey as 'Target',
-    (SELECT COUNT(id) FROM xformrecord WHERE xformrecord.PSU = PSUList.PSU and xformrecord.UserID=userinfo.id AND xformrecord.FormId = ?) as Collected 
-    FROM PSUList JOIN userinfo ON PSUList.PSUUserID = userinfo.id WHERE PSUList.FarmName = '' AND PSUList.PSUUserID = ?";
+    $QueryDataCollectionStatus = "SELECT COUNT(DISTINCT ii.id) AS Target, COUNT(xfr.id) AS Collected FROM InstituteInfo ii LEFT JOIN xformrecord xfr ON xfr.SampleHHNo = ii.id AND xfr.UserID = ii.UserID AND xfr.FormId = ? WHERE ii.UserID = ? AND ii.Type = '$MunType'";
 
     $FindMissingAndDuplicateQuery = "EXEC find_Duplicate_Missing_HH_For_User $FormID, '$columnNameToUpdateValueForMainData', $maxNumberOfHHForSampling, $UserID;";
     $FindMissingAndDuplicateQueryRS = $app->getDBConnection()->fetchAll($FindMissingAndDuplicateQuery);
 
 } else if ($FormID == $formIdSamplingData) {
-    $QueryDataCollectionStatus = "SELECT DISTINCT PSUList.PSUUserID, PSUList.PSU, userinfo.FullName, PSUList.NumberOfRecord as 'Target',
-    (SELECT COUNT(id) FROM xformrecord WHERE xformrecord.PSU = PSUList.PSU AND xformrecord.UserID=userinfo.id AND xformrecord.FormId = ?) AS Collected 
-    FROM PSUList JOIN userinfo ON PSUList.PSUUserID = userinfo.id WHERE PSUList.FarmName = '' AND PSUList.PSUUserID = ?";
+    $QueryDataCollectionStatus = "SELECT COUNT(DISTINCT ii.id) AS Target, COUNT(xfr.id) AS Collected FROM InstituteInfo ii LEFT JOIN xformrecord xfr ON xfr.SampleHHNo = ii.id AND xfr.UserID = ii.UserID AND xfr.FormId = ? WHERE ii.UserID = ? AND ii.Type = '$InstType'";
+
 } else if ($FormID == $formIdFarmData) {
     $QueryDataCollectionStatus = "SELECT DISTINCT PSUList.PSUUserID, PSUList.PSU, userinfo.FullName, PSUList.NumberOfRecordForMainSurvey as 'Target',
     (SELECT COUNT(id) FROM xformrecord WHERE xformrecord.PSU = PSUList.PSU and xformrecord.UserID=userinfo.id AND xformrecord.FormId = ?) as Collected 
@@ -76,7 +73,6 @@ $DataSendingDateRS = $app->getDBConnection()->fetchAll($DataSendingDateQuery, $U
                             <table class="table table-responsive-lg table-bordered table-striped table-sm mb-0">
                                 <thead>
                                 <tr>
-                                    <th>PSU</th>
                                     <th>Target</th>
                                     <th>Collected</th>
                                     <th>Not-Collected</th>
@@ -89,7 +85,6 @@ $DataSendingDateRS = $app->getDBConnection()->fetchAll($DataSendingDateQuery, $U
                                 $CollectedData = 0;
 
                                 foreach ($QueryDataCollectionStatusRS as $row) {
-                                    $PsuID = $row->PSU;
                                     $UserTargetData = $row->Target;
                                     $UserCollectedData = $row->Collected;
                                     $UserNotCollectedData = $UserTargetData - $UserCollectedData;
@@ -99,7 +94,6 @@ $DataSendingDateRS = $app->getDBConnection()->fetchAll($DataSendingDateQuery, $U
                                     $CollectedData += $UserCollectedData;
                                     ?>
                                     <tr>
-                                        <td><?php echo $PsuID; ?></td>
                                         <td><?php echo $UserTargetData; ?></td>
                                         <td><?php echo $UserCollectedData; ?></td>
                                         <td><?php echo $UserNotCollectedData; ?></td>
@@ -108,13 +102,6 @@ $DataSendingDateRS = $app->getDBConnection()->fetchAll($DataSendingDateQuery, $U
                                     <?php
                                 }
                                 ?>
-                                <tr>
-                                    <td>Total</td>
-                                    <td><?php echo $TargetData; ?></td>
-                                    <td><?php echo $CollectedData; ?></td>
-                                    <td><?php echo $TargetData - $CollectedData; ?></td>
-                                    <td><?php echo Ratio($CollectedData, $TargetData); ?></td>
-                                </tr>
 
                                 </tbody>
                             </table>

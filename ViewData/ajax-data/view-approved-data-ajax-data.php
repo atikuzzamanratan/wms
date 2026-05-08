@@ -32,47 +32,8 @@ if (!empty($_POST)) {
 	$col[] = "IsApproved";
 	$col[] = "DeviceID";
 
-    $qry = "SELECT xfr.id, 
-					xfr.SampleHHNo, 
-					xfr.PSU, 
-					ui.UserName, 
-					ui.id as userid, 
-					ui.FullName, 
-					ui.MobileNumber, 
-					xfr.DataName, 
-					xfr.DeviceID, 
-					xfr.EntryDate, 
-					xfr.FormGroupId, 
-					xfr.IsApproved, 
-					xfr.XFormsFilePath,  
-					COALESCE(xfr.IsEdited, 0) AS IsRowEdited, 
-					pl.DivisionName, 
-					pl.DistrictName,
-					(
-						SELECT TOP 1 mdp.ColumnValue 
-						FROM masterdatarecord_Approved mdp 
-						WHERE mdp.XFormRecordId = xfr.id 
-							AND mdp.FormId = xfr.FormId 
-							AND mdp.UserID = xfr.UserID 
-							AND mdp.CompanyId = xfr.CompanyId 
-							AND mdp.PSU = xfr.PSU 
-							AND mdp.SampleHHNo = xfr.SampleHHNo 
-							AND mdp.ColumnName = N'surveyEndDate'
-					) AS StartTime,
-					(
-						SELECT TOP 1 mdp.ColumnValue 
-						FROM masterdatarecord_Approved mdp 
-						WHERE mdp.XFormRecordId = xfr.id 
-							AND mdp.FormId = xfr.FormId 
-							AND mdp.UserID = xfr.UserID 
-							AND mdp.CompanyId = xfr.CompanyId 
-							AND mdp.PSU = xfr.PSU 
-							AND mdp.SampleHHNo = xfr.SampleHHNo 
-							AND mdp.ColumnName = N'surveyStartDate'
-					) AS EndTime 
-			FROM xformrecord xfr 
-				JOIN userinfo ui ON xfr.UserID = ui.id 
-				JOIN PSUList pl ON pl.PSUUserID = ui.id AND xfr.PSU = pl.PSU ";
+    $qry = "SELECT xfr.id, xfr.SampleHHNo, xfr.PSU, ui.UserName, ui.id as userid, ui.FullName, ui.MobileNumber, xfr.DataName, xfr.DeviceID, xfr.EntryDate, xfr.FormGroupId, xfr.IsApproved, xfr.XFormsFilePath, COALESCE(xfr.IsEdited, 0) AS IsRowEdited, pl.DIVISION_NAME DivisionName, pl.DISTRICT_NAME DistrictName,
+	(SELECT TOP 1 mdp.ColumnValue FROM masterdatarecord_Approved mdp WHERE mdp.XFormRecordId = xfr.id AND mdp.FormId = xfr.FormId AND mdp.UserID = xfr.UserID AND mdp.CompanyId = xfr.CompanyId AND mdp.SampleHHNo = xfr.SampleHHNo AND mdp.ColumnName = N'surveyEndDate') AS StartTime, (SELECT TOP 1 mdp.ColumnValue FROM masterdatarecord_Approved mdp WHERE mdp.XFormRecordId = xfr.id AND mdp.FormId = xfr.FormId AND mdp.UserID = xfr.UserID AND mdp.SampleHHNo = xfr.SampleHHNo AND mdp.ColumnName = N'surveyStartDate') AS EndTime FROM xformrecord xfr JOIN userinfo ui ON xfr.UserID = ui.id JOIN InstituteInfo pl ON pl.id = xfr.SampleHHNo ";
 	if (strpos($LoggedUserName, 'cs') !== false) {
 		$qry .= " JOIN assignsupervisor a ON a.UserID = ui.id AND a.SupervisorID = $LoggedUserID ";
 	}
@@ -99,29 +60,28 @@ if (!empty($_POST)) {
 	$UnionWardCode = xss_clean($_REQUEST['UnionWardCode']);
 	$MauzaCode = xss_clean($_REQUEST['MauzaCode']);
 	$VillageCode = xss_clean($_REQUEST['VillageCode']);
-	
-	if (!empty($DivisionCode)) {
-		$qry .= " AND ( pl.DivisionCode = '" . $DivisionCode . "') ";
-	}
-	if (!empty($DistrictCode)) {
-		$qry .= " AND ( pl.DistrictCode = '" . $DistrictCode . "') ";
-	}
-	if (!empty($UpazilaCode)) {
-		$qry .= " AND ( pl.UpazilaCode = '" . $UpazilaCode . "') ";
-	}
-	if (!empty($UnionWardCode)) {
-		$qry .= " AND ( pl.UnionWardCode = '" . $UnionWardCode . "') ";
-	}
-	if (!empty($MauzaCode)) {
-		$qry .= " AND ( pl.MauzaCode = '" . $MauzaCode . "') ";
-	}
-	if (!empty($VillageCode)) {
-		$qry .= " AND ( pl.VillageCode = '" . $VillageCode . "') ";
-	}
+
+    if (!empty($DivisionCode)) {
+        $qry .= " AND ( pl.DIVISION_CODE = '" . $DivisionCode . "') ";
+    }
+    if (!empty($DistrictCode)) {
+        $qry .= " AND ( pl.DISTRICT_CODE = '" . $DistrictCode . "') ";
+    }
+    if (!empty($UpazilaCode)) {
+        $qry .= " AND ( pl.UPAZILA_CODE = '" . $UpazilaCode . "') ";
+    }
+    if (!empty($UnionWardCode)) {
+        $qry .= " AND ( pl.UNION_CODE = '" . $UnionWardCode . "') ";
+    }
+    if (!empty($MauzaCode)) {
+        $qry .= " AND ( pl.MOUZA_CODE = '" . $MauzaCode . "') ";
+    }
+    if (!empty($VillageCode)) {
+        $qry .= " AND ( pl.VILLAGE_CODE = '" . $VillageCode . "') ";
+    }
 
     if (!empty($request['search']['value'])) {
         $qry .= " AND (xfr.id like'" . $request['search']['value'] . "%'";
-        $qry .= " OR ui.id like'%" . $request['search']['value'] . "%'";
         $qry .= " OR ui.UserName like'%" . $request['search']['value'] . "%'";
         $qry .= " OR ui.FullName like'%" . $request['search']['value'] . "%'";
         $qry .= " OR ui.MobileNumber like'%" . $request['search']['value'] . "%'";
@@ -129,8 +89,8 @@ if (!empty($_POST)) {
         $qry .= " OR xfr.SampleHHNo like'%" . $request['search']['value'] . "%'";
         $qry .= " OR xfr.DeviceID like'%" . $request['search']['value'] . "%'";
         $qry .= " OR xfr.EntryDate like'%" . $request['search']['value'] . "%'";
-		$qry .= " OR pl.DivisionName like'%" . $request['search']['value'] . "%'";
-		$qry .= " OR pl.DistrictName like'%" . $request['search']['value'] . "%')";
+        $qry .= " OR pl.DIVISION_NAME like'%" . $request['search']['value'] . "%'";
+        $qry .= " OR pl.DISTRICT_NAME like'%" . $request['search']['value'] . "%')";
     }
 
     $rs = db_query($qry, $cn);

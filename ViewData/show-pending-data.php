@@ -204,6 +204,9 @@ if ($_REQUEST['show'] === 'Show') {
                     $SelectedUserID = $_REQUEST['SelectedUserID'];
                     $checkAll = $_REQUEST['chkAll'];
 
+                    //echo "$SelectedFormID | $SelectedCompanyID | $SelectedUserID | $checkAll";
+                    //exit();
+
                     if ($checkAll == 'chkAll') {
                         $SelectedCheckAll = 1;
                     } else {
@@ -254,8 +257,8 @@ if ($_REQUEST['show'] === 'Show') {
                                         <tr>
                                             <th>Actions</th>
                                             <th>Record ID</th>
-                                            <th>HH No</th>
-                                            <th>PSU</th>
+                                            <th>Institute ID</th>
+                                            <th> </th>
                                             <th>Division Name</th>
                                             <th>District Name</th>
                                             <th>User</th>
