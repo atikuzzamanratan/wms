@@ -52,7 +52,7 @@ if($_REQUEST['show'] === 'Show'){
                                         <?php if (strpos($loggedUserName, 'admin') === false) { ?>
                                             required
                                         <?php } ?>
-                                            onchange="ShowDropDown('DivisionCode', 'DistrictDiv', 'ShowDistrict', 'ShowUpazila')">
+                                            onchange="ShowDropDown4('DivisionCode', 'DistrictDiv', 'ShowDistrict', 'ShowUpazila')">
                                         <option value="">Choose division</option>
                                         <?PHP
                                         foreach ($rsDivQuery as $row) {
@@ -64,10 +64,10 @@ if($_REQUEST['show'] === 'Show'){
                             </div>
                             <div id="geoDiv" style="display: none">
                                 <div class="form-group row pb-3" id="DistrictDiv"></div>
-                                <!--<div class="form-group row pb-3" id="UpazilaDiv"></div>-->
-                                <!--<div class="form-group row pb-3" id="UnionWardDiv"></div>
+                                <div class="form-group row pb-3" id="UpazilaDiv"></div>
+                                <div class="form-group row pb-3" id="UnionWardDiv"></div>
                                 <div class="form-group row pb-3" id="MauzaDiv"></div>
-                                <div class="form-group row pb-3" id="VillageDiv"></div>-->
+                                <div class="form-group row pb-3" id="VillageDiv"></div>
 
                                 <footer class="card-footer">
                                     <div class="row justify-content-end">
@@ -91,47 +91,51 @@ if($_REQUEST['show'] === 'Show'){
         $qryCreate2 = "";
         $qryCreate3 = "";
         $qryCreate4 = "";
+        $qryCreate5 = "";
         if ($_REQUEST['show'] === 'Show') {
             $DivisionCode = xss_clean($_REQUEST['DivisionCode']);
             $DistrictCode = xss_clean($_REQUEST['DistrictCode']);
-            /*$UpazilaCode = xss_clean($_REQUEST['UpazilaCode']);
+            $UpazilaCode = xss_clean($_REQUEST['UpazilaCode']);
             $UnionWardCode = xss_clean($_REQUEST['UnionWardCode']);
             $MauzaCode = xss_clean($_REQUEST['MauzaCode']);
-            $VillageCode = xss_clean($_REQUEST['VillageCode']);*/
+            $VillageCode = xss_clean($_REQUEST['VillageCode']);
 
 
             if (!empty($DivisionCode)) {
-                $DivisionName = getValue('InstituteInfo', 'Division_Name', "Division_Code = $DivisionCode");
+                $DivisionName = getValue('InstituteInfo', 'Division_Name', "Division_Code = '$DivisionCode'");
             }
 
             if (!empty($DistrictCode)) {
-                $DistrictName = getValue('InstituteInfo', 'District_Name', "Division_Code = $DivisionCode AND District_Code = $DistrictCode");
+                $DistrictName = getValue('InstituteInfo', 'District_Name', "Division_Code = '$DivisionCode' AND District_Code = '$DistrictCode'");
                 $DistrictName = ' > ' . $DistrictName;
             }
 
-            /*if (!empty($UpazilaCode)) {
-                $UpazilaName = getValue('PSUList', 'UpazilaName',
-                    "DivisionCode = $DivisionCode AND DistrictCode = $DistrictCode AND UpazilaCode = $UpazilaCode");
+            if (!empty($UpazilaCode)) {
+                $UpazilaName = getValue('InstituteInfo', 'Upazila_Name',
+                    "Division_Code = '$DivisionCode' AND District_Code = '$DistrictCode' AND Upazila_Code = '$UpazilaCode'");
                 $UpazilaName = ' > ' . $UpazilaName;
             }
 
             if (!empty($UnionWardCode)) {
-                $UnionWardName = getValue('PSUList', 'UnionWardName',
-                    "DivisionCode = $DivisionCode AND DistrictCode = $DistrictCode AND UpazilaCode = $UpazilaCode AND UnionWardCode = $UnionWardCode");
+                $UnionWardName = getValue('InstituteInfo', 'Union_Name',
+                    "Division_Code = '$DivisionCode' AND District_Code = '$DistrictCode' AND Upazila_Code = '$UpazilaCode' AND Union_Code = '$UnionWardCode'");
                 $UnionWardName = ' > ' . $UnionWardName;
             }
 
             if (!empty($MauzaCode)) {
-                $MauzaName = getValue('PSUList', 'MauzaName',
-                    "DivisionCode = $DivisionCode AND DistrictCode = $DistrictCode AND UpazilaCode = $UpazilaCode AND UnionWardCode = $UnionWardCode AND MauzaCode = $MauzaCode");
+                $MauzaName = getValue('InstituteInfo', 'Mouza_Name',
+                    "Division_Code = '$DivisionCode' AND District_Code = '$DistrictCode' AND Upazila_Code = '$UpazilaCode' AND Union_Code = '$UnionWardCode' AND Mouza_Code = '$MauzaCode'");
                 $MauzaName = ' > ' . $MauzaName;
             }
 
             if (!empty($VillageCode)) {
-                $VillageName = getValue('PSUList', 'VillageName',
-                    "DivisionCode = $DivisionCode AND DistrictCode = $DistrictCode AND UpazilaCode = $UpazilaCode AND UnionWardCode = $UnionWardCode AND MauzaCode = $MauzaCode AND VillageCode = $VillageCode");
+                $VillageName = getValue('InstituteInfo', 'Village_Name',
+                    "Division_Code = '$DivisionCode' AND District_Code = '$DistrictCode' AND Upazila_Code = '$UpazilaCode' AND Union_Code = '$UnionWardCode' AND Mouza_Code = '$MauzaCode' AND Village_Code = '$VillageCode'");
                 $VillageName = ' > ' . $VillageName;
-            }*/
+            }
+
+            //echo "$DivisionName $DistrictName $UpazilaName $UnionWardName $MauzaName $VillageName";
+            //exit();
 
             function getQryCreate($userParam): string
             {
@@ -140,18 +144,18 @@ if($_REQUEST['show'] === 'Show'){
                     if (!empty($DistrictCode)) {
                         $qryCreate .= " AND District_Code = $DistrictCode";
                     }
-                    /*if (!empty($UpazilaCode)) {
-                        $qryCreate .= " AND UpazilaCode = $UpazilaCode";
+                    if (!empty($UpazilaCode)) {
+                        $qryCreate .= " AND Upazila_Code = $UpazilaCode";
                     }
                     if (!empty($UnionWardCode)) {
-                        $qryCreate .= " AND UnionWardCode = $UnionWardCode";
+                        $qryCreate .= " AND Union_Code = $UnionWardCode";
                     }
                     if (!empty($MauzaCode)) {
-                        $qryCreate .= " AND MauzaCode = $MauzaCode";
+                        $qryCreate .= " AND Mouza_Code = $MauzaCode";
                     }
                     if (!empty($VillageCode)) {
-                        $qryCreate .= " AND VillageCode = $VillageCode";
-                    }*/
+                        $qryCreate .= " AND Village_Code = $VillageCode";
+                    }
                     $qryCreate .= ")";
                 }
                 return $qryCreate;
@@ -159,43 +163,43 @@ if($_REQUEST['show'] === 'Show'){
 
             //qryCreate
             if (!empty($DivisionCode)) {
-                $qryCreate .= " AND UserID IN (SELECT UserID FROM InstituteInfo WHERE Division_Code = $DivisionCode";
+                $qryCreate .= " AND UserID IN (SELECT UserID FROM InstituteInfo WHERE Division_Code = '$DivisionCode'";
                 if (!empty($DistrictCode)) {
-                    $qryCreate .= " AND District_Code = $DistrictCode";
+                    $qryCreate .= " AND District_Code = '$DistrictCode'";
                 }
-                /*if (!empty($UpazilaCode)) {
-                    $qryCreate .= " AND UpazilaCode = $UpazilaCode";
+                if (!empty($UpazilaCode)) {
+                    $qryCreate .= " AND Upazila_Code = '$UpazilaCode'";
                 }
                 if (!empty($UnionWardCode)) {
-                    $qryCreate .= " AND UnionWardCode = $UnionWardCode";
+                    $qryCreate .= " AND Union_Code = '$UnionWardCode'";
                 }
                 if (!empty($MauzaCode)) {
-                    $qryCreate .= " AND MauzaCode = $MauzaCode";
+                    $qryCreate .= " AND Mouza_Code = '$MauzaCode'";
                 }
                 if (!empty($VillageCode)) {
-                    $qryCreate .= " AND VillageCode = $VillageCode";
-                }*/
+                    $qryCreate .= " AND Village_Code = '$VillageCode'";
+                }
                 $qryCreate .= ")";
             }
 
             //qryCreate2
             if (!empty($DivisionCode)) {
-                $qryCreate2 .= " AND UserID IN (SELECT UserID FROM InstituteInfo WHERE Division_Code = $DivisionCode";
+                $qryCreate2 .= " AND UserID IN (SELECT UserID FROM InstituteInfo WHERE Division_Code = '$DivisionCode'";
                 if (!empty($DistrictCode)) {
-                    $qryCreate2 .= " AND District_Code = $DistrictCode";
+                    $qryCreate2 .= " AND District_Code = '$DistrictCode'";
                 }
-                /*if (!empty($UpazilaCode)) {
-                    $qryCreate2 .= " AND UpazilaCode = $UpazilaCode";
+                if (!empty($UpazilaCode)) {
+                    $qryCreate2 .= " AND Upazila_Code = '$UpazilaCode'";
                 }
                 if (!empty($UnionWardCode)) {
-                    $qryCreate2 .= " AND UnionWardCode = $UnionWardCode";
+                    $qryCreate2 .= " AND Union_Code = '$UnionWardCode'";
                 }
                 if (!empty($MauzaCode)) {
-                    $qryCreate2 .= " AND MauzaCode = $MauzaCode";
+                    $qryCreate2 .= " AND Mouza_Code = '$MauzaCode'";
                 }
                 if (!empty($VillageCode)) {
-                    $qryCreate2 .= " AND VillageCode = $VillageCode";
-                }*/
+                    $qryCreate2 .= " AND Village_Code = '$VillageCode'";
+                }
                 $qryCreate2 .= ")";
             }
 
@@ -203,20 +207,20 @@ if($_REQUEST['show'] === 'Show'){
             if (!empty($DivisionCode)) {
                 $qryCreate3 .= " AND id IN (SELECT UserID FROM InstituteInfo WHERE Division_Code = $DivisionCode";
                 if (!empty($DistrictCode)) {
-                    $qryCreate3 .= " AND District_Code = $DistrictCode";
+                    $qryCreate3 .= " AND District_Code = '$DistrictCode'";
                 }
-                /*if (!empty($UpazilaCode)) {
-                    $qryCreate3 .= " AND UpazilaCode = $UpazilaCode";
+                if (!empty($UpazilaCode)) {
+                    $qryCreate3 .= " AND Upazila_Code = '$UpazilaCode'";
                 }
                 if (!empty($UnionWardCode)) {
-                    $qryCreate3 .= " AND UnionWardCode = $UnionWardCode";
+                    $qryCreate3 .= " AND Union_Code = '$UnionWardCode'";
                 }
                 if (!empty($MauzaCode)) {
-                    $qryCreate3 .= " AND MauzaCode = $MauzaCode";
+                    $qryCreate3 .= " AND Mouza_Code = '$MauzaCode'";
                 }
                 if (!empty($VillageCode)) {
-                    $qryCreate3 .= " AND VillageCode = $VillageCode";
-                }*/
+                    $qryCreate3 .= " AND Village_Code = '$VillageCode'";
+                }
                 $qryCreate3 .= ")";
             }
 
@@ -224,21 +228,42 @@ if($_REQUEST['show'] === 'Show'){
             if (!empty($DivisionCode)) {
                 $qryCreate4 .= " AND userinfo.id IN (SELECT UserID FROM InstituteInfo WHERE Division_Code = $DivisionCode";
                 if (!empty($DistrictCode)) {
-                    $qryCreate4 .= " AND District_Code = $DistrictCode";
+                    $qryCreate4 .= " AND District_Code = '$DistrictCode'";
                 }
-                /*if (!empty($UpazilaCode)) {
-                    $qryCreate4 .= " AND UpazilaCode = $UpazilaCode";
+                if (!empty($UpazilaCode)) {
+                    $qryCreate4 .= " AND Upazila_Code = '$UpazilaCode'";
                 }
                 if (!empty($UnionWardCode)) {
-                    $qryCreate4 .= " AND UnionWardCode = $UnionWardCode";
+                    $qryCreate4 .= " AND Union_Code = '$UnionWardCode'";
                 }
                 if (!empty($MauzaCode)) {
-                    $qryCreate4 .= " AND MauzaCode = $MauzaCode";
+                    $qryCreate4 .= " AND Mouza_Code = '$MauzaCode'";
                 }
                 if (!empty($VillageCode)) {
-                    $qryCreate4 .= " AND VillageCode = $VillageCode";
-                }*/
+                    $qryCreate4 .= " AND Village_Code = '$VillageCode'";
+                }
                 $qryCreate4 .= ")";
+            }
+
+            //qryCreate5
+            if (!empty($DivisionCode)) {
+                $qryCreate5 .= " AND ui.id IN (SELECT UserID FROM InstituteInfo WHERE Division_Code = $DivisionCode";
+                if (!empty($DistrictCode)) {
+                    $qryCreate5 .= " AND District_Code = '$DistrictCode'";
+                }
+                if (!empty($UpazilaCode)) {
+                    $qryCreate5 .= " AND Upazila_Code = '$UpazilaCode'";
+                }
+                if (!empty($UnionWardCode)) {
+                    $qryCreate5 .= " AND Union_Code = '$UnionWardCode'";
+                }
+                if (!empty($MauzaCode)) {
+                    $qryCreate5 .= " AND Mouza_Code = '$MauzaCode'";
+                }
+                if (!empty($VillageCode)) {
+                    $qryCreate5 .= " AND Village_Code = '$VillageCode'";
+                }
+                $qryCreate5 .= ")";
             }
         }
 
@@ -374,7 +399,7 @@ if($_REQUEST['show'] === 'Show'){
                             ) pl ON xfr.UserID = pl.UserID
                             WHERE xfr.CompanyId = ?
                               AND xfr.UserID $distUserIdSelectCodition
-                              AND xfr.FormId = ?
+                              AND xfr.FormId = ? $qryCreate5
                               AND ui.id NOT IN $testingUserIDs
                             GROUP BY 
                                 xfr.UserID,
@@ -427,7 +452,7 @@ if($_REQUEST['show'] === 'Show'){
             $result_TotalDataQry = $app->getDBConnection()->fetch($TotalDataQry, $loggedUserCompanyID, $FormID);
             $TotalData = $result_TotalDataQry->TotalHouseHold;
             $ApprovedData = $result_TotalDataQry->ApprovedData;
-			$CheckedData = $result_TotalDataQry->CheckedData;
+            $CheckedData = $result_TotalDataQry->CheckedData;
             $UnApprovedData = $result_TotalDataQry->UnApprovedData;
             $PendingData = $result_TotalDataQry->Pending;
 
@@ -455,17 +480,6 @@ if($_REQUEST['show'] === 'Show'){
                 $TotalDataLast7DaysQry = "SELECT COUNT(*) AS TotalData FROM xformrecord WHERE FormId = ? AND CompanyId = ? AND (EntryDate BETWEEN DATEADD(day, -7,'$todayDate 00:00:00') AND '$todayDate 23:59:59')";
                 $TotalDataLast7DaysQry .= $qryCreate;
                 $result_TotalDataLast7DaysQry = $app->getDBConnection()->fetch($TotalDataLast7DaysQry, $formIdMainData, $loggedUserCompanyID);
-            } else if ($FormID == $formIdFarmData) {
-                $TotalTergetQry = "SELECT SUM(NumberOfRecordForMainSurvey) as TotalTerget FROM PSUList where CompanyID = ? and PSUUserID <>'' and FarmName<>'' and PSUUserID>0";
-                $TotalTergetQry .= $qryCreate2;
-
-                $TotalDataTodayQry = "SELECT COUNT(*) AS TotalData FROM xformrecord WHERE FormId = ? AND CompanyId = ? AND (EntryDate BETWEEN '$todayDate 00:00:00' AND '$todayDate 23:59:59')";
-                $TotalDataTodayQry .= $qryCreate;
-                $result_TotalDataTodayQry = $app->getDBConnection()->fetch($TotalDataTodayQry, $formIdFarmData, $loggedUserCompanyID);
-
-                $TotalDataLast7DaysQry = "SELECT COUNT(*) AS TotalData FROM xformrecord WHERE FormId = ? AND CompanyId = ? AND (EntryDate BETWEEN DATEADD(day, -7,'$todayDate 00:00:00') AND '$todayDate 23:59:59')";
-                $TotalDataLast7DaysQry .= $qryCreate;
-                $result_TotalDataLast7DaysQry = $app->getDBConnection()->fetch($TotalDataLast7DaysQry, $formIdFarmData, $loggedUserCompanyID);
             }
 
             $TotalUserTodayQry = "SELECT count(distinct(UserID)) as TotalUser FROM UserLogStatus WHERE UserId in (SELECT id FROM userinfo where UserName like 'cd%' and IsActive=1)  and [DateTime] BETWEEN '$todayDate 00:00:00' AND '$todayDate 23:59:59'";
@@ -557,6 +571,7 @@ if($_REQUEST['show'] === 'Show'){
                             WHERE xfr.CompanyId = ?
                               AND xfr.FormId = ?
                               AND ui.id NOT IN $testingUserIDs
+                            $qryCreate5
                             GROUP BY 
                                 xfr.UserID,
                                 ui.UserName,
@@ -621,7 +636,7 @@ if($_REQUEST['show'] === 'Show'){
                                             <div class="title">
                                                 <i class="fas fa-caret-right"></i> Approved : <strong
                                                         class="amount"><?php echo $ApprovedData; ?></strong><br/>
-												<i class="fas fa-caret-right"></i> Checked : <strong
+                                                <i class="fas fa-caret-right"></i> Checked : <strong
                                                         class="amount"><?php echo $CheckedData; ?></strong><br/>
                                                 <i class="fas fa-caret-right"></i> Pending : <strong
                                                         class="amount"><?php echo $PendingData; ?></strong><br/>
