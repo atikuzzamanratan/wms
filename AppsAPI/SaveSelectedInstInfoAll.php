@@ -46,7 +46,7 @@ if (!$userID) {
 }
 
 // Query to fetch rows
-$query = "SELECT id, Q4A, MOBILE_NO, BSIC_CODE, DIVISION_CODE, DIVISION_NAME, DISTRICT_CODE, DISTRICT_NAME, UPAZILA_CODE, UPAZILA_NAME FROM InstituteInfo WHERE Type='Establishment' AND UserID = ?  AND id NOT IN(SELECT SampleHHNo FROM xformrecord)";
+$query = "SELECT id, Q4A, MOBILE_NO, BSIC_CODE, DIVISION_CODE, DIVISION_NAME, DISTRICT_CODE, DISTRICT_NAME, UPAZILA_CODE, UPAZILA_NAME FROM InstituteInfo WHERE Type='Establishment' AND UserID = ?  AND id NOT IN(SELECT SampleHHNo FROM xformrecord WHERE UserID=69)";
 
 try {
     // Execute query using Nette Database
