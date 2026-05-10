@@ -67,7 +67,7 @@
                                         <div class="checkbox-custom checkbox-warning">
                                             <input id="chkAll" value="chkAll" type="checkbox"
                                                    name="chkAll" <?php echo isset($checkAll) && $checkAll == 'chkAll' ? 'checked' : ''; ?> />
-                                            <label for="chkAll">All Users</label>
+                                            <label for="chkAll">Show All</label>
                                         </div>
                                     </div>
                                 </div>
@@ -121,6 +121,7 @@
                                         <th>BSIC Code</th>
                                         <th>BSIC Detail</th>
                                         <th>Institute Name</th>
+                                        <th style="color: blue">Type</th>
                                         <th>Address</th>
                                         <th>Mobile No</th>
                                         <th>Assigned User</th>
@@ -169,4 +170,27 @@
             }
         });
     });
+</script>
+
+<script type="text/javascript">
+    function EditItem(id, instName, instAddress, mobileNo, data) {
+        if (confirm("Are you sure to update this data?")) {
+            $.ajax({
+                url: "Authentication/edit-institute-info.php",
+                method: "GET",
+                datatype: "json",
+                data: {
+                    id: id,
+                    instName: instName,
+                    instAddress: instAddress,
+                    mobileNo: mobileNo
+                },
+                success: function (response) {
+                    alert(response);
+                    window.location.reload();
+                }
+            });
+        }
+        return false;
+    }
 </script>

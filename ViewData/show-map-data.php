@@ -17,7 +17,7 @@ if (strpos($loggedUserName, 'dist') !== false) {
     $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery, $loggedUserID);
 } else {
     $divQuery = "SELECT DISTINCT Division_Name as DivisionName, Division_Code as DivisionCode FROM InstituteInfo ORDER BY DivisionName ASC";
-    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery, $loggedUserCompanyID);
+    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery);
 }
 
 if ($_REQUEST['show'] === 'Show') {
@@ -219,50 +219,44 @@ if ($_REQUEST['show'] === 'Show') {
                         $TableName = "masterdatarecord_Approved";
                     }
                     if ($checkAll == 'chkAll') {
-                        $qry = "SELECT mdra.XFormRecordId, mdra.DataName, ui.id, ui.UserName, ui.FullName, ui.MobileNumber, mdra.ColumnValue, mdra.EntryDate, mdra.PSU, pl.DivisionName, pl.DistrictName, pl.CityCorporationName, pl.UpazilaName, pl.MunicipalityName, pl.UnionWardName, pl.MauzaName, pl.VillageName
-                        FROM $TableName mdra 
-                        JOIN userinfo ui ON mdra.UserID = ui.id 
-                        JOIN datacollectionform dcf ON mdra.FormId = dcf.id 
-                        JOIN PSUList pl ON pl.PSU = mdra.PSU
+                        $qry = "SELECT mdra.XFormRecordId, mdra.DataName, ui.id, ui.UserName, ui.FullName, ui.MobileNumber, mdra.ColumnValue, mdra.EntryDate, mdra.PSU, pl.Division_Name as DivisionName, pl.District_Name as DistrictName, pl.City_Corporation_Name as CityCorporationName, pl.Upazila_Name as UpazilaName, pl.MUNICIPAL_NAME as MunicipalityName, pl.Union_Name as UnionWardName, pl.Mouza_Name as MauzaName, pl.Village_Name as VillageName FROM $TableName mdra 
+                        JOIN userinfo ui ON mdra.UserID = ui.id JOIN datacollectionform dcf ON mdra.FormId = dcf.id 
+                        JOIN InstituteInfo pl ON pl.id = mdra.SampleHHNo 
                         WHERE CONVERT(NVARCHAR(MAX), ColumnName) = 'geopoint' AND mdra.ColumnValue <> '' AND mdra.FormId = $SelectedFormID 
                         ORDER BY mdra.XFormRecordId ASC";
                     } elseif (!empty($SelectedUserID)) {
-                        $qry = "SELECT mdra.XFormRecordId, mdra.DataName, ui.id, ui.UserName, ui.FullName, ui.MobileNumber, mdra.ColumnValue, mdra.EntryDate, mdra.PSU, pl.DivisionName, pl.DistrictName, pl.CityCorporationName, pl.UpazilaName, pl.MunicipalityName, pl.UnionWardName, pl.MauzaName, pl.VillageName
-                        FROM $TableName mdra 
-                        JOIN userinfo ui ON mdra.UserID = ui.id 
-                        JOIN datacollectionform dcf ON mdra.FormId = dcf.id 
-                        JOIN PSUList pl ON pl.PSU = mdra.PSU
+                        $qry = "SELECT mdra.XFormRecordId, mdra.DataName, ui.id, ui.UserName, ui.FullName, ui.MobileNumber, mdra.ColumnValue, mdra.EntryDate, mdra.PSU, pl.Division_Name as DivisionName, pl.District_Name as DistrictName, pl.City_Corporation_Name as CityCorporationName, pl.Upazila_Name as UpazilaName, pl.MUNICIPAL_NAME as MunicipalityName, pl.Union_Name as UnionWardName, pl.Mouza_Name as MauzaName, pl.Village_Name as VillageName FROM $TableName mdra 
+                        JOIN userinfo ui ON mdra.UserID = ui.id JOIN datacollectionform dcf ON mdra.FormId = dcf.id 
+                        JOIN InstituteInfo pl ON pl.id = mdra.SampleHHNo 
                         WHERE CONVERT(NVARCHAR(MAX), ColumnName) = 'geopoint' AND mdra.ColumnValue <> '' 
                         AND mdra.FormId = $SelectedFormID AND mdra.UserID = $SelectedUserID
                         ORDER BY mdra.XFormRecordId ASC";
                     } elseif (!empty($DivisionCode)) {
-                        $qry = "SELECT mdra.XFormRecordId, mdra.DataName, ui.id, ui.UserName, ui.FullName, ui.MobileNumber, mdra.ColumnValue, mdra.EntryDate, mdra.PSU, pl.DivisionName, pl.DistrictName, pl.CityCorporationName, pl.UpazilaName, pl.MunicipalityName, pl.UnionWardName, pl.MauzaName, pl.VillageName
-                        FROM $TableName mdra 
-                        JOIN userinfo ui ON mdra.UserID = ui.id 
-                        JOIN datacollectionform dcf ON mdra.FormId = dcf.id 
-                        JOIN PSUList pl ON pl.PSU = mdra.PSU
+                        $qry = "SELECT mdra.XFormRecordId, mdra.DataName, ui.id, ui.UserName, ui.FullName, ui.MobileNumber, mdra.ColumnValue, mdra.EntryDate, mdra.PSU, pl.Division_Name as DivisionName, pl.District_Name as DistrictName, pl.City_Corporation_Name as CityCorporationName, pl.Upazila_Name as UpazilaName, pl.MUNICIPAL_NAME as MunicipalityName, pl.Union_Name as UnionWardName, pl.Mouza_Name as MauzaName, pl.Village_Name as VillageName FROM $TableName mdra 
+                        JOIN userinfo ui ON mdra.UserID = ui.id JOIN datacollectionform dcf ON mdra.FormId = dcf.id 
+                        JOIN InstituteInfo pl ON pl.id = mdra.SampleHHNo 
                         WHERE CONVERT(NVARCHAR(MAX), ColumnName) = 'geopoint' AND mdra.ColumnValue <> '' 
                         AND mdra.FormId = $SelectedFormID";
                         if (!empty($DistrictCode)) {
-                            $qry .= " AND pl.DivisionCode = $DivisionCode";
+                            $qry .= " AND pl.Division_Code = '$DivisionCode'";
                         }
                         if (!empty($DistrictCode)) {
-                            $qry .= " AND pl.DistrictCode = $DistrictCode";
+                            $qry .= " AND pl.District_Code = '$DistrictCode'";
                         }
                         if (!empty($UpazilaCode)) {
-                            $qry .= " AND pl.UpazilaCode = $UpazilaCode";
+                            $qry .= " AND pl.Upazila_Code = '$UpazilaCode'";
                         }
                         if (!empty($UnionWardCode)) {
-                            $qry .= " AND pl.UnionWardCode = $UnionWardCode";
+                            $qry .= " AND pl.Union_Code = '$UnionWardCode'";
                         }
                         if (!empty($MauzaCode)) {
-                            $qry .= " AND pl.MauzaCode = $MauzaCode";
+                            $qry .= " AND pl.Mouza_Code = '$MauzaCode'";
                         }
                         if (!empty($VillageCode)) {
-                            $qry .= " AND pl.VillageCode = $VillageCode";
+                            $qry .= " AND pl.Village_Code = '$VillageCode'";
                         }
                     }
-                    // echo $qry;
+                    //echo $qry;
                     $resQry = $app->getDBConnection()->fetchAll($qry);
 
                     $initLat = "23.777176";

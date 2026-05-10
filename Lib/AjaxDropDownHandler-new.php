@@ -213,7 +213,7 @@ function ShowMauzaUser($app, $RequestingValue)
         <select data-plugin-selectTwo class="form-control populate" name="MauzaCode" id="MauzaCode"
             onchange="<?php echo $NextCallFunction; ?>">
             <?php
-            echo "<option selected value=\"\">Select Mauza Name</option>";
+            echo "<option selected value=\"\">Select Mauza</option>";
             foreach ($rsQuery as $row) {
                 echo "<option value=\"" . $row->MauzaCode . "\">" . $row->MauzaName . "</option>";
             }
@@ -238,7 +238,7 @@ function ShowVillageUser($app, $RequestingValue)
     <div class="col-lg-6">
         <select data-plugin-selectTwo class="form-control populate" name="VillageCode" id="VillageCode">
             <?php
-            echo "<option selected value=\"\">Select VillageName Name</option>";
+            echo "<option selected value=\"\">Select Village</option>";
             foreach ($rsQuery as $row) {
                 echo "<option value=\"" . $row->VillageCode . "\">" . $row->VillageName . "</option>";
             }

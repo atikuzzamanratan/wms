@@ -1,61 +1,12 @@
 <?php
-// error_reporting(1);
-
-
-
-
-
-
-
-
-
-
-
 error_reporting(0);
 ini_set('display_errors', 0);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 require '../../vendor/autoload.php';
 include "../../Config/config.php";
 include "../../Lib/lib.php";
 
 $app = new Solvers\Dsql\Application();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 function includeModal($UserDBID, $UserName, $UserPassword, $UserFullName, $UserMobileNo, $UserEmail, $IsActive, $UserStatus) {
     return "
     <div class='modal fade' id='editDataModal$UserDBID' tabindex='-1' aria-labelledby='editDataModalLabel' aria-hidden='true'>
@@ -115,29 +66,6 @@ function includeModal($UserDBID, $UserName, $UserPassword, $UserFullName, $UserM
     </div>";
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 if ($_REQUEST['par'] != '') {
     $param = $app->cleanInput($_REQUEST['par']);
 }
@@ -159,8 +87,6 @@ if ($_REQUEST['lci'] != '') {
 }
 
 
-
-
 // --- NEW: Detect if logged user is a Supervisor ---
 // --- Detect if logged user is Supervisor ---
 $SuperID = 0;
@@ -171,12 +97,6 @@ if (!empty($LoggedUserID)) {
         $SuperID = $rsSupervisor->id;
     }
 }
-
-
-
-
-
-
 
 if ($param == '1') {
     if ($LoggedUserName == 'admin') {
@@ -239,160 +159,6 @@ foreach ($resQry as $row) {
     $SubData[] = $UserProject;
     $SubData[] = $UserStatus;
 
-    // if (strpos($LoggedUserName, 'admin') !== false) {
-    //     $actions = "<div style= \"display: flex; align-items: center; justify-content: center;\">
-    //                 <button title=\"$btnTitleEdit\" type=\"button\" class=\"btn btn-outline-primary\" style=\"display: inline-block;margin: 0 1px;\" data-bs-toggle=\"modal\" data-bs-target=\"#editDataModal$UserDBID\"><i class=\"fas fa-pencil-alt\"></i></button>
-    //                 <button title=\"$btnTitleDelete\" type=\"button\" class=\"btn btn-outline-danger\" style=\"display: inline-block\" onclick=\"DeleteItem('$UserDBID');\"><i class=\"far fa-trash-alt\"></i></button>
-    //             </div>
-                
-    //              <!-- Modal Edit-->
-    //             <div class=\"modal fade\" id=\"editDataModal$UserDBID\" tabindex=\"-1\" aria-labelledby=\"editDataModalLabel\" aria-hidden=\"true\">
-    //               <div class=\"modal-dialog\">
-    //                 <div class=\"modal-content\">
-    //                   <div class=\"modal-header\">
-    //                   <h5 class=\"modal-title\" id=\"editDataModalLabel\">Edit Form</h5>
-    //                     <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"modal\" aria-label=\"Close\"></button>
-    //                   </div>
-    //                   <div class=\"modal-body\">
-    //                     <form id=\"editForm\" method=\"POST\" action=\"\">
-    //                         <div class=\"form-group\">
-    //                             <label for=\"UserName\">Username</label>
-    //                             <input type=\"text\" class=\"form-control\" name=\"UserName\" id=\"UserName$UserDBID\" value=\"$UserName\" required>
-    //                         </div>
-    //                         <div class=\"form-group\">
-    //                             <label for=\"UserPass\">Password<span class=\"required\">*</span></label>
-    //                             <input type=\"text\" class=\"form-control\" name=\"UserPass\" id=\"UserPass$UserDBID\" value=\"$UserPassword\" required>
-    //                         </div>
-    //                         <div class=\"form-group\">
-    //                             <label for=\"FullName\">Full Name<span class=\"required\">*</span></label>
-    //                             <input type=\"text\" class=\"form-control\" name=\"FullName\" id=\"FullName$UserDBID\" value=\"$UserFullName\" required>
-    //                         </div>
-    //                         <div class=\"form-group\">
-    //                             <label for=\"MobileNo\">Mobile No<span class=\"required\">*</span></label>
-    //                             <input type=\"text\" class=\"form-control\" name=\"MobileNo\" id=\"MobileNo$UserDBID\" value=\"$UserMobileNo\" required>
-    //                         </div>
-    //                         <div class=\"form-group\">
-    //                             <label for=\"Email\">Email</label>
-    //                             <input type=\"text\" class=\"form-control\" name=\"Email\" id=\"Email$UserDBID\" value=\"$UserEmail\">
-    //                         </div>
-                            
-    //                         <div class=\"form-group\">
-    //                             <label for=\"Status\">Status</label>
-    //                             <select name=\"Status\" id=\"Status$UserDBID\" class=\"form-control\">
-    //                                 <option value=\"$IsActive\" selected>$UserStatus</option>
-    //                                 <option value=\"1\">Active</option>
-    //                                 <option value=\"0\">Inactive</option>
-    //                             </select>
-    //                         </div>
-    //                         <div class=\"modal-footer\">
-    //                             <button type=\"button\" class=\"btn btn-secondary\" data-bs-dismiss=\"modal\">Close</button>
-    //                             <button type=\"button\" class=\"btn btn-primary\" name=\"Save\" id=\"Save\" value=\"Update\" 
-    //                             onclick= \"
-    //                             var uName = document.getElementById('UserName$UserDBID').value;
-    //                             var uPass = document.getElementById('UserPass$UserDBID').value;
-    //                             var uFullName = document.getElementById('FullName$UserDBID').value;
-    //                             var uMobileNo = document.getElementById('MobileNo$UserDBID').value;
-    //                             var uEmail = document.getElementById('Email$UserDBID').value;
-    //                             var fStatus = document.getElementById('Status$UserDBID').value;
-
-    //                             EditItem('$UserDBID', uName, uPass, uFullName, uMobileNo, uEmail, fStatus);
-    //                             \">
-    //                             Save changes
-    //                             </button>
-    //                          </div>
-    //                     </form>
-    //                   </div>
-    //                 </div>
-    //               </div>
-    //             </div>";
-    // }else if (strpos($LoggedUserName, 'dist') !== false) {
-    //     $actions = "<div style= \"display: flex; align-items: center; justify-content: center;\">
-    //                 <button title=\"$btnTitleEdit\" type=\"button\" class=\"btn btn-outline-primary\" style=\"display: inline-block;margin: 0 1px;\" data-bs-toggle=\"modal\" data-bs-target=\"#editDataModal$UserDBID\"><i class=\"fas fa-pencil-alt\"></i></button>
-                    
-    //             </div>
-                
-    //              <!-- Modal Edit-->
-    //             <div class=\"modal fade\" id=\"editDataModal$UserDBID\" tabindex=\"-1\" aria-labelledby=\"editDataModalLabel\" aria-hidden=\"true\">
-    //               <div class=\"modal-dialog\">
-    //                 <div class=\"modal-content\">
-    //                   <div class=\"modal-header\">
-    //                   <h5 class=\"modal-title\" id=\"editDataModalLabel\">Edit Form</h5>
-    //                     <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"modal\" aria-label=\"Close\"></button>
-    //                   </div>
-    //                   <div class=\"modal-body\">
-    //                     <form id=\"editForm\" method=\"POST\" action=\"\">
-    //                         <div class=\"form-group\">
-    //                             <label for=\"UserName\">Username</label>
-    //                             <input type=\"text\" class=\"form-control\" name=\"UserName\" id=\"UserName$UserDBID\" value=\"$UserName\" required>
-    //                         </div>
-    //                         <div class=\"form-group\">
-    //                             <label for=\"UserPass\">Password<span class=\"required\">*</span></label>
-    //                             <input type=\"text\" class=\"form-control\" name=\"UserPass\" id=\"UserPass$UserDBID\" value=\"$UserPassword\" required>
-    //                         </div>
-    //                         <div class=\"form-group\">
-    //                             <label for=\"FullName\">Full Name<span class=\"required\">*</span></label>
-    //                             <input type=\"text\" class=\"form-control\" name=\"FullName\" id=\"FullName$UserDBID\" value=\"$UserFullName\" required>
-    //                         </div>
-    //                         <div class=\"form-group\">
-    //                             <label for=\"MobileNo\">Mobile No<span class=\"required\">*</span></label>
-    //                             <input type=\"text\" class=\"form-control\" name=\"MobileNo\" id=\"MobileNo$UserDBID\" value=\"$UserMobileNo\" required>
-    //                         </div>
-    //                         <div class=\"form-group\">
-    //                             <label for=\"Email\">Email</label>
-    //                             <input type=\"text\" class=\"form-control\" name=\"Email\" id=\"Email$UserDBID\" value=\"$UserEmail\">
-    //                         </div>
-                            
-    //                         <div class=\"form-group\">
-    //                             <label for=\"Status\">Status</label>
-    //                             <select name=\"Status\" id=\"Status$UserDBID\" class=\"form-control\">
-    //                                 <option value=\"$IsActive\" selected>$UserStatus</option>
-    //                                 <option value=\"1\">Active</option>
-    //                                 <option value=\"0\">InActive</option>
-    //                             </select>
-    //                         </div>
-    //                         <div class=\"modal-footer\">
-    //                             <button type=\"button\" class=\"btn btn-secondary\" data-bs-dismiss=\"modal\">Close</button>
-    //                             <button type=\"button\" class=\"btn btn-primary\" name=\"Save\" id=\"Save\" value=\"Update\" 
-    //                             onclick= \"
-    //                             var uName = document.getElementById('UserName$UserDBID').value;
-    //                             var uPass = document.getElementById('UserPass$UserDBID').value;                
-    //                             var uFullName = document.getElementById('FullName$UserDBID').value;
-    //                             var uMobileNo = document.getElementById('MobileNo$UserDBID').value;
-    //                             var uEmail = document.getElementById('Email$UserDBID').value;
-    //                             var fStatus = document.getElementById('Status$UserDBID').value;
-
-    //                             EditItem('$UserDBID', uName, uPass, uFullName, uMobileNo, uEmail, fStatus);
-    //                             \">
-    //                             Save changes
-    //                             </button>
-    //                          </div>
-    //                     </form>
-    //                   </div>
-    //                 </div>
-    //               </div>
-    //             </div>";
-    // }else{
-    //     $actions = "<div style= \"display: flex; align-items: center; justify-content: center;\">
-    //                 <button title=\"$btnTitleEdit\" type=\"button\" class=\"btn btn-outline-primary\" style=\"display: inline-block;margin: 0 1px;\" data-bs-toggle=\"modal\" data-bs-target=\"#editDataModal$UserDBID\"><i class=\"fas fa-pencil-alt\"></i></button>
-                    
-    //             </div>";
-    // }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     // --- FIXED: Action buttons and modal handling (Supervisor enabled) ---
     if (strpos($LoggedUserName, 'admin') !== false) {
         // Admins: edit + delete
@@ -425,30 +191,6 @@ foreach ($resQry as $row) {
         $actions = "<div style=\"text-align:center;\">—</div>";
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     $SubData[] = $actions;
 
     $il++;
@@ -456,10 +198,6 @@ foreach ($resQry as $row) {
     $data[] = $SubData;
 }
 
-
-/*$SubData[] = "$LoggedUserName|$LoggedUserCompanyID|$qry";
-
-$data[] = $SubData;*/
 
 $jsonData = json_encode($data);
 

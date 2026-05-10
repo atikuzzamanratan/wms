@@ -9,6 +9,48 @@ include "../../Lib/lib.php";
 $app = new Solvers\Dsql\Application();
 $cn = ConnectDB();
 
+
+function includeModal($id,  $Q4A, $ADDRESS, $MOBILE_NO) {
+    return "
+    <div class='modal fade' id='editDataModal$id' tabindex='-1' aria-labelledby='editDataModalLabel' aria-hidden='true'>
+      <div class='modal-dialog'>
+        <div class='modal-content'>
+          <div class='modal-header'>
+            <h5 class='modal-title' id='editDataModalLabel'>Edit Form</h5>
+            <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+          </div>
+          <div class='modal-body'>
+            <form>
+              <div class='form-group'>
+                <label>Institute Name</label>
+                <input type='text' class='form-control bg-light' id='InstName$id' value='$Q4A' required>
+              </div>
+              <div class='form-group'>
+                <label>Address</label>
+                <input type='text' class='form-control' id='InstAddress$id' value='$ADDRESS' required>
+              </div>
+              <div class='form-group'>
+                <label>Mobile No</label>
+                <input type='text' class='form-control' id='MobileNo$id' value='$MOBILE_NO' required>
+              </div>
+             
+              <div class='modal-footer'>
+                <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Close</button>
+                <button type='button' class='btn btn-primary' onclick=\"
+                  EditItem('$id',
+                    document.getElementById('InstName$id').value,
+                    document.getElementById('InstAddress$id').value,
+                    document.getElementById('MobileNo$id').value
+                  );
+                \">Save changes</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>";
+}
+
 $request = $_REQUEST;
 $DataUserID = $request["DataUserID"] ?? '';
 $DataChkAll = $request["DataChkAll"] ?? '';
@@ -20,6 +62,7 @@ $columns = [
     'BSIC_CODE',
     'BSIC_DETAIL',
     'Q4A',
+    'Type',
     'ADDRESS',
     'MOBILE_NO',
     'UserID'
@@ -118,10 +161,23 @@ foreach ($resQry as $row) {
     $UserID = $row->UserID;
     $STATUS = $row->STATUS;
 
+    $Type = $row->Type;
+    if($Type == "Municipal"){
+        $Type = "<b style='color: green'>Municipality</b>";
+    }else{
+        //$Type = "Establishment";
+        $Type = "<b style='color: blueviolet'>Establishment</b>";
+    }
+
     $actions = "<div style= \"display: flex; align-items: center; justify-content: center;\">
+                    <button type=\"button\" class=\"btn btn-outline-danger\" style=\"margin:0 1px;\" 
+                    data-bs-toggle=\"modal\" data-bs-target=\"#editDataModal$id\">
+                    <i class=\"fas fa-pencil-alt\"></i>
+                    </button>
+                    
                    <button title=\"$btnViewDetailTitle\" type=\"button\" class=\"simple-ajax-modal btn btn-outline-primary\" style=\"display: inline-block;margin: 0 1px;\" data-bs-toggle=\"modal\" data-bs-target=\"#viewDataModal$id\"><i class=\"fas fa-eye\"></i></button>
                 </div>
-                               
+                              
                 <!-- View Data Modal-->
                 <div class='modal fade' id='viewDataModal$id' tabindex='-1' aria-labelledby='editDataModalLabel' aria-hidden='true'>
                   <div class='modal-dialog'>
@@ -241,6 +297,8 @@ foreach ($resQry as $row) {
                   </div>
                 </div>";
 
+    $actions .= includeModal($id, $Q4A, $ADDRESS, $MOBILE_NO);
+
     $UserName = getValue('userinfo', 'UserName', "id = $UserID");
     $UserFullName = getValue('userinfo', 'FullName', "id = $UserID");
     $UserData = "$UserFullName ($UserName/$UserID)";
@@ -253,6 +311,7 @@ foreach ($resQry as $row) {
         $BSIC_CODE,
         $BSIC_DETAIL,
         $Q4A,
+        $Type,
         $ADDRESS,
         $MOBILE_NO,
         $UserData

@@ -184,7 +184,7 @@ function ShowDistrict($app, $RequestingValue, $NextCallFunction, $UserID, $Selec
                 required
             <?php } ?>>
             <?php
-            echo "<option selected value=\"\">Select district</option>";
+            echo "<option selected value=\"\">Select District</option>";
             foreach ($rsQuery as $row) {
                 echo "<option value=\"" . $row->DistrictCode . "\"" . (isset($SelectedValue) && !empty($SelectedValue) && $row->DistrictCode == $SelectedValue ? ' selected' : '') . ">" . $row->DistrictName . "</option>";
             }
@@ -253,7 +253,7 @@ function ShowUpazila($app, $RequestingValue, $SelectedValue)
         <select data-plugin-selectTwo class="form-control populate" name="UpazilaCode" id="UpazilaCode"
                 onchange="<?php echo $NextCallFunction; ?>">
             <?php
-            echo "<option selected value=\"\">Select upazila</option>";
+            echo "<option selected value=\"\">Select Upazila</option>";
             foreach ($rsQuery as $row) {
                 echo "<option value=\"" . $row->UpazilaCode . "\"" . (isset($SelectedValue) && !empty($SelectedValue) && $row->UpazilaCode == $SelectedValue ? ' selected' : '') . ">" . $row->UpazilaName . "</option>";
             }
@@ -280,7 +280,7 @@ function ShowUnionWard($app, $RequestingValue, $SelectedValue)
         <select data-plugin-selectTwo class="form-control populate" class="form-control" name="UnionWardCode"
                 id="UnionWardCode" onchange="<?php echo $NextCallFunction; ?>">
             <?php
-            echo "<option selected value=\"\">Select union/ward</option>";
+            echo "<option selected value=\"\">Select Union/Ward</option>";
             foreach ($rsQuery as $row) {
                 echo "<option value=\"" . $row->UnionWardCode . "\"" . (isset($SelectedValue) && !empty($SelectedValue) && $row->UnionWardCode == $SelectedValue ? ' selected' : '') . ">" . $row->UnionWardName . "</option>";
             }
@@ -307,7 +307,7 @@ function ShowMauza($app, $RequestingValue, $SelectedValue)
         <select data-plugin-selectTwo class="form-control populate" class="form-control" name="MauzaCode" id="MauzaCode"
                 onchange="<?php echo $NextCallFunction; ?>">
             <?php
-            echo "<option selected value=\"\">Select mauza</option>";
+            echo "<option selected value=\"\">Select Mauza</option>";
             foreach ($rsQuery as $row) {
                 echo "<option value=\"" . $row->MauzaCode . "\"" . (isset($SelectedValue) && !empty($SelectedValue) && $row->MauzaCode == $SelectedValue ? ' selected' : '') . ">" . $row->MauzaName . "</option>";
             }
@@ -334,7 +334,7 @@ function ShowVillage($app, $RequestingValue, $SelectedValue)
         <select data-plugin-selectTwo class="form-control populate" class="form-control" name="VillageCode"
                 id="VillageCode">
             <?php
-            echo "<option selected value=\"\">Select village</option>";
+            echo "<option selected value=\"\">Select Village</option>";
 
             foreach ($rsQuery as $row) {
                 echo "<option value=\"" . $row->VillageCode . "\"" . (isset($SelectedValue) && !empty($SelectedValue) && $row->VillageCode == $SelectedValue ? ' selected' : '') . ">" . $row->VillageName . "</option>";
