@@ -25,14 +25,14 @@ include_once '../Components/header-includes.php';
             <table class="table table-bordered table-striped">
                 <tbody>
                 <tr>
-                    <td><a href="../Documents/SAS-Mobile-Application-Manual-v3"><i class="bi bi-phone"></i>মোবাইল এপ্লিকেশন ম্যানুয়াল</a></td>
+                    <td><a href="../Documents/WMS-Mobile-Application-Manual-v3"><i class="bi bi-phone"></i>মোবাইল এপ্লিকেশন ম্যানুয়াল</a></td>
                 </tr>
                 <tr>
-                    <td><a href="../Documents/SAS-Listing-v15.pdf"><i class="bi bi-phone"></i>লিস্টিং প্রশ্নপত্র</a>
+                    <td><a href="../Documents/EPER-WM-Survey-2026_Questionnaire.pdf"><i class="bi bi-phone"></i>প্রশ্নপত্র: পরিবেশ সংরক্ষণ ব্যয়, সম্পদ এবং বর্জ্য ব্যবস্থাপনা (প্রতিষ্ঠান) জরিপ ২০২৬ (EPER & WM Survey)</a>
                     </td>
                 </tr>
                 <tr>
-                    <td><a href="../Documents/SAS-Household-v15.pdf"><i class="bi bi-phone"></i>মূল সার্ভে প্রশ্নপত্র (খানা)</a>
+                    <td><a href="../Documents/MWM-Survey-2026-Questionnarie.pdf"><i class="bi bi-phone"></i>প্রশ্নপত্র: বর্জ্য ব্যবস্থাপনা জরিপ (সিটি কর্পোরেশন ও পৌরসভা) ২০২৬ (MWM Survey)</a>
                     </td>
                 </tr>
 
