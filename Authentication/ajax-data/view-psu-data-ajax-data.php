@@ -23,15 +23,15 @@ function includeModal($id,  $Q4A, $ADDRESS, $MOBILE_NO) {
             <form>
               <div class='form-group'>
                 <label>Institute Name</label>
-                <input type='text' class='form-control bg-light' id='InstName$id' value='$Q4A' required>
+                <input type='text' class='form-control bg-light' id='InstName$id' value='$Q4A'>
               </div>
               <div class='form-group'>
                 <label>Address</label>
-                <input type='text' class='form-control' id='InstAddress$id' value='$ADDRESS' required>
+                <input type='text' class='form-control' id='InstAddress$id' value='$ADDRESS'>
               </div>
               <div class='form-group'>
                 <label>Mobile No</label>
-                <input type='text' class='form-control' id='MobileNo$id' value='$MOBILE_NO' required>
+                <input type='text' class='form-control' id='MobileNo$id' value='$MOBILE_NO'>
               </div>
              
               <div class='modal-footer'>
