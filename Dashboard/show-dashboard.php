@@ -352,8 +352,6 @@ if($_REQUEST['show'] === 'Show'){
                 $TypeString = "Type='$InstType'";
             }
 
-
-
             $LastSenderQuery = "SELECT TOP 10
                                 xfr.UserID,
                                 ui.UserName,
@@ -385,9 +383,9 @@ if($_REQUEST['show'] === 'Show'){
                             ORDER BY 
                                 Ratio ASC;";
 
+            $result_LastSender = $app->getDBConnection()->fetchAll($LastSenderQuery, $loggedUserCompanyID, $FormID);
 
-
-            $TopSenderQuery = "SELECT top 10 xfr.UserID, ui.UserName, COUNT(*) AS Number FROM xformrecord xfr JOIN userinfo ui ON xfr.UserID = ui.id WHERE xfr.UserID $distUserIdSelectCodition AND  xfr.CompanyId = ?  AND xfr.FormId = ? AND ui.id NOT IN(68, 69)";
+            $TopSenderQuery = "SELECT top 10 xfr.UserID, ui.UserName, COUNT(*) AS Number FROM xformrecord xfr JOIN userinfo ui ON xfr.UserID = ui.id WHERE xfr.UserID $distUserIdSelectCodition AND  xfr.CompanyId = ?  AND xfr.FormId = ? AND ui.id NOT IN $testingUserIDs";
             $TopSenderQuery .= $qryCreate;
             //$TopSenderQuery .= " GROUP BY xfr.UserID,ui.UserName ORDER BY Number DESC";
             $TopSenderQuery .= " GROUP BY xfr.UserID,ui.UserName";
@@ -395,10 +393,10 @@ if($_REQUEST['show'] === 'Show'){
             $TopSenderQuery .= " ORDER BY Number DESC";
             $result_TopSender = $app->getDBConnection()->fetchAll($TopSenderQuery, $loggedUserCompanyID, $FormID);
 
-            $LastSenderQuery = "SELECT top 10 xfr.UserID, ui.UserName, COUNT(*) AS Number FROM xformrecord xfr JOIN userinfo ui ON xfr.UserID = ui.id WHERE xfr.UserID $distUserIdSelectCodition AND  xfr.CompanyId = ?  AND xfr.FormId = ? AND ui.id NOT IN(68, 69)";
+            /*$LastSenderQuery = "SELECT top 10 xfr.UserID, ui.UserName, COUNT(*) AS Number FROM xformrecord xfr JOIN userinfo ui ON xfr.UserID = ui.id WHERE xfr.UserID $distUserIdSelectCodition AND  xfr.CompanyId = ?  AND xfr.FormId = ? AND ui.id NOT IN(68, 69)";
             $LastSenderQuery .= $qryCreate;
             $LastSenderQuery .= " GROUP BY xfr.UserID,ui.UserName ORDER BY Number ASC";
-            $result_LastSender = $app->getDBConnection()->fetchAll($LastSenderQuery, $loggedUserCompanyID, $FormID);
+            $result_LastSender = $app->getDBConnection()->fetchAll($LastSenderQuery, $loggedUserCompanyID, $FormID);*/
 
             $DataSendingDateQuery = " Select CONVERT(date, EntryDate) as DataDate, count(*) as Number from xformrecord where UserID $distUserIdSelectCodition AND  CompanyId = ? AND FormId = ?";
             $DataSendingDateQuery .= $qryCreate;
