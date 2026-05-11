@@ -125,6 +125,7 @@
                                         <th>Address</th>
                                         <th>Mobile No</th>
                                         <th>Assigned User</th>
+                                        <th>Is Collected</th>
                                     </tr>
                                     </thead>
                                     <tbody>

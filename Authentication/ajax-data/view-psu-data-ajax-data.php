@@ -65,6 +65,7 @@ $columns = [
     'Type',
     'ADDRESS',
     'MOBILE_NO',
+    'UserID',
     'UserID'
 ];
 
@@ -160,6 +161,14 @@ foreach ($resQry as $row) {
     $UNIT_CAT = $row->UNIT_CAT;
     $UserID = $row->UserID;
     $STATUS = $row->STATUS;
+
+    $isCollected = isExist('xformrecord', "SampleHHNo = $id");
+    $collectedText = "";
+    if($isCollected > 0){
+        $collectedText = "<b style='color: green'>Collected</b>";
+    }else{
+        $collectedText = "<b style='color: orangered'>Not Collected</b>";
+    }
 
     $Type = $row->Type;
     if($Type == "Municipal"){
@@ -314,7 +323,8 @@ foreach ($resQry as $row) {
         $Type,
         $ADDRESS,
         $MOBILE_NO,
-        $UserData
+        $UserData,
+        $collectedText
     ];
 
     $data[] = $subData;

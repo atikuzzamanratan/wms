@@ -17,9 +17,16 @@ $mobileNo = xss_clean($_REQUEST["mobileNo"]);
 
 $cond = "id=$Id";
 
+$isCollected = isExist('xformrecord', "SampleHHNo = $Id");
+
 $type = getValue('InstituteInfo', 'Type', "$cond");
 
 $param = "Q4A=N'$instName', ADDRESS=N'$instAddress', MOBILE_NO='$mobileNo'";
+
+if ($isCollected > 0){
+    echo 'Sorry, this institute data already collected. Can`t update info now!';
+    exit();
+}
 
 if ($type == "Municipal") {
     if (empty($instName)) {
