@@ -26,7 +26,7 @@ $cond = "id='$UserId'";
 if (empty($UserId) || empty($UserPass) || empty($UserFullName) || empty($UserMobileNo)) {
     echo 'Sorry, some information are missing!';
 } else {
-    if (Edit('userinfo', $param, $cond)) {
+    if (Update('userinfo', $param, $cond)) {
         echo 'Successfully updated.';
     } else
         echo 'Failed to update!';
