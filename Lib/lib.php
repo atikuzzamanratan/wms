@@ -57,6 +57,7 @@ function Edit($table, $param, $cond): bool
     $conn = PDOConnectDB();
     $SQL = "UPDATE $table SET ";
     $SQL .= "$param ";
+    $SQL .= "$cond ";
     $stmt = $conn->query($SQL);
     if ($stmt)
         return true;

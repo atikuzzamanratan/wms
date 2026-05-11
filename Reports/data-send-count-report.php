@@ -3,31 +3,29 @@ $qryFormName = "SELECT id, FormName FROM datacollectionform WHERE CompanyID = ? 
 $rsQryFormName = $app->getDBConnection()->fetchAll($qryFormName, $loggedUserCompanyID);
 
 if (strpos($loggedUserName, 'dist') !== false) {
-    $divQuery = "SELECT DISTINCT p.DivisionName, p.DivisionCode FROM PSUList AS p 
-    JOIN assignsupervisor AS a ON p.PSUUserID = a.UserID 
-    WHERE  p.CompanyID = ? AND a.DistCoordinatorID = ?";
-    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery, $loggedUserCompanyID, $loggedUserID);
+    $divQuery = "SELECT DISTINCT p.Division_Name as DivisionName, p.Division_Code as DivisionCode FROM InstituteInfo AS p 
+    JOIN assignsupervisor AS a ON p.UserID = a.UserID 
+    WHERE a.DistCoordinatorID = ?";
+    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery, $loggedUserID);
 } elseif (strpos($loggedUserName, 'val') !== false) {
-    $divQuery = "SELECT DISTINCT p.DivisionName, p.DivisionCode FROM PSUList AS p 
-    JOIN assignsupervisor AS a ON p.PSUUserID = a.UserID 
-    WHERE  p.CompanyID = ? AND a.ValidatorID = ?";
-    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery, $loggedUserCompanyID, $loggedUserID);
+    $divQuery = "SELECT DISTINCT p.Division_Name as DivisionName, p.Division_Code as DivisionCode FROM InstituteInfo AS p 
+    JOIN assignsupervisor AS a ON p.UserID = a.UserID 
+    WHERE a.ValidatorID = ?";
+    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery, $loggedUserID);
 } else {
-    $divQuery = "SELECT DISTINCT DivisionName , DivisionCode FROM PSUList WHERE CompanyID = ? ORDER BY DivisionName ASC";
-    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery, $loggedUserCompanyID);
+    $divQuery = "SELECT DISTINCT Division_Name as DivisionName, Division_Code as DivisionCode FROM InstituteInfo ORDER BY DivisionName ASC";
+    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery);
 }
 
 if (strpos($loggedUserName, 'cval') !== false) {
-    $divQuery = "SELECT DISTINCT p.DivisionName, p.DivisionCode FROM PSUList AS p 
-    JOIN assignsupervisor AS a ON p.PSUUserID = a.UserID 
-    WHERE  p.CompanyID = ?";
-    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery, $loggedUserCompanyID);
+    $divQuery = "SELECT DISTINCT p.Division_Name as DivisionName, p.Division_Code as DivisionCode FROM InstituteInfo AS p 
+    JOIN assignsupervisor AS a ON p.PSUUserID = a.UserID";
+    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery);
 }
 
+
 if ($_REQUEST['show'] === 'Show') {
-
     $FormID = xss_clean($_REQUEST['FormID']);
-
     $DivisionCode = xss_clean($_REQUEST['DivisionCode']);
     $DistrictCode = xss_clean($_REQUEST['DistrictCode']);
     $UpazilaCode = xss_clean($_REQUEST['UpazilaCode']);
@@ -114,46 +112,46 @@ if ($_REQUEST['show'] === 'Show') {
                     $FormName = getValue('datacollectionform', 'FormName', "id = $FormID");
 
                     if (!empty($DivisionCode)) {
-                        $DivisionName = getValue('PSUList', 'DISTINCT(DivisionName)', "DivisionCode = $DivisionCode");
+                        $DivisionName = getValue('InstituteInfo', 'DISTINCT(Division_Name)', "Division_Code = $DivisionCode");
                     }
 
                     if (!empty($DistrictCode)) {
-                        $DistrictName = getValue('PSUList', 'DISTINCT(DistrictName)', "DivisionCode = $DivisionCode AND DistrictCode = $DistrictCode");
+                        $DistrictName = getValue('InstituteInfo', 'DISTINCT(District_Name)', "Division_Code = $DivisionCode AND District_Code = $DistrictCode");
                         $DistrictName = ' > ' . $DistrictName;
                     }
 
                     if (!empty($UpazilaCode)) {
                         $UpazilaName = getValue(
-                            'PSUList',
-                            'DISTINCT(UpazilaName)',
-                            "DivisionCode = $DivisionCode AND DistrictCode = $DistrictCode AND UpazilaCode = $UpazilaCode"
+                            'InstituteInfo',
+                            'DISTINCT(Upazila_Name)',
+                            "Division_Code = $DivisionCode AND District_Code = $DistrictCode AND Upazila_Code = $UpazilaCode"
                         );
                         $UpazilaName = ' > ' . $UpazilaName;
                     }
 
                     if (!empty($UnionWardCode)) {
                         $UnionWardName = getValue(
-                            'PSUList',
-                            'DISTINCT(UnionWardName)',
-                            "DivisionCode = $DivisionCode AND DistrictCode = $DistrictCode AND UpazilaCode = $UpazilaCode AND UnionWardCode = $UnionWardCode"
+                            'InstituteInfo',
+                            'DISTINCT(Union_Name)',
+                            "Division_Code = $DivisionCode AND District_Code = $DistrictCode AND Upazila_Code = $UpazilaCode AND Union_Code = $UnionWardCode"
                         );
                         $UnionWardName = ' > ' . $UnionWardName;
                     }
 
                     if (!empty($MauzaCode)) {
                         $MauzaName = getValue(
-                            'PSUList',
-                            'DISTINCT(MauzaName)',
-                            "DivisionCode = $DivisionCode AND DistrictCode = $DistrictCode AND UpazilaCode = $UpazilaCode AND UnionWardCode = $UnionWardCode AND MauzaCode = $MauzaCode"
+                            'InstituteInfo',
+                            'DISTINCT(Mouza_Name)',
+                            "Division_Code = $DivisionCode AND District_Code = $DistrictCode AND Upazila_Code = $UpazilaCode AND Union_Code = $UnionWardCode AND Mouza_Code = $MauzaCode"
                         );
                         $MauzaName = ' > ' . $MauzaName;
                     }
 
                     if (!empty($VillageCode)) {
                         $VillageName = getValue(
-                            'PSUList',
-                            'DISTINCT(VillageName)',
-                            "DivisionCode = $DivisionCode AND DistrictCode = $DistrictCode AND UpazilaCode = $UpazilaCode AND UnionWardCode = $UnionWardCode AND MauzaCode = $MauzaCode AND VillageCode = $VillageCode"
+                            'InstituteInfo',
+                            'DISTINCT(Village_Name)',
+                            "Division_Code = $DivisionCode AND District_Code = $DistrictCode AND Upazila_Code = $UpazilaCode AND Union_Code = $UnionWardCode AND Mouza_Code = $MauzaCode AND Village_Code = $VillageCode"
                         );
                         $VillageName = ' > ' . $VillageName;
                     }

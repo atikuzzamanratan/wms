@@ -177,7 +177,7 @@ if ($isCollected > 0) {
                         if (empty($Name)) {
                             echo 'Sorry, information are missing!';
                         } else {
-                            if (Edit('InstituteInfo', $param, $cond)) {
+                            if (Update('InstituteInfo', $param, $cond)) {
                                 MsgBox2('Data updated successfully.');
                             } else
                                 MsgBox2('Failed to update data!');

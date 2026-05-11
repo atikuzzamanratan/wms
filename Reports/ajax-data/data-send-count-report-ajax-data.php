@@ -48,14 +48,11 @@ $qryCreate = "SELECT ui.id,
 				sup.MobileNumber AS SupMobileNumber,
 				ISNULL(COUNT(xfr.id), 0) AS Number, ";
 if ($FormID==$formIdMainData) {
-	$qryCreate .= " (SELECT DISTINCT STRING_AGG(pl.DistrictName, ', ') WITHIN GROUP (ORDER BY pl.DistrictName) FROM PSUList pl WHERE pl.PSUUserID = ui.id) AS DistrictName, ";
-	$qryCreate .= " (SELECT ISNULL(SUM(pli.NumberofRecordForMainSurvey),0) FROM PSUList pli WHERE pli.PSUUserID = ui.id and pli.FarmName='') AS FormTarget";
+	$qryCreate .= " (SELECT DISTINCT STRING_AGG(pl.District_Name, ', ') WITHIN GROUP (ORDER BY pl.District_Name) FROM InstituteInfo pl WHERE pl.UserID = ui.id) AS DistrictName, ";
+	$qryCreate .= " (SELECT ISNULL(COUNT(pli.id),0) FROM InstituteInfo pli WHERE pli.UserID = ui.id and pli.Type='Municipal') AS FormTarget";
 } elseif ($FormID ==$formIdSamplingData) {
-	$qryCreate .= " (SELECT DISTINCT STRING_AGG(pl.DistrictName, ', ') WITHIN GROUP (ORDER BY pl.DistrictName) FROM PSUList pl WHERE pl.PSUUserID = ui.id) AS DistrictName, ";
-	$qryCreate .= " (SELECT ISNULL(SUM(pli.NumberOfRecord),0) FROM PSUList pli WHERE pli.PSUUserID = ui.id and pli.FarmName='') AS FormTarget";
-}elseif ($FormID==$formIdFarmData) {
-    $qryCreate .= " (SELECT DISTINCT STRING_AGG(pl.DistrictName, ', ') WITHIN GROUP (ORDER BY pl.DistrictName) FROM PSUList pl WHERE pl.PSUUserID = ui.id) AS DistrictName, ";
-    $qryCreate .= " (SELECT ISNULL(SUM(pli.NumberofRecordForMainSurvey),0) FROM PSUList pli WHERE pli.PSUUserID = ui.id and pli.FarmName<>'') AS FormTarget";
+    $qryCreate .= " (SELECT DISTINCT STRING_AGG(pl.District_Name, ', ') WITHIN GROUP (ORDER BY pl.District_Name) FROM InstituteInfo pl WHERE pl.UserID = ui.id) AS DistrictName, ";
+    $qryCreate .= " (SELECT ISNULL(COUNT(pli.id),0) FROM InstituteInfo pli WHERE pli.UserID = ui.id and pli.Type='Establishment') AS FormTarget";
 }
 
 $qryCreate .= " FROM userinfo ui 
@@ -67,21 +64,21 @@ $qryCreate .= " FROM userinfo ui
 			";
 
 if (!empty($DivisionCode)) {
-	$qryCreate .= " AND ui.id IN (SELECT PSUUserID FROM PSUList WHERE DivisionCode = $DivisionCode";
+	$qryCreate .= " AND ui.id IN (SELECT UserID FROM InstituteInfo WHERE Division_Code = '$DivisionCode'";
 	if (!empty($DistrictCode)) {
-		$qryCreate .= " AND DistrictCode = $DistrictCode";
+		$qryCreate .= " AND District_Code = '$DistrictCode'";
 	}
 	if (!empty($UpazilaCode)) {
-		$qryCreate .= " AND UpazilaCode = $UpazilaCode";
+		$qryCreate .= " AND Upazila_Code = '$UpazilaCode'";
 	}
 	if (!empty($UnionWardCode)) {
-		$qryCreate .= " AND UnionWardCode = $UnionWardCode";
+		$qryCreate .= " AND Union_Code = '$UnionWardCode'";
 	}
 	if (!empty($MauzaCode)) {
-		$qryCreate .= " AND MauzaCode = $MauzaCode";
+		$qryCreate .= " AND Mouza_Code = '$MauzaCode'";
 	}
 	if (!empty($VillageCode)) {
-		$qryCreate .= " AND VillageCode = $VillageCode";
+		$qryCreate .= " AND Village_Code = '$VillageCode'";
 	}
 	$qryCreate .= ")";
 }
