@@ -22,7 +22,8 @@ include_once '../Components/header-includes.php';
 
     <section class="card">
         <header class="card-header">
-            <div class="card-title"><h4>Help & Support</h4></div>
+            <!--<div class="card-title"><h4>Help & Support</h4></div>-->
+            <div class="card-title"><h4> </h4></div>
         </header>
         <div class="card-body">
             <table class="table table-striped table-bordered">
