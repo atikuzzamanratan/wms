@@ -42,17 +42,30 @@ include_once '../Components/header-includes.php';
                     <th>Project Head quarter</th>
                 </tr>
                 <tr>
-                    <td><a href="tel:+880255007045"><i class="bi bi-phone"></i>
-                            Muhammad Rafiqul Islam<br>
-                            Project Director,<br>
-                            +880255007045</a>
+                    <td><a href="tel:+8801712141750"><i class="bi bi-phone"></i>
+                            Md. Rafiqul Islam<br>
+                            Director (In Charge)<br>
+                            Director General Office,<br>
+                            Bangladesh Bureau of Statistics<br>
+                            (Additional Charge:SCEMP Project, BBS)<br>
+                            Mobile: +8801712141750</a>
                     </td>
                 </tr>
                 <tr>
-                    <td><a href="tel:+8801639818744"><i class="bi bi-phone"></i>
-                            Md. Mostafizur Rahman<br>
-                            Project Staff,<br>
-                            +8801639818744</a>
+                    <td><a href="tel:+8801727301205"><i class="bi bi-phone"></i>
+                            Surangit Kumar Ghosh<br>
+                            Deputy Director<br>
+                            National Accounting Wing<br>
+                            Bangladesh Bureau of Statistics<br>
+                            Mobile: +8801727301205</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td><a href="tel:+8801310724965"><i class="bi bi-phone"></i>
+                            Ahshan Habib<br>
+                            Statistical Officer, FA & MIS<br>
+                            Bangladesh Bureau of Statistics<br>
+                            Mobile: +8801310724965</a>
                     </td>
                 </tr>
                 <tr>
