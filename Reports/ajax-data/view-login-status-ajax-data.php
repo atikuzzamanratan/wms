@@ -20,22 +20,6 @@ if (!empty($_POST)) {
     $DataStartDate = xss_clean($_REQUEST["DataStartDate"]);
     $DataEndDate = xss_clean($_REQUEST["DataEndDate"]);
 
-    // $col = array(
-    //     0 => 'id',
-    //     1 => 'DivisionName',
-	// 	2 => 'DistrictName',
-    //     3 => 'UserID',
-    //     4 => 'DateTime'
-    // );
-
-
-
-
-
-
-
-
-
 	$col = array(
 		0 => 'DivName',        // Matches alias in SELECT
 		1 => 'DistName',       // Matches alias in SELECT
@@ -43,15 +27,6 @@ if (!empty($_POST)) {
 		3 => 'MobileNumber',   // Actual column in SELECT
 		4 => 'DateTime'        // Actual column in SELECT
 	);
-
-
-
-
-
-
-
-
-
 	
 	$DivisionCode = xss_clean($_REQUEST['DivisionCode']);
 	$DistrictCode = xss_clean($_REQUEST['DistrictCode']);
@@ -71,9 +46,9 @@ if (!empty($_POST)) {
 						SELECT STRING_AGG(divn, ', ') WITHIN GROUP (ORDER BY divn) AS DivName 
 						FROM 
 							(
-								SELECT DISTINCT pl.DivisionName divn 
-								FROM PSUList pl 
-								WHERE pl.PSUUserID IN 
+								SELECT DISTINCT pl.Division_Name divn 
+								FROM InstituteInfo pl 
+								WHERE pl.UserID IN 
 									(
 										SELECT a.UserID 
 										FROM assignsupervisor a 
@@ -90,9 +65,9 @@ if (!empty($_POST)) {
 						SELECT STRING_AGG(dn, ', ') WITHIN GROUP (ORDER BY dn) AS DistName 
 						FROM 
 							(
-								SELECT DISTINCT pl.DistrictName dn 
-								FROM PSUList pl 
-								WHERE pl.PSUUserID IN 
+								SELECT DISTINCT pl.District_Name dn 
+								FROM InstituteInfo pl 
+								WHERE pl.UserID IN 
 									(
 										SELECT a.UserID 
 										FROM assignsupervisor a 
@@ -108,7 +83,7 @@ if (!empty($_POST)) {
 			FROM UserLogStatus uls 
 				JOIN userinfo ui ON uls.UserID = ui.id 
 				JOIN assignsupervisor asp ON asp.DivCoordinatorID = ui.id OR asp.DistCoordinatorID = ui.id OR asp.SupervisorID = ui.id Or asp.UserID = ui.id
-				JOIN PSUList pl ON pl.PSUUserID IN (
+				JOIN InstituteInfo pl ON pl.UserID IN (
 										SELECT a.UserID 
 										FROM assignsupervisor a 
 										WHERE (a.DivCoordinatorID = ui.id 
@@ -126,22 +101,22 @@ if (!empty($_POST)) {
     }
 	
 	if (!empty($DivisionCode)) {
-		$qry .= " AND ( pl.DivisionCode = '" . $DivisionCode . "') ";
+		$qry .= " AND ( pl.Division_Code = '" . $DivisionCode . "') ";
 	}
 	if (!empty($DistrictCode)) {
-		$qry .= " AND ( pl.DistrictCode = '" . $DistrictCode . "') ";
+		$qry .= " AND ( pl.District_Code = '" . $DistrictCode . "') ";
 	}
 	if (!empty($UpazilaCode)) {
-		$qry .= " AND ( pl.UpazilaCode = '" . $UpazilaCode . "') ";
+		$qry .= " AND ( pl.Upazila_Code = '" . $UpazilaCode . "') ";
 	}
 	if (!empty($UnionWardCode)) {
-		$qry .= " AND ( pl.UnionWardCode = '" . $UnionWardCode . "') ";
+		$qry .= " AND ( pl.Union_Code = '" . $UnionWardCode . "') ";
 	}
 	if (!empty($MauzaCode)) {
-		$qry .= " AND ( pl.MauzaCode = '" . $MauzaCode . "') ";
+		$qry .= " AND ( pl.Mouza_Code = '" . $MauzaCode . "') ";
 	}
 	if (!empty($VillageCode)) {
-		$qry .= " AND ( pl.VillageCode = '" . $VillageCode . "') ";
+		$qry .= " AND ( pl.Village_Code = '" . $VillageCode . "') ";
 	}
 	
 	if (!empty($request['search']['value'])) {
@@ -150,8 +125,8 @@ if (!empty($_POST)) {
 		$qry .= " OR ui.FullName like'%" . $request['search']['value'] . "%'";
 		$qry .= " OR ui.MobileNumber like'%" . $request['search']['value'] . "%'";
         $qry .= " OR uls.DateTime like'%" . $request['search']['value'] . "%'";
-		$qry .= " OR pl.DivisionName like'%" . $request['search']['value'] . "%'";
-		$qry .= " OR pl.DistrictName like'%" . $request['search']['value'] . "%')";
+		$qry .= " OR pl.Division_Name like'%" . $request['search']['value'] . "%'";
+		$qry .= " OR pl.District_Name like'%" . $request['search']['value'] . "%')";
     }
 //echo $qry;exit;
     $rs = db_query($qry, $cn);

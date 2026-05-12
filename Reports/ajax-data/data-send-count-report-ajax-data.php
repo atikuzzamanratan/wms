@@ -48,10 +48,13 @@ $qryCreate = "SELECT ui.id,
 				sup.MobileNumber AS SupMobileNumber,
 				ISNULL(COUNT(xfr.id), 0) AS Number, ";
 if ($FormID==$formIdMainData) {
-	$qryCreate .= " (SELECT DISTINCT STRING_AGG(pl.District_Name, ', ') WITHIN GROUP (ORDER BY pl.District_Name) FROM InstituteInfo pl WHERE pl.UserID = ui.id) AS DistrictName, ";
+	//$qryCreate .= " (SELECT DISTINCT STRING_AGG(pl.District_Name, ', ') WITHIN GROUP (ORDER BY pl.District_Name) FROM InstituteInfo pl WHERE pl.UserID = ui.id) AS DistrictName, ";
+	$qryCreate .= " (SELECT STRING_AGG(District_Name, ', ') WITHIN GROUP (ORDER BY District_Name) FROM (SELECT DISTINCT TRIM(District_Name) AS District_Name FROM InstituteInfo pl WHERE pl.UserID = ui.id AND pl.District_Name IS NOT NULL AND TRIM(pl.District_Name) <> '') AS DistinctDistricts) AS DistrictName, ";
 	$qryCreate .= " (SELECT ISNULL(COUNT(pli.id),0) FROM InstituteInfo pli WHERE pli.UserID = ui.id and pli.Type='Municipal') AS FormTarget";
 } elseif ($FormID ==$formIdSamplingData) {
-    $qryCreate .= " (SELECT DISTINCT STRING_AGG(pl.District_Name, ', ') WITHIN GROUP (ORDER BY pl.District_Name) FROM InstituteInfo pl WHERE pl.UserID = ui.id) AS DistrictName, ";
+    //$qryCreate .= " (SELECT DISTINCT STRING_AGG(pl.District_Name, ', ') WITHIN GROUP (ORDER BY pl.District_Name) FROM InstituteInfo pl WHERE pl.UserID = ui.id) AS DistrictName, ";
+    $qryCreate .= " (SELECT STRING_AGG(District_Name, ', ') WITHIN GROUP (ORDER BY District_Name) FROM (SELECT DISTINCT TRIM(District_Name) AS District_Name FROM InstituteInfo pl WHERE pl.UserID = ui.id AND pl.District_Name IS NOT NULL AND TRIM(pl.District_Name) <> '') AS DistinctDistricts) AS DistrictName, ";
+
     $qryCreate .= " (SELECT ISNULL(COUNT(pli.id),0) FROM InstituteInfo pli WHERE pli.UserID = ui.id and pli.Type='Establishment') AS FormTarget";
 }
 

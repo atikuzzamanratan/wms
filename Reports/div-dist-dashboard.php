@@ -11,14 +11,13 @@ $rsSupervisor = $app->getDBConnection()->fetch($qrySupervisor, $loggedUserID);
 $SuperID = $rsSupervisor->id;
 
 if (strpos($loggedUserName, 'dist') !== false) {
-    $divQuery = "SELECT DISTINCT p.DivisionName, p.DivisionCode FROM PSUList AS p 
-    JOIN assignsupervisor AS a ON p.PSUUserID = a.UserID 
-    WHERE  p.CompanyID = $loggedUserCompanyID AND a.DistCoordinatorID = $loggedUserID";
-    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery);
+    $divQuery = "SELECT DISTINCT p.Division_Name, p.Division_Code FROM InstituteInfo AS p 
+    JOIN assignsupervisor AS a ON p.UserID = a.UserID 
+    WHERE a.DistCoordinatorID = $loggedUserID";
 } else {
-    $divQuery = "SELECT DISTINCT DivisionName , DivisionCode FROM PSUList WHERE CompanyID = ? ORDER BY DivisionName ASC";
-    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery, $loggedUserCompanyID);
+    $divQuery = "SELECT DISTINCT Division_Name, Division_Code FROM InstituteInfo ORDER BY Division_Name ASC";
 }
+$rsDivQuery = $app->getDBConnection()->fetchAll($divQuery);
 
 $boxFontColor = "black";
 
@@ -77,100 +76,101 @@ if ($_REQUEST['show'] === 'Show') {
         $FormName = getValue('datacollectionform', 'FormName', "id = $FormID");
 
         //die("Form Name: ".$FormName);
-        $DHKUserCond = " IN(SELECT PSUUserID FROM PSUList WHERE DivisionCode = 30)";
-        $CTGUserCond = " IN(SELECT PSUUserID FROM PSUList WHERE DivisionCode = 20)";
-        $RAJUserCond = " IN(SELECT PSUUserID FROM PSUList WHERE DivisionCode = 50)";
-        $KHLUserCond = " IN(SELECT PSUUserID FROM PSUList WHERE DivisionCode = 40)";
-        $BARUserCond = " IN(SELECT PSUUserID FROM PSUList WHERE DivisionCode = 10)";
-        $SYLUserCond = " IN(SELECT PSUUserID FROM PSUList WHERE DivisionCode = 60)";
-        $RANUserCond = " IN(SELECT PSUUserID FROM PSUList WHERE DivisionCode = 55)";
-        $MYMUserCond = " IN(SELECT PSUUserID FROM PSUList WHERE DivisionCode = 45)";
 
-        $TotalQueryDHK = "SELECT COUNT(id) AS Number FROM xformrecord WHERE CompanyId = ? AND FormId = ? AND UserID $DHKUserCond";
+        $DHKDivCode = " Division_Code = 30";
+        $CTGDivCode = " Division_Code = 20";
+        $RAJDivCode = " Division_Code = 50";
+        $KHLDivCode = " Division_Code = 40";
+        $BARDivCode = " Division_Code = 10";
+        $SYLDivCode = " Division_Code = 60";
+        $RANDivCode = " Division_Code = 55";
+        $MYMDivCode = " Division_Code = 45";
+
+        $DHKUserCond = " IN(SELECT id FROM InstituteInfo WHERE Division_Code = 30)";
+        $CTGUserCond = " IN(SELECT id FROM InstituteInfo WHERE Division_Code = 20)";
+        $RAJUserCond = " IN(SELECT id FROM InstituteInfo WHERE Division_Code = 50)";
+        $KHLUserCond = " IN(SELECT id FROM InstituteInfo WHERE Division_Code = 40)";
+        $BARUserCond = " IN(SELECT id FROM InstituteInfo WHERE Division_Code = 10)";
+        $SYLUserCond = " IN(SELECT id FROM InstituteInfo WHERE Division_Code = 60)";
+        $RANUserCond = " IN(SELECT id FROM InstituteInfo WHERE Division_Code = 55)";
+        $MYMUserCond = " IN(SELECT id FROM InstituteInfo WHERE Division_Code = 45)";
+
+        $TotalQueryDHK = "SELECT COUNT(id) AS Number FROM xformrecord WHERE CompanyId = ? AND FormId = ? AND SampleHHNo $DHKUserCond";
         $RsTotalQueryDHK = $app->getDBConnection()->fetch($TotalQueryDHK, $loggedUserCompanyID, $FormID);
         $NumberOfRecordDHK = $RsTotalQueryDHK->Number;
 
-        $TotalQueryCTG = "SELECT COUNT(id) AS Number FROM xformrecord WHERE CompanyId = ? AND FormId = ? AND UserID $CTGUserCond";
+        $TotalQueryCTG = "SELECT COUNT(id) AS Number FROM xformrecord WHERE CompanyId = ? AND FormId = ? AND SampleHHNo $CTGUserCond";
         $RsTotalQueryCTG = $app->getDBConnection()->fetch($TotalQueryCTG, $loggedUserCompanyID, $FormID);
         $NumberOfRecordCTG = $RsTotalQueryCTG->Number;
 
-        $TotalQueryRAJ = "SELECT COUNT(id) AS Number FROM xformrecord WHERE CompanyId = ? AND FormId = ? AND UserID $RAJUserCond";
+        $TotalQueryRAJ = "SELECT COUNT(id) AS Number FROM xformrecord WHERE CompanyId = ? AND FormId = ? AND SampleHHNo $RAJUserCond";
         $RsTotalQueryRAJ = $app->getDBConnection()->fetch($TotalQueryRAJ, $loggedUserCompanyID, $FormID);
         $NumberOfRecordRAJ = $RsTotalQueryRAJ->Number;
 
-        $TotalQueryKHL = "SELECT COUNT(id) AS Number FROM xformrecord WHERE CompanyId = ? AND FormId = ? AND UserID $KHLUserCond";
+        $TotalQueryKHL = "SELECT COUNT(id) AS Number FROM xformrecord WHERE CompanyId = ? AND FormId = ? AND SampleHHNo $KHLUserCond";
         $RsTotalQueryKHL = $app->getDBConnection()->fetch($TotalQueryKHL, $loggedUserCompanyID, $FormID);
         $NumberOfRecordKHL = $RsTotalQueryKHL->Number;
 
-        $TotalQueryBAR = "SELECT COUNT(id) AS Number FROM xformrecord WHERE CompanyId = ? AND FormId = ? AND UserID $BARUserCond";
+        $TotalQueryBAR = "SELECT COUNT(id) AS Number FROM xformrecord WHERE CompanyId = ? AND FormId = ? AND SampleHHNo $BARUserCond";
         $RsTotalQueryBAR = $app->getDBConnection()->fetch($TotalQueryBAR, $loggedUserCompanyID, $FormID);
         $NumberOfRecordBAR = $RsTotalQueryBAR->Number;
 
-        $TotalQuerySYL = "SELECT COUNT(id) AS Number FROM xformrecord WHERE CompanyId = ? AND FormId = ? AND UserID $SYLUserCond";
+        $TotalQuerySYL = "SELECT COUNT(id) AS Number FROM xformrecord WHERE CompanyId = ? AND FormId = ? AND SampleHHNo $SYLUserCond";
         $RsTotalQuerySYL = $app->getDBConnection()->fetch($TotalQuerySYL, $loggedUserCompanyID, $FormID);
         $NumberOfRecordSYL = $RsTotalQuerySYL->Number;
 
-        $TotalQueryRAN = "SELECT COUNT(id) AS Number FROM xformrecord WHERE CompanyId = ? AND FormId = ? AND UserID $RANUserCond";
+        $TotalQueryRAN = "SELECT COUNT(id) AS Number FROM xformrecord WHERE CompanyId = ? AND FormId = ? AND SampleHHNo $RANUserCond";
         $RsTotalQueryRAN = $app->getDBConnection()->fetch($TotalQueryRAN, $loggedUserCompanyID, $FormID);
         $NumberOfRecordRAN = $RsTotalQueryRAN->Number;
 
-        $TotalQueryMYM = "SELECT COUNT(id) AS Number FROM xformrecord WHERE CompanyId = ? AND FormId = ? AND UserID $MYMUserCond";
+        $TotalQueryMYM = "SELECT COUNT(id) AS Number FROM xformrecord WHERE CompanyId = ? AND FormId = ? AND SampleHHNo $MYMUserCond";
         $RsTotalQueryMYM = $app->getDBConnection()->fetch($TotalQueryMYM, $loggedUserCompanyID, $FormID);
         $NumberOfRecordMYM = $RsTotalQueryMYM->Number;
 
-        if ($FormID == $formIdSamplingData) { //For Listing
-            $TotalTergetQryDHK = "SELECT SUM(NumberOfRecord) as TotalTerget FROM PSUList where FarmName='' and CompanyID = ? and PSUUserID <>'' AND PSUUserID $DHKUserCond";
-            $TotalTergetQryCTG = "SELECT SUM(NumberOfRecord) as TotalTerget FROM PSUList where FarmName='' and CompanyID = ? and PSUUserID <>'' AND PSUUserID $CTGUserCond";
-            $TotalTergetQryRAJ = "SELECT SUM(NumberOfRecord) as TotalTerget FROM PSUList where FarmName='' and CompanyID = ? and PSUUserID <>'' AND PSUUserID $RAJUserCond";
-            $TotalTergetQryKHL = "SELECT SUM(NumberOfRecord) as TotalTerget FROM PSUList where FarmName='' and CompanyID = ? and PSUUserID <>'' AND PSUUserID $KHLUserCond";
-            $TotalTergetQryBAR = "SELECT SUM(NumberOfRecord) as TotalTerget FROM PSUList where FarmName='' and CompanyID = ? and PSUUserID <>'' AND PSUUserID $BARUserCond";
-            $TotalTergetQrySYL = "SELECT SUM(NumberOfRecord) as TotalTerget FROM PSUList where FarmName='' and CompanyID = ? and PSUUserID <>'' AND PSUUserID $SYLUserCond";
-            $TotalTergetQryRAN = "SELECT SUM(NumberOfRecord) as TotalTerget FROM PSUList where FarmName='' and CompanyID = ? and PSUUserID <>'' AND PSUUserID $RANUserCond";
-            $TotalTergetQryMYM = "SELECT SUM(NumberOfRecord) as TotalTerget FROM PSUList where FarmName='' and CompanyID = ? and PSUUserID <>'' AND PSUUserID $MYMUserCond";
-        } else if ($FormID == $formIdMainData) {
-            $TotalTergetQryDHK = "SELECT SUM(NumberOfRecordForMainSurvey) as TotalTerget FROM PSUList where  FarmName='' and CompanyID = ? and PSUUserID <>'' AND PSUUserID $DHKUserCond";
-            $TotalTergetQryCTG = "SELECT SUM(NumberOfRecordForMainSurvey) as TotalTerget FROM PSUList where FarmName='' and CompanyID = ? and PSUUserID <>'' AND PSUUserID $CTGUserCond";
-            $TotalTergetQryRAJ = "SELECT SUM(NumberOfRecordForMainSurvey) as TotalTerget FROM PSUList where FarmName='' and CompanyID = ? and PSUUserID <>'' AND PSUUserID $RAJUserCond";
-            $TotalTergetQryKHL = "SELECT SUM(NumberOfRecordForMainSurvey) as TotalTerget FROM PSUList where FarmName='' and CompanyID = ? and PSUUserID <>'' AND PSUUserID $KHLUserCond";
-            $TotalTergetQryBAR = "SELECT SUM(NumberOfRecordForMainSurvey) as TotalTerget FROM PSUList where FarmName='' and CompanyID = ? and PSUUserID <>'' AND PSUUserID $BARUserCond";
-            $TotalTergetQrySYL = "SELECT SUM(NumberOfRecordForMainSurvey) as TotalTerget FROM PSUList where FarmName='' and CompanyID = ? and PSUUserID <>'' AND PSUUserID $SYLUserCond";
-            $TotalTergetQryRAN = "SELECT SUM(NumberOfRecordForMainSurvey) as TotalTerget FROM PSUList where FarmName='' and CompanyID = ? and PSUUserID <>'' AND PSUUserID $RANUserCond";
-            $TotalTergetQryMYM = "SELECT SUM(NumberOfRecordForMainSurvey) as TotalTerget FROM PSUList where FarmName='' and CompanyID = ? and PSUUserID <>'' AND PSUUserID $MYMUserCond";
-        } else if ($FormID == $formIdFarmData) {
-            $TotalTergetQryDHK = "SELECT SUM(NumberOfRecordForMainSurvey) as TotalTerget FROM PSUList where  FarmName<>'' and CompanyID = ? and PSUUserID <>'' AND PSUUserID $DHKUserCond";
-            $TotalTergetQryCTG = "SELECT SUM(NumberOfRecordForMainSurvey) as TotalTerget FROM PSUList where FarmName<>'' and CompanyID = ? and PSUUserID <>'' AND PSUUserID $CTGUserCond";
-            $TotalTergetQryRAJ = "SELECT SUM(NumberOfRecordForMainSurvey) as TotalTerget FROM PSUList where FarmName<>'' and CompanyID = ? and PSUUserID <>'' AND PSUUserID $RAJUserCond";
-            $TotalTergetQryKHL = "SELECT SUM(NumberOfRecordForMainSurvey) as TotalTerget FROM PSUList where FarmName<>'' and CompanyID = ? and PSUUserID <>'' AND PSUUserID $KHLUserCond";
-            $TotalTergetQryBAR = "SELECT SUM(NumberOfRecordForMainSurvey) as TotalTerget FROM PSUList where FarmName<>'' and CompanyID = ? and PSUUserID <>'' AND PSUUserID $BARUserCond";
-            $TotalTergetQrySYL = "SELECT SUM(NumberOfRecordForMainSurvey) as TotalTerget FROM PSUList where FarmName<>'' and CompanyID = ? and PSUUserID <>'' AND PSUUserID $SYLUserCond";
-            $TotalTergetQryRAN = "SELECT SUM(NumberOfRecordForMainSurvey) as TotalTerget FROM PSUList where FarmName<>'' and CompanyID = ? and PSUUserID <>'' AND PSUUserID $RANUserCond";
-            $TotalTergetQryMYM = "SELECT SUM(NumberOfRecordForMainSurvey) as TotalTerget FROM PSUList where FarmName<>'' and CompanyID = ? and PSUUserID <>'' AND PSUUserID $MYMUserCond";
+        if ($FormID == $formIdSamplingData) { //For Establishment
+            $TotalTergetQryDHK = "SELECT COUNT(id) as TotalTerget FROM InstituteInfo where UserID > 0 AND Type = '$InstType' AND $DHKDivCode";
+            $TotalTergetQryCTG = "SELECT COUNT(id) as TotalTerget FROM InstituteInfo where UserID > 0 AND Type = '$InstType' AND $CTGDivCode";
+            $TotalTergetQryRAJ = "SELECT COUNT(id) as TotalTerget FROM InstituteInfo where UserID > 0 AND Type = '$InstType' AND $RAJDivCode";
+            $TotalTergetQryKHL = "SELECT COUNT(id) as TotalTerget FROM InstituteInfo where UserID > 0 AND Type = '$InstType' AND $KHLDivCode";
+            $TotalTergetQryBAR = "SELECT COUNT(id) as TotalTerget FROM InstituteInfo where UserID > 0 AND Type = '$InstType' AND $BARDivCode";
+            $TotalTergetQrySYL = "SELECT COUNT(id) as TotalTerget FROM InstituteInfo where UserID > 0 AND Type = '$InstType' AND $SYLDivCode";
+            $TotalTergetQryRAN = "SELECT COUNT(id) as TotalTerget FROM InstituteInfo where UserID > 0 AND Type = '$InstType' AND $RANDivCode";
+            $TotalTergetQryMYM = "SELECT COUNT(id) as TotalTerget FROM InstituteInfo where UserID > 0 AND Type = '$InstType' AND $MYMDivCode";
+        } else if ($FormID == $formIdMainData) {//For Municipal
+            $TotalTergetQryDHK = "SELECT COUNT(id) as TotalTerget FROM InstituteInfo where UserID > 0 AND Type = '$MunType' AND $DHKDivCode";
+            $TotalTergetQryCTG = "SELECT COUNT(id) as TotalTerget FROM InstituteInfo where UserID > 0 AND Type = '$MunType' AND $CTGDivCode";
+            $TotalTergetQryRAJ = "SELECT COUNT(id) as TotalTerget FROM InstituteInfo where UserID > 0 AND Type = '$MunType' AND $RAJDivCode";
+            $TotalTergetQryKHL = "SELECT COUNT(id) as TotalTerget FROM InstituteInfo where UserID > 0 AND Type = '$MunType' AND $KHLDivCode";
+            $TotalTergetQryBAR = "SELECT COUNT(id) as TotalTerget FROM InstituteInfo where UserID > 0 AND Type = '$MunType' AND $BARDivCode";
+            $TotalTergetQrySYL = "SELECT COUNT(id) as TotalTerget FROM InstituteInfo where UserID > 0 AND Type = '$MunType' AND $SYLDivCode";
+            $TotalTergetQryRAN = "SELECT COUNT(id) as TotalTerget FROM InstituteInfo where UserID > 0 AND Type = '$MunType' AND $RANDivCode";
+            $TotalTergetQryMYM = "SELECT COUNT(id) as TotalTerget FROM InstituteInfo where UserID > 0 AND Type = '$MunType' AND $MYMDivCode";
         }
         //die("Total Target: ".$TotalTergetQryDHK);
         //echo $TotalTergetQryRAJ;
 
-        $result_TotalTergetQryDHK = $app->getDBConnection()->fetch($TotalTergetQryDHK, $loggedUserCompanyID);
+        $result_TotalTergetQryDHK = $app->getDBConnection()->fetch($TotalTergetQryDHK);
         $TotalTergetDHK = $result_TotalTergetQryDHK->TotalTerget;
 
-        $result_TotalTergetQryCTG = $app->getDBConnection()->fetch($TotalTergetQryCTG, $loggedUserCompanyID);
+        $result_TotalTergetQryCTG = $app->getDBConnection()->fetch($TotalTergetQryCTG);
         $TotalTergetCTG = $result_TotalTergetQryCTG->TotalTerget;
 
-        $result_TotalTergetQryRAJ = $app->getDBConnection()->fetch($TotalTergetQryRAJ, $loggedUserCompanyID);
+        $result_TotalTergetQryRAJ = $app->getDBConnection()->fetch($TotalTergetQryRAJ);
         $TotalTergetRAJ = $result_TotalTergetQryRAJ->TotalTerget;
 
-        $result_TotalTergetQryKHL = $app->getDBConnection()->fetch($TotalTergetQryKHL, $loggedUserCompanyID);
+        $result_TotalTergetQryKHL = $app->getDBConnection()->fetch($TotalTergetQryKHL);
         $TotalTergetKHL = $result_TotalTergetQryKHL->TotalTerget;
 
-        $result_TotalTergetQryBAR = $app->getDBConnection()->fetch($TotalTergetQryBAR, $loggedUserCompanyID);
+        $result_TotalTergetQryBAR = $app->getDBConnection()->fetch($TotalTergetQryBAR);
         $TotalTergetBAR = $result_TotalTergetQryBAR->TotalTerget;
 
-        $result_TotalTergetQrySYL = $app->getDBConnection()->fetch($TotalTergetQrySYL, $loggedUserCompanyID);
+        $result_TotalTergetQrySYL = $app->getDBConnection()->fetch($TotalTergetQrySYL);
         $TotalTergetSYL = $result_TotalTergetQrySYL->TotalTerget;
 
-        $result_TotalTergetQryRAN = $app->getDBConnection()->fetch($TotalTergetQryRAN, $loggedUserCompanyID);
+        $result_TotalTergetQryRAN = $app->getDBConnection()->fetch($TotalTergetQryRAN);
         $TotalTergetRAN = $result_TotalTergetQryRAN->TotalTerget;
 
-        $result_TotalTergetQryMYM = $app->getDBConnection()->fetch($TotalTergetQryMYM, $loggedUserCompanyID);
+        $result_TotalTergetQryMYM = $app->getDBConnection()->fetch($TotalTergetQryMYM);
         $TotalTergetMYM = $result_TotalTergetQryMYM->TotalTerget;
 
         $DataCollectionRatioDHK = Ratio($NumberOfRecordDHK, $TotalTergetDHK);
@@ -182,41 +182,22 @@ if ($_REQUEST['show'] === 'Show') {
         $DataCollectionRatioRAN = Ratio($NumberOfRecordRAN, $TotalTergetRAN);
         $DataCollectionRatioMYM = Ratio($NumberOfRecordMYM, $TotalTergetMYM);
         //die("Ratio: ".$DataCollectionRatioMYM);
-        $DataSendingDateQuery = " Select CONVERT(date, EntryDate) as DataDate, count(*) as Number from xformrecord where CompanyId = ? AND FormId = ?";
+        $DataSendingDateQuery = " Select CONVERT(date, EntryDate) as DataDate, count(*) as Number from xformrecord where FormId = ?";
         $DataSendingDateQuery .= " group by CONVERT(date, EntryDate) order by DataDate desc";
-        $DataSendingDateRS = $app->getDBConnection()->fetchAll($DataSendingDateQuery, $loggedUserCompanyID, $FormID);
+        $DataSendingDateRS = $app->getDBConnection()->fetchAll($DataSendingDateQuery, $FormID);
 
-        $QueryDistLavel = "SELECT DISTINCT p.DistrictName, p.DistrictCode, 
-								(
-									SELECT SUM(SQ.Target) 
-									FROM 
-										(
-											SELECT DISTINCT PSU, ";
-        if ($FormID == $formIdMainData) {
-            $QueryDistLavel .= " NumberOfRecordForMainSurvey as Target FROM PSUList WHERE FarmName='' and DistrictCode = p.DistrictCode ";
-        } else if ($FormID == $formIdSamplingData) {
-            $QueryDistLavel .= " NumberOfRecord as Target FROM PSUList WHERE FarmName='' and DistrictCode = p.DistrictCode ";
-        } else if ($FormID == $formIdFarmData) {
-            $QueryDistLavel .= " NumberOfRecordForMainSurvey as Target FROM PSUList WHERE FarmName<>'' and DistrictCode = p.DistrictCode ";
+        if ($FormID == $formIdSamplingData) {
+            $QueryDistLavel = "SELECT DISTINCT p.District_Name, p.District_Code, ( SELECT COUNT(SQ.Target) 
+            FROM ( SELECT DISTINCT id as Target FROM InstituteInfo WHERE Type='$InstType' and District_Code = p.District_Code ) SQ ) as Target, 
+            ( SELECT COUNT(id) FROM xformrecord WHERE xformrecord.FormId = $formIdSamplingData AND xformrecord.SampleHHNo IN ( SELECT id FROM InstituteInfo WHERE District_Code = p.District_Code and Type='$InstType') ) as Collected 
+            FROM InstituteInfo as p WHERE p.UserID > 0 GROUP BY p.District_Code,p.District_Name ORDER BY p.District_Name asc";
+        } else if ($FormID == $formIdMainData) {
+            $QueryDistLavel = "SELECT DISTINCT p.District_Name, p.District_Code, ( SELECT COUNT(SQ.Target) 
+            FROM ( SELECT DISTINCT id as Target FROM InstituteInfo WHERE Type='$MunType' and District_Code = p.District_Code ) SQ ) as Target, 
+            ( SELECT COUNT(id) FROM xformrecord WHERE xformrecord.FormId = $formIdMainData AND xformrecord.SampleHHNo IN ( SELECT id FROM InstituteInfo WHERE District_Code = p.District_Code and Type='$MunType') ) as Collected 
+            FROM InstituteInfo as p WHERE p.UserID > 0 GROUP BY p.District_Code,p.District_Name ORDER BY p.District_Name asc";
         }
 
-        $QueryDistLavel .= "			) SQ
-								) as Target, 
-								(
-									SELECT COUNT(id) 
-									FROM xformrecord 
-									WHERE xformrecord.FormId = $FormID 
-										AND xformrecord.UserID IN
-											(
-												SELECT PSUUserID 
-												FROM PSUList 
-												WHERE DistrictCode = p.DistrictCode
-											)
-								) as Collected 
-						FROM PSUList as  p 
-						WHERE p.PSUUserID IS NOT NULL 
-						GROUP BY p.DistrictCode,p.DistrictName 
-						ORDER BY p.DistrictName asc;";
         //die("SQL: ".$QueryDistLavel);
         $QueryDistLavelRS = $app->getDBConnection()->fetchAll($QueryDistLavel);
         ?>
@@ -431,44 +412,13 @@ if ($_REQUEST['show'] === 'Show') {
                             </header>
                             <div class="card-body">
                                 <div class="chart chart-lg" id="morrisBar"></div>
-                                <!-- <script type="text/javascript">
-                                    var morrisBarData =
-                                        [
-                                            <?php
-                                // foreach ($QueryDistLavelRS as $row) {
-                                // $CtDist = $row->DistrictName;
-                                // if ($CtDist === "COX'S BAZAR") {
-                                //     $CtDist = "COX`S BAZAR";
-                                // }
-                                // $CtTarget = $row->Target;
-                                // $CtCollected = $row->Collected;
-                                ?>
-                                            {
-                                                y: '<?php
-                                // echo $CtDist;
-                                ?>',
-                                                a: <?php
-                                // echo $CtTarget;
-                                ?>,
-                                                b: <?php
-                                // echo $CtCollected;
-                                ?>
-                                            },
-                                            <?php
-                                // }
-                                ?>
-                                        ];
-                                    // See: js/examples/examples.charts.js for more settings.
-                                </script> -->
-
-
                                 <script type="text/javascript">
                                     // Build chart data safely
                                     var morrisBarData = [
                                         <?php
                                         foreach ($QueryDistLavelRS as $row) {
                                             echo json_encode([
-                                                    'y' => $row->DistrictName,
+                                                    'y' => $row->District_Name,
                                                     'a' => (int)($row->Target ?: 0),
                                                     'b' => (int)($row->Collected ?: 0)
                                                 ]) . ",";

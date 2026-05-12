@@ -37,24 +37,6 @@ $SuperID = $resQrySupervisor->id;
                                 </div>
                             </div>
 
-                            <!--<div class="form-group row pb-3">
-                                <label class="col-lg-3 control-label text-sm-end pt-2">Record Select<span
-                                            class="required">*</span></label>
-                                <div class="col-lg-6">
-                                    <select data-plugin-selectTwo class="form-control populate" name="SelectedRecordID"
-                                            id="SelectedRecordID" title="Please select a record" required>
-                                        <option value="">Choose a record</option>
-                                        <?php
-                            /*                                        $qry = "SELECT id, DataName FROM xformrecord WHERE FormId = ?";
-                                                                    $resQry = $app->getDBConnection()->fetchAll($qry, $formIdMainData);
-                                                                    foreach ($resQry as $row) {
-                                                                        echo '<option value="' . $row->id . '">' . $row->id . ' - (' . $row->DataName . ')' . '</option>';
-                                                                    }
-                                                                    */ ?>
-                                    </select>
-                                </div>
-                            </div>-->
-
                             <div class="form-group row pb-3">
                                 <label class="col-lg-3 control-label text-sm-end pt-2">Record Select<span
                                             class="required">*</span></label>
@@ -121,11 +103,13 @@ $SuperID = $resQrySupervisor->id;
                         $tableForMasterData = 'masterdatarecord_UnApproved';
                     }
 
-                    if ($formID == $formIdMainData) {
+                    /*if ($formID == $formIdMainData) {
                         $ColumnNameToUpdate = $columnNameToUpdateValueForMainData;
                     } else {
                         $ColumnNameToUpdate = $columnNameToUpdateValueForListingData;
-                    }
+                    }*/
+
+                    $ColumnNameToUpdate = $columnNameToUpdateValueForListingData;
 
                     //echo "$formID | $recordID | $recordToUpdate";
 

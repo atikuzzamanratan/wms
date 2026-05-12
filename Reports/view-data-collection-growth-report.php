@@ -2,32 +2,28 @@
 $qryFormName = "SELECT id, FormName FROM datacollectionform WHERE CompanyID = ? AND Status = '$formActiveStatus' ORDER BY id";
 $rsQryFormName = $app->getDBConnection()->fetchAll($qryFormName, $loggedUserCompanyID);
 
-$divQuery = "SELECT DISTINCT DivisionCode, DivisionName FROM GeoInformation ORDER BY DivisionName ASC";
+$divQuery = "SELECT DISTINCT Division_Code as DivisionCode, Division_Name as DivisionName FROM InstituteInfo ORDER BY Division_Name ASC";
 $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery);
 
-if (strpos($loggedUserName, 'div') !== false) {
-    $divQuery = "SELECT DISTINCT p.DivisionCode, p.DivisionName 
-				FROM PSUList AS p 
-					JOIN assignsupervisor AS a ON p.PSUUserID = a.UserID 
-				WHERE  p.CompanyID = ? AND a.DivCoordinatorID = ? 
-				ORDER BY DivisionName ASC";
-    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery, $loggedUserCompanyID, $loggedUserID);
+if (strpos($loggedUserName, 'dist') !== false) {
+    $divQuery = "SELECT DISTINCT p.Division_Name as DivisionName, p.Division_Code as DivisionCode FROM InstituteInfo AS p 
+    JOIN assignsupervisor AS a ON p.UserID = a.UserID 
+    WHERE a.DistCoordinatorID = ?";
+    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery, $loggedUserID);
 } elseif (strpos($loggedUserName, 'val') !== false) {
-    $divQuery = "SELECT DISTINCT p.DivisionCode, p.DivisionName 
-				FROM PSUList AS p 
-					JOIN assignsupervisor AS a ON p.PSUUserID = a.UserID 
-				WHERE  p.CompanyID = ? AND a.ValidatorID = ? 
-				ORDER BY DivisionName ASC";
-    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery, $loggedUserCompanyID, $loggedUserID);
+    $divQuery = "SELECT DISTINCT p.Division_Name as DivisionName, p.Division_Code as DivisionCode FROM InstituteInfo AS p 
+    JOIN assignsupervisor AS a ON p.UserID = a.UserID 
+    WHERE a.ValidatorID = ?";
+    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery, $loggedUserID);
+} else {
+    $divQuery = "SELECT DISTINCT Division_Name as DivisionName, Division_Code as DivisionCode FROM InstituteInfo ORDER BY DivisionName ASC";
+    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery);
 }
 
 if (strpos($loggedUserName, 'cval') !== false) {
-    $divQuery = "SELECT DISTINCT p.DivisionCode, p.DivisionName 
-				FROM PSUList AS p 
-					JOIN assignsupervisor AS a ON p.PSUUserID = a.UserID 
-				WHERE  p.CompanyID = ?
-				ORDER BY DivisionName ASC";
-    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery, $loggedUserCompanyID);
+    $divQuery = "SELECT DISTINCT p.Division_Name as DivisionName, p.Division_Code as DivisionCode FROM InstituteInfo AS p 
+    JOIN assignsupervisor AS a ON p.PSUUserID = a.UserID";
+    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery);
 }
 
 if ($_REQUEST['show'] === 'Show') {
@@ -59,10 +55,10 @@ if ($_REQUEST['show'] === 'Show') {
                         <form class="form-horizontal form-bordered" action="" method="post">
                             <div class="form-group row pb-3">
                                 <label class="col-lg-3 control-label text-sm-end pt-2">Form Select<span
-                                        class="required">*</span></label>
+                                            class="required">*</span></label>
                                 <div class="col-lg-6">
                                     <select data-plugin-selectTwo class="form-control populate" name="FormID"
-                                        id="FormID" required>
+                                            id="FormID" required>
                                         <optgroup label="Select Form">
                                             <?PHP
                                             foreach ($rsQryFormName as $row) {
@@ -81,11 +77,11 @@ if ($_REQUEST['show'] === 'Show') {
                                 </label>
                                 <div class="col-lg-6">
                                     <select data-plugin-selectTwo class="form-control populate" name="DivisionCode"
-                                        id="DivisionCode"
+                                            id="DivisionCode"
                                         <?php if (strpos($loggedUserName, 'admin') === false) { ?>
-                                        required
+                                            required
                                         <?php } ?>
-                                        onchange="ShowDropDown('DivisionCode', 'DistrictDiv', 'ShowDistrict', 'ShowUpazila')">
+                                            onchange="ShowDropDown('DivisionCode', 'DistrictDiv', 'ShowDistrict', 'ShowUpazila')">
                                         <option value="">Choose division</option>
                                         <?PHP
                                         foreach ($rsDivQuery as $row) {
@@ -98,18 +94,19 @@ if ($_REQUEST['show'] === 'Show') {
                             <div id="geoDiv" style="display: none">
                                 <div class="form-group row pb-3" id="DistrictDiv"></div>
                                 <div class="form-group row pb-3" id="UpazilaDiv"></div>
-                                <div class="form-group row pb-3" id="UnionWardDiv"></div>
+                                <!--<div class="form-group row pb-3" id="UnionWardDiv"></div>
                                 <div class="form-group row pb-3" id="MauzaDiv"></div>
-                                <div class="form-group row pb-3" id="VillageDiv"></div>
+                                <div class="form-group row pb-3" id="VillageDiv"></div>-->
                             </div>
 
                             <footer class="card-footer">
                                 <div class="row justify-content-end">
                                     <div class="col-lg-9">
                                         <input class="btn btn-primary" name="show" type="submit" id="show"
-                                            value="Show">
+                                               value="Show">
 
-                                        <button type="button" class="btn btn-secondary ms-4" id="clearForm">Clear</button>
+                                        <button type="button" class="btn btn-secondary ms-4" id="clearForm">Clear
+                                        </button>
                                     </div>
                                 </div>
                             </footer>
@@ -120,232 +117,245 @@ if ($_REQUEST['show'] === 'Show') {
                 if ($_REQUEST['show'] === 'Show') {
 
                     $FormName = getValue('datacollectionform', 'FormName', "id = $FormID");
-//die("Form Name: ".$DivisionCode);
+
                     $ReportCondition = "";
-                    $getFieldValue = 'DivisionName';
+                    $getFieldValue = 'Division_Name';
 
                     if (!empty($DivisionCode)) {
-                        $DivisionName = getValue('PSUList', 'DISTINCT(DivisionName)', "DivisionCode = $DivisionCode");
-//die('Division Name: '.$DivisionName);
-                        $getFieldValue = 'DistrictName';
-                        $ReportCondition .= " AND ( ps.DivisionCode = '" . $DivisionCode . "') ";
+                        $DivisionName = getValue('InstituteInfo', 'DISTINCT(Division_Name)', "Division_Code = '$DivisionCode'");
+                        $getFieldValue = 'District_Name';
+                        $ReportCondition .= " AND ( ps.Division_Code = '" . $DivisionCode . "') ";
+                        //echo $DivisionName;
                     }
 
                     if (!empty($DistrictCode)) {
-                        $DistrictName = getValue('PSUList', 'DISTINCT(DistrictName)', "DivisionCode = $DivisionCode AND DistrictCode = $DistrictCode");
+                        $DistrictName = getValue('InstituteInfo', 'DISTINCT(District_Name)', "Division_Code = '$DivisionCode' AND District_Code = '$DistrictCode'");
                         $DistrictName = ' > ' . $DistrictName;
+                        //echo $DistrictName;
 
-                        $getFieldValue = 'UpazilaName';
-                        $ReportCondition .= " AND ( ps.DistrictCode = '" . $DistrictCode . "') ";
+                        $getFieldValue = 'Upazila_Name';
+                        $ReportCondition .= " AND ( ps.District_Code = '" . $DistrictCode . "') ";
                     }
 
                     if (!empty($UpazilaCode)) {
                         $UpazilaName = getValue(
-                            'PSUList',
-                            'DISTINCT(UpazilaName)',
-                            "DivisionCode = $DivisionCode AND DistrictCode = $DistrictCode AND UpazilaCode = $UpazilaCode"
+                            'InstituteInfo',
+                            'DISTINCT(Upazila_Name)',
+                            "Division_Code = '$DivisionCode' AND District_Code = '$DistrictCode' AND Upazila_Code = '$UpazilaCode'"
                         );
                         $UpazilaName = ' > ' . $UpazilaName;
+                        //echo $UpazilaName;
 
-                        $getFieldValue = 'UnionWardName';
-                        $ReportCondition .= " AND ( ps.UpazilaCode = '" . $UpazilaCode . "') ";
+                        $getFieldValue = 'Union_Name';
+                        $ReportCondition .= " AND ( ps.Upazila_Code = '" . $UpazilaCode . "') ";
                     }
 
                     if (!empty($UnionWardCode)) {
                         $UnionWardName = getValue(
-                            'PSUList',
-                            'DISTINCT(UnionWardName)',
-                            "DivisionCode = $DivisionCode AND DistrictCode = $DistrictCode AND UpazilaCode = $UpazilaCode AND UnionWardCode = $UnionWardCode"
+                            'InstituteInfo',
+                            'DISTINCT(Union_Name)',
+                            "Division_Code = '$DivisionCode' AND District_Code = '$DistrictCode' AND Upazila_Code = '$UpazilaCode' AND Union_Code = '$UnionWardCode'"
                         );
                         $UnionWardName = ' > ' . $UnionWardName;
 
-                        $getFieldValue = 'MauzaName';
-                        $ReportCondition .= " AND ( ps.UnionWardCode = '" . $UnionWardCode . "') ";
+                        $getFieldValue = 'Mouza_Name';
+                        $ReportCondition .= " AND ( ps.Union_Code = '" . $UnionWardCode . "') ";
                     }
 
                     if (!empty($MauzaCode)) {
                         $MauzaName = getValue(
-                            'PSUList',
-                            'DISTINCT(MauzaName)',
-                            "DivisionCode = $DivisionCode AND DistrictCode = $DistrictCode AND UpazilaCode = $UpazilaCode AND UnionWardCode = $UnionWardCode AND MauzaCode = $MauzaCode"
+                            'InstituteInfo',
+                            'DISTINCT(Mouza_Name)',
+                            "Division_Code = '$DivisionCode' AND District_Code = '$DistrictCode' AND Upazila_Code = '$UpazilaCode' AND Union_Code = '$UnionWardCode' AND Mouza_Code = '$MauzaCode'"
                         );
                         $MauzaName = ' > ' . $MauzaName;
 
-                        $getFieldValue = 'VillageName';
-                        $ReportCondition .= " AND ( ps.MauzaCode = '" . $MauzaCode . "') ";
+                        $getFieldValue = 'Village_Name';
+                        $ReportCondition .= " AND ( ps.Mouza_Code = '" . $MauzaCode . "') ";
                     }
 
                     if (!empty($VillageCode)) {
                         $VillageName = getValue(
-                            'PSUList',
-                            'DISTINCT(VillageName)',
-                            "DivisionCode = $DivisionCode AND DistrictCode = $DistrictCode AND UpazilaCode = $UpazilaCode AND UnionWardCode = $UnionWardCode AND MauzaCode = $MauzaCode AND VillageCode = $VillageCode"
+                            'InstituteInfo',
+                            'DISTINCT(Village_Name)',
+                            "Division_Code = '$DivisionCode' AND District_Code = '$DistrictCode' AND Upazila_Code = '$UpazilaCode' AND Union_Code = '$UnionWardCode' AND Mouza_Code = '$MauzaCode' AND Village_Code = '$VillageCode'"
                         );
                         $VillageName = ' > ' . $VillageName;
+                        //echo $VillageName;
                     }
 
-                    $check = $_REQUEST['chkAll'];
-                    if ($FormID == $formIdMainData) {
-                        $QueryTarget = "SELECT SUM(SQ.Target) as Target FROM (SELECT DISTINCT PSU, NumberOfRecordForMainSurvey as Target FROM PSUList WHERE FarmName='' and CompanyID = ?";
-                    } elseif ($FormID == $formIdSamplingData) {
-                        $QueryTarget = "SELECT SUM(SQ.Target) as Target FROM (SELECT DISTINCT PSU, NumberOfRecord as Target FROM PSUList WHERE FarmName='' and CompanyID = ?";
+                    if ($FormID == $formIdSamplingData) {
+                        $QueryTarget = "SELECT COUNT(SQ.Target) as Target FROM (SELECT DISTINCT id as Target FROM InstituteInfo WHERE Type='$InstType'";
+                    } elseif ($FormID == $formIdMainData) {
+                        $QueryTarget = "SELECT COUNT(SQ.Target) as Target FROM (SELECT DISTINCT id as Target FROM InstituteInfo WHERE Type='$MunType'";
                     }
 
-
-                    $QueryCollected = "SELECT COUNT(id) as Collected FROM xformrecord WHERE CompanyID = ? AND FormId=$FormID AND PSU 
-                    IN(SELECT DISTINCT PSU FROM PSUList WHERE 1=1 ";
+                    $QueryCollected = "SELECT COUNT(id) as Collected FROM xformrecord WHERE CompanyID = ? AND FormId=$FormID AND SampleHHNo 
+                    IN(SELECT DISTINCT id FROM InstituteInfo WHERE 1=1 ";
 
                     if (!empty($DivisionCode)) {
-                        $QueryTarget .= " AND ( DivisionCode = '" . $DivisionCode . "') ";
-                        $QueryCollected .= " AND ( DivisionCode = '" . $DivisionCode . "') ";
+                        $QueryTarget .= " AND ( Division_Code = '" . $DivisionCode . "') ";
+                        $QueryCollected .= " AND ( Division_Code = '" . $DivisionCode . "') ";
                     }
 
                     if (!empty($DistrictCode)) {
-                        $QueryTarget .= " AND ( DistrictCode = '" . $DistrictCode . "') ";
-                        $QueryCollected .= " AND ( DistrictCode = '" . $DistrictCode . "') ";
+                        $QueryTarget .= " AND ( District_Code = '" . $DistrictCode . "') ";
+                        $QueryCollected .= " AND ( District_Code = '" . $DistrictCode . "') ";
                     }
 
                     if (!empty($UpazilaCode)) {
-                        $QueryTarget .= " AND ( UpazilaCode = '" . $UpazilaCode . "') ";
-                        $QueryCollected .= " AND ( UpazilaCode = '" . $UpazilaCode . "') ";
+                        $QueryTarget .= " AND ( Upazila_Code = '" . $UpazilaCode . "') ";
+                        $QueryCollected .= " AND ( Upazila_Code = '" . $UpazilaCode . "') ";
                     }
 
                     if (!empty($UnionWardCode)) {
-                        $QueryTarget .= " AND ( UnionWardCode = '" . $UnionWardCode . "') ";
-                        $QueryCollected .= " AND ( UnionWardCode = '" . $UnionWardCode . "') ";
+                        $QueryTarget .= " AND ( Union_Code = '" . $UnionWardCode . "') ";
+                        $QueryCollected .= " AND ( Union_Code = '" . $UnionWardCode . "') ";
                     }
 
                     if (!empty($MauzaCode)) {
-                        $QueryTarget .= " AND ( MauzaCode = '" . $MauzaCode . "') ";
-                        $QueryCollected .= " AND ( MauzaCode = '" . $MauzaCode . "') ";
+                        $QueryTarget .= " AND ( Mouza_Code = '" . $MauzaCode . "') ";
+                        $QueryCollected .= " AND ( Mouza_Code = '" . $MauzaCode . "') ";
                     }
 
                     if (!empty($VillageCode)) {
-                        $QueryTarget .= " AND ( VillageCode = '" . $VillageCode . "') ";
-                        $QueryCollected .= " AND ( VillageCode = '" . $VillageCode . "') ";
+                        $QueryTarget .= " AND ( Village_Code = '" . $VillageCode . "') ";
+                        $QueryCollected .= " AND ( Village_Code = '" . $VillageCode . "') ";
                     }
 
                     $QueryTarget .= ") SQ";
                     $QueryCollected .= ")";
 
-					/*
-                    echo $QueryTarget;
+
+                    /*echo $QueryTarget;
                     echo '<br>';
                     echo $QueryCollected;
-					exit;
-					*/
-                    
-                    $targetRecordField = $FormID == $formIdSamplingData ? 'NumberOfRecord' : 'NumberOfRecordForMainSurvey';
-                    $locationReportQuery = "SELECT ps.$getFieldValue as Name, 
-												SUM(DISTINCT ps.$targetRecordField) as Target, 
+					exit;*/
+
+                    if ($FormID == $formIdSamplingData) {
+                        $locationReportQuery = "SELECT ps.$getFieldValue as Name, 
+												COUNT(ps.id) as Target, 
 												COUNT(CASE WHEN xfr.FormId = $FormID THEN xfr.id END) as Collected 
-											FROM PSUList ps 
-												LEFT JOIN xformrecord xfr ON xfr.PSU = ps.PSU 
-											WHERE ps.FarmName='' and ps.CompanyID = $loggedUserCompanyID $ReportCondition 
+											FROM InstituteInfo ps 
+												LEFT JOIN xformrecord xfr ON xfr.SampleHHNo = ps.id 
+											WHERE ps.Type='$InstType' $ReportCondition 
 											GROUP BY ps.$getFieldValue";
-//die("Top District Code: ".$DistrictCode);					
-					if (empty($DivisionCode)) {
-						if ($FormID == $formIdMainData) {
-							//$locationReportQuery = "";
-							$targetSQL = "SELECT ps.DivisionName, 
-											ISNULL(SUM(ps.NumberofRecordForMainSurvey),0) AS Target
-										FROM PSUList ps 
-										WHERE ps.CompanyID = ? AND ps.FarmName=''
-										GROUP BY ps.DivisionName";
-						} elseif ($FormID == $formIdSamplingData) {
-							$targetSQL = "SELECT ps.DivisionName, 
-											ISNULL(SUM(ps.NumberOfRecord),0) AS Target
-										FROM PSUList ps 
-										WHERE ps.CompanyID = ? AND ps.FarmName=''
-										GROUP BY ps.DivisionName";
-						}
-						$rsDistrictTarget = $app->getDBConnection()->fetchAll($targetSQL, $loggedUserCompanyID);
-						$DistTargetArray = array();
-						foreach ($rsDistrictTarget as $rowTarget) {
-							$DistTargetArray[strtolower($rowTarget->DivisionName)] = $rowTarget->Target;
-						}
-					}
-					if (!empty($DivisionCode)) {
-						if ($FormID == $formIdMainData) {
-							//$locationReportQuery = "";
-							$targetSQL = "SELECT ps.DistrictName, 
-											ISNULL(SUM(ps.NumberofRecordForMainSurvey),0) AS Target
-										FROM PSUList ps 
-										WHERE ps.CompanyID = ? AND ps.DivisionCode = ? AND ps.FarmName=''
-										GROUP BY ps.DistrictName";
-						} elseif ($FormID == $formIdSamplingData) {
-							$targetSQL = "SELECT ps.DistrictName, 
-											ISNULL(SUM(ps.NumberOfRecord),0) AS Target
-										FROM PSUList ps 
-										WHERE ps.CompanyID = ? AND ps.DivisionCode = ? AND ps.FarmName=''
-										GROUP BY ps.DistrictName";
-						}
-						$rsDistrictTarget = $app->getDBConnection()->fetchAll($targetSQL, $loggedUserCompanyID, $DivisionCode);
-						$DistTargetArray = array();
-						foreach ($rsDistrictTarget as $rowTarget) {
-							$DistTargetArray[strtolower($rowTarget->DistrictName)] = $rowTarget->Target;
-						}
-					}
-					if (!empty($DistrictCode)) {
-						if ($FormID == $formIdMainData) {
-							//$locationReportQuery = "";
-							$targetSQL = "SELECT ps.UpazilaName, 
-											ISNULL(SUM(ps.NumberofRecordForMainSurvey),0) AS Target
-										FROM PSUList ps 
-										WHERE ps.CompanyID = ? AND ps.DivisionCode = ? AND ps.DistrictCode = ? AND ps.FarmName=''
-										GROUP BY ps.UpazilaName";
-						} elseif ($FormID == $formIdSamplingData) {
-							$targetSQL = "SELECT ps.UpazilaName, 
-											ISNULL(SUM(ps.NumberOfRecord),0) AS Target
-										FROM PSUList ps 
-										WHERE ps.CompanyID = ? AND ps.DivisionCode = ? AND ps.DistrictCode = ? AND ps.FarmName=''
-										GROUP BY ps.UpazilaName";
-						}
-//die("SQL: ".$targetSQL);
-						$rsDistrictTarget = $app->getDBConnection()->fetchAll($targetSQL, $loggedUserCompanyID, $DivisionCode, $DistrictCode);
-						$DistTargetArray = array();
-						foreach ($rsDistrictTarget as $rowTarget) {
-							$DistTargetArray[strtolower($rowTarget->UpazilaName)] = $rowTarget->Target;
-						}
-					}
-					if (!empty($UpazilaCode)) {
-						if ($FormID == $formIdMainData) {
-							//$locationReportQuery = "";
-							$targetSQL = "SELECT ps.UnionWardName, 
-											ISNULL(SUM(ps.NumberofRecordForMainSurvey),0) AS Target
-										FROM PSUList ps 
-										WHERE ps.CompanyID = ? AND ps.DivisionCode = ? AND ps.DistrictCode = ? AND ps.UpazilaCode = ? AND ps.FarmName=''
-										GROUP BY ps.UnionWardName";
-						} elseif ($FormID == $formIdSamplingData) {
-							$targetSQL = "SELECT ps.UnionWardName, 
-											ISNULL(SUM(ps.NumberOfRecord),0) AS Target
-										FROM PSUList ps 
-										WHERE ps.CompanyID = ? AND ps.DivisionCode = ? AND ps.DistrictCode = ? AND ps.UpazilaCode = ? AND ps.FarmName=''
-										GROUP BY ps.UnionWardName";
-						}
-//var_dump($loggedUserCompanyID, $DivisionCode, $DistrictCode, $UpazilaCode);
-//die("SQL: ".$targetSQL);
-						$rsDistrictTarget = $app->getDBConnection()->fetchAll($targetSQL, $loggedUserCompanyID, $DivisionCode, $DistrictCode, $UpazilaCode);
-						$DistTargetArray = array();
-						foreach ($rsDistrictTarget as $rowTarget) {
-							$DistTargetArray[strtolower($rowTarget->UnionWardName)] = $rowTarget->Target;
-						}
-					}
-					
-//die($locationReportQuery);
-                    $rsTarget = $app->getDBConnection()->fetch($QueryTarget, $loggedUserCompanyID);
+                    } elseif ($FormID == $formIdMainData) {
+                        $locationReportQuery = "SELECT ps.$getFieldValue as Name, 
+												COUNT(ps.id) as Target, 
+												COUNT(CASE WHEN xfr.FormId = $FormID THEN xfr.id END) as Collected 
+											FROM InstituteInfo ps 
+												LEFT JOIN xformrecord xfr ON xfr.SampleHHNo = ps.id 
+											WHERE ps.Type='$MunType' $ReportCondition 
+											GROUP BY ps.$getFieldValue";
+                    }
+
+                    //echo $locationReportQuery;
+                    //exit();
+
+                    if (empty($DivisionCode)) {
+                        if ($FormID == $formIdMainData) {
+                            //$locationReportQuery = "";
+                            $targetSQL = "SELECT ps.Division_Name, 
+											ISNULL(COUNT(ps.id),0) AS Target
+										FROM InstituteInfo ps 
+										WHERE ps.Type='$MunType'
+										GROUP BY ps.Division_Name";
+                        } elseif ($FormID == $formIdSamplingData) {
+                            $targetSQL = "SELECT ps.Division_Name, 
+											ISNULL(COUNT(ps.id),0) AS Target
+										FROM InstituteInfo ps 
+										WHERE ps.Type='$InstType'
+										GROUP BY ps.Division_Name";
+                        }
+                        //echo $targetSQL;
+                        //exit();
+                        $rsDistrictTarget = $app->getDBConnection()->fetchAll($targetSQL);
+                        $DistTargetArray = array();
+                        foreach ($rsDistrictTarget as $rowTarget) {
+                            $DistTargetArray[strtolower($rowTarget->Division_Name)] = $rowTarget->Target;
+                        }
+                    }
+                    if (!empty($DivisionCode)) {
+                        if ($FormID == $formIdMainData) {
+                            //$locationReportQuery = "";
+                            $targetSQL = "SELECT ps.District_Name, 
+											ISNULL(COUNT(ps.id),0) AS Target
+										FROM InstituteInfo ps 
+										WHERE ps.Type='$MunType' AND ps.Division_Code = ?
+										GROUP BY ps.District_Name";
+                        } elseif ($FormID == $formIdSamplingData) {
+                            $targetSQL = "SELECT ps.District_Name, 
+											ISNULL(COUNT(ps.id),0) AS Target
+										FROM InstituteInfo ps 
+										WHERE ps.Type='$InstType' AND ps.Division_Code = ?
+										GROUP BY ps.District_Name";
+                        }
+                        $rsDistrictTarget = $app->getDBConnection()->fetchAll($targetSQL, $DivisionCode);
+                        $DistTargetArray = array();
+                        foreach ($rsDistrictTarget as $rowTarget) {
+                            $DistTargetArray[strtolower($rowTarget->District_Name)] = $rowTarget->Target;
+                        }
+                    }
+                    if (!empty($DistrictCode)) {
+                        if ($FormID == $formIdMainData) {
+                            //$locationReportQuery = "";
+                            $targetSQL = "SELECT ps.Upazila_Name, 
+											ISNULL(COUNT(ps.id),0) AS Target
+										FROM InstituteInfo ps 
+										WHERE ps.Type='$MunType' AND ps.Division_Code = ? AND ps.District_Code = ?
+										GROUP BY ps.Upazila_Name";
+                        } elseif ($FormID == $formIdSamplingData) {
+                            $targetSQL = "SELECT ps.Upazila_Name, 
+											ISNULL(COUNT(ps.id),0) AS Target
+										FROM InstituteInfo ps 
+										WHERE ps.Type='$InstType' AND ps.Division_Code = ? AND ps.District_Code = ?
+										GROUP BY ps.Upazila_Name";
+                        }
+
+                        $rsDistrictTarget = $app->getDBConnection()->fetchAll($targetSQL, $DivisionCode, $DistrictCode);
+                        $DistTargetArray = array();
+                        foreach ($rsDistrictTarget as $rowTarget) {
+                            $DistTargetArray[strtolower($rowTarget->Upazila_Name)] = $rowTarget->Target;
+                        }
+                    }
+                    if (!empty($UpazilaCode)) {
+                        if ($FormID == $formIdMainData) {
+                            //$locationReportQuery = "";
+                            $targetSQL = "SELECT ps.Union_Name, 
+											ISNULL(COUNT(ps.id),0) AS Target
+										FROM InstituteInfo ps 
+										WHERE ps.Type='$MunType' AND ps.Division_Code = ? AND ps.District_Code = ? AND ps.Upazila_Code = ?
+										GROUP BY ps.Union_Name";
+                        } elseif ($FormID == $formIdSamplingData) {
+                            $targetSQL = "SELECT ps.Union_Name, 
+											ISNULL(COUNT(ps.id),0) AS Target
+										FROM InstituteInfo ps 
+										WHERE ps.Type='$InstType' AND ps.Division_Code = ? AND ps.District_Code = ? AND ps.Upazila_Code = ?
+										GROUP BY ps.Union_Name";
+                        }
+
+                        $rsDistrictTarget = $app->getDBConnection()->fetchAll($targetSQL, $DivisionCode, $DistrictCode, $UpazilaCode);
+                        $DistTargetArray = array();
+                        foreach ($rsDistrictTarget as $rowTarget) {
+                            $DistTargetArray[strtolower($rowTarget->Union_Name)] = $rowTarget->Target;
+                        }
+                    }
+
+
+                    $rsTarget = $app->getDBConnection()->fetch($QueryTarget);
                     $Target = $rsTarget->Target;
-                    
+
                     $rsCollected = $app->getDBConnection()->fetch($QueryCollected, $loggedUserCompanyID);
                     $Collected = $rsCollected->Collected;
 
                     $CountData = $Target + $Collected;
-                    
+
                     $DataCollectionPercentage = Ratio($Collected, $Target);
-                   
+
                     $rsLocationReport = $app->getDBConnection()->fetchAll($locationReportQuery);
-                    
-                ?>
+
+                    ?>
                     <div class="card">
                         <div class="row">
                             <div class="col-lg-12 mb-3">
@@ -360,25 +370,25 @@ if ($_REQUEST['show'] === 'Show') {
                                                 <div class="liquid-meter-wrapper liquid-meter-lg mt-3">
                                                     <div class="liquid-meter">
                                                         <meter min="0" max="100"
-                                                            value="<?php echo $DataCollectionPercentage; ?>"
-                                                            id="meterSales"></meter>
+                                                               value="<?php echo $DataCollectionPercentage; ?>"
+                                                               id="meterSales"></meter>
                                                     </div>
                                                 </div>
                                                 <div class="table-responsive">
                                                     <table class="table table-responsive-lg table-bordered table-striped table-sm mb-0">
                                                         <thead>
-                                                            <tr>
-                                                                <th>Target</th>
-                                                                <th>Collected</th>
-                                                                <th>Remaining</th>
-                                                            </tr>
+                                                        <tr>
+                                                            <th>Target</th>
+                                                            <th>Collected</th>
+                                                            <th>Remaining</th>
+                                                        </tr>
                                                         </thead>
                                                         <tbody>
-                                                            <tr>
-                                                                <td><?php echo $Target; ?></td>
-                                                                <td><?php echo $Collected; ?></td>
-                                                                <td><?php echo $Target - $Collected; ?></td>
-                                                            </tr>
+                                                        <tr>
+                                                            <td><?php echo $Target; ?></td>
+                                                            <td><?php echo $Collected; ?></td>
+                                                            <td><?php echo $Target - $Collected; ?></td>
+                                                        </tr>
                                                         </tbody>
                                                     </table>
                                                 </div>
@@ -394,24 +404,24 @@ if ($_REQUEST['show'] === 'Show') {
                                                 <div class="table-responsive">
                                                     <table class="table table-responsive-lg table-bordered table-striped table-sm mb-0">
                                                         <thead>
-                                                            <tr>
-                                                                <th>Name</th>
-                                                                <th>Target</th>
-                                                                <th>Collected</th>
-                                                                <th>Remaining</th>
-                                                                <th>Progress</th>
-                                                            </tr>
+                                                        <tr>
+                                                            <th>Name</th>
+                                                            <th>Target</th>
+                                                            <th>Collected</th>
+                                                            <th>Remaining</th>
+                                                            <th>Progress</th>
+                                                        </tr>
                                                         </thead>
                                                         <tbody>
-                                                            <?php foreach ($rsLocationReport as $row) { ?>
-                                                                <tr>
-                                                                    <td><?php echo $row->Name; ?></td>
-                                                                    <td><?php echo $DistTargetArray[strtolower($row->Name)]; ?></td>
-                                                                    <td><?php echo $row->Collected; ?></td>
-                                                                    <td><?php echo ($DistTargetArray[strtolower($row->Name)] - $row->Collected) > 0 ? $DistTargetArray[strtolower($row->Name)] - $row->Collected : 0; ?></td>
-                                                                    <td><?php echo $DistTargetArray[strtolower($row->Name)] > 0 ? Ratio($row->Collected, $DistTargetArray[strtolower($row->Name)]) : '0.00%'; ?></td>
-                                                                </tr>
-                                                            <?php } ?>
+                                                        <?php foreach ($rsLocationReport as $row) { ?>
+                                                            <tr>
+                                                                <td><?php echo $row->Name; ?></td>
+                                                                <td><?php echo $DistTargetArray[strtolower($row->Name)]; ?></td>
+                                                                <td><?php echo $row->Collected; ?></td>
+                                                                <td><?php echo ($DistTargetArray[strtolower($row->Name)] - $row->Collected) > 0 ? $DistTargetArray[strtolower($row->Name)] - $row->Collected : 0; ?></td>
+                                                                <td><?php echo $DistTargetArray[strtolower($row->Name)] > 0 ? Ratio($row->Collected, $DistTargetArray[strtolower($row->Name)]) : '0.00%'; ?></td>
+                                                            </tr>
+                                                        <?php } ?>
                                                         </tbody>
                                                     </table>
                                                 </div>
@@ -422,7 +432,7 @@ if ($_REQUEST['show'] === 'Show') {
                             </div>
                         </div>
                     </div>
-                <?php
+                    <?php
                 }
                 ?>
                 <!-- end: page -->
@@ -433,7 +443,7 @@ if ($_REQUEST['show'] === 'Show') {
 </div>
 
 <script>
-      $(document).ready(function() {
+    $(document).ready(function () {
         populateDropdowns(
             <?php echo isset($DivisionCode) && $DivisionCode !== '' ? $DivisionCode : 'null'; ?>,
             <?php echo isset($DistrictCode) && $DistrictCode !== '' ? $DistrictCode : 'null'; ?>,

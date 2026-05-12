@@ -38,7 +38,7 @@ if (!empty($_POST)) {
 				COUNT(xfr.id) AS NoOfCheckData
 			FROM xformrecord xfr 
 				JOIN userinfo ui ON ui.id = xfr.ValidatorID 
-				JOIN PSUList pl ON pl.PSUUserID = xfr.UserID AND xfr.PSU = pl.PSU 
+				JOIN InstituteInfo pl ON pl.UserID = xfr.UserID AND xfr.SampleHHNo = pl.id 
 			WHERE 1=1  AND xfr.FormId = $DataFromID ";
 	if (strpos($LoggedUserName, 'val') !== false) {
 		if (strpos($LoggedUserName, 'cval') === false) {
@@ -52,22 +52,22 @@ if (!empty($_POST)) {
 		$qry .= " AND (xfr.EntryDate BETWEEN '$DataStartDate' AND '$DataEndDate')";
 	}
 	if (!empty($DivisionCode)) {
-		$qry .= " AND ( pl.DivisionCode = '" . $DivisionCode . "') ";
+		$qry .= " AND ( pl.Division_Code = '" . $DivisionCode . "') ";
 	}
 	if (!empty($DistrictCode)) {
-		$qry .= " AND ( pl.DistrictCode = '" . $DistrictCode . "') ";
+		$qry .= " AND ( pl.District_Code = '" . $DistrictCode . "') ";
 	}
 	if (!empty($UpazilaCode)) {
-		$qry .= " AND ( pl.UpazilaCode = '" . $UpazilaCode . "') ";
+		$qry .= " AND ( pl.Upazila_Code = '" . $UpazilaCode . "') ";
 	}
 	if (!empty($UnionWardCode)) {
-		$qry .= " AND ( pl.UnionWardCode = '" . $UnionWardCode . "') ";
+		$qry .= " AND ( pl.Union_Code = '" . $UnionWardCode . "') ";
 	}
 	if (!empty($MauzaCode)) {
-		$qry .= " AND ( pl.MauzaCode = '" . $MauzaCode . "') ";
+		$qry .= " AND ( pl.Mouza_Code = '" . $MauzaCode . "') ";
 	}
 	if (!empty($VillageCode)) {
-		$qry .= " AND ( pl.VillageCode = '" . $VillageCode . "') ";
+		$qry .= " AND ( pl.Village_Code = '" . $VillageCode . "') ";
 	}
 	if (!empty($request['search']['value'])) {
         $qry .= " AND (ui.id like'%" . $request['search']['value'] . "%'";

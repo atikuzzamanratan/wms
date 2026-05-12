@@ -424,15 +424,13 @@ function updateListingHHNumber($formID, $recordID, $numberToUpdate): bool
 
 function updateListingHHNumberNew($recordID, $numberToUpdate, $tableForMasterData, $ColumnNameToUpdate): bool
 {
-    //$totalRecord = getValue('xformrecord', 'COUNT(id)', "id=$recordID");
-    //$recordStatus = getValue('xformrecord', 'IsApproved', "id=$recordID");
     $recordDataName = getValue('xformrecord', 'DataName', "id=$recordID");
 
-    $contents = explode('_', $recordDataName);
-    $existingHHNo = end($contents);
-    $existingString = "HH_$existingHHNo";
+    if (preg_match('/ID_\d+/', $recordDataName, $matches)) {
+       $existingString = $matches[0]; // Output: ID_22042
+    }
 
-    $newHHString = "HH_$numberToUpdate";
+    $newHHString = "ID_$numberToUpdate";
 
     $newDataName = str_replace($existingString, $newHHString, $recordDataName);
     $param = "SampleHHNo = $numberToUpdate, DataName = '$newDataName'";
@@ -441,16 +439,6 @@ function updateListingHHNumberNew($recordID, $numberToUpdate, $tableForMasterDat
     $tableForXFormRecord = 'xformrecord';
 
     $condForMasterData = "XFormRecordId = $recordID";
-    /*if ($recordStatus == 0) {
-        //echo "Ready to update pending table and $existingString AND new DataName: $newDataName";
-        $tableForMasterData = 'masterdatarecord_Pending';
-    } elseif ($recordStatus == 1) {
-        //echo "Ready to update approve table and $existingString AND new DataName: $newDataName";
-        $tableForMasterData = 'masterdatarecord_Approved';
-    } elseif ($recordStatus == 2) {
-        //echo "Ready to update un-approve table and $existingString AND new DataName: $newDataName";
-        $tableForMasterData = 'masterdatarecord_UnApproved';
-    }*/
 
     if (Edit($tableForXFormRecord, $param, $condForXFormRecord) && Edit($tableForMasterData, $param, $condForMasterData)) {
         $par = "ColumnValue = $numberToUpdate";
