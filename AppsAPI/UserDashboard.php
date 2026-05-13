@@ -85,31 +85,19 @@ if ($_REQUEST['show'] === "Show") {
     $resXFormsQueryRejected = $app->getDBConnection()->fetch("SELECT COUNT(id) AS NumberRejected FROM deletedxformrecord WHERE UserID = ? AND FormId = ?", $UserID, $FormID);
     $NumberOfRecordRejected = $resXFormsQueryRejected->NumberRejected;
 
-    $resQryDataCollection = $app->getDBConnection()->fetch("SELECT SUM(NumberOfRecordForMainSurvey) AS NumberOfRecordForMainSurvey, 
-    (SELECT COUNT(id) FROM xformrecord WHERE PSU IN(SELECT PSU FROM PSUList WHERE PSUUSerID = ? AND FormId = ?)) AS Collected FROM PSUList 
-    WHERE PSUUserID = ?", $UserID, $FormID, $UserID);
-    $NumberOfRecordForMainSurvey = $resQryDataCollection->NumberOfRecordForMainSurvey;
-    $Collected = $resQryDataCollection->Collected;
-    $NotCollectedData = $NumberOfRecordForMainSurvey - $Collected;
-
     if ($FormID == $formIdMainData) {
-        $QueryDataCollectionStatus = "SELECT DISTINCT PSUList.PSUUserID, PSUList.PSU, userinfo.FullName, PSUList.NumberOfRecordForMainSurvey as 'Target',
-    (SELECT COUNT(id) FROM xformrecord WHERE xformrecord.PSU = PSUList.PSU and xformrecord.UserID=userinfo.id AND xformrecord.FormId = ?) as Collected 
-    FROM PSUList JOIN userinfo ON PSUList.PSUUserID = userinfo.id WHERE PSUList.PSUUserID = ? AND PSUList.FarmName = ''";
-
-    $FindMissingAndDuplicateQuery = "EXEC find_Duplicate_Missing_HH_For_User $FormID, '$columnNameToUpdateValueForMainData', $maxNumberOfHHForSampling, $UserID;";
-    $FindMissingAndDuplicateQueryRS = $app->getDBConnection()->fetchAll($FindMissingAndDuplicateQuery);
+        $QueryDataCollectionStatus = "SELECT COUNT(DISTINCT ii.id) AS Target, COUNT(xfr.id) AS Collected FROM InstituteInfo ii LEFT JOIN xformrecord xfr ON xfr.SampleHHNo = ii.id AND xfr.UserID = ii.UserID AND xfr.FormId = ? WHERE ii.UserID = ? AND ii.Type = '$MunType'";
+        $FindMissingAndDuplicateQuery = "EXEC find_Duplicate_Missing_Inst_For_User $FormID, '$columnNameToUpdateValueForListingData', '$MunType', $UserID;";
     } else if ($FormID == $formIdSamplingData) {
-        $QueryDataCollectionStatus = "SELECT DISTINCT PSUList.PSUUserID, PSUList.PSU, userinfo.FullName, PSUList.NumberOfRecord as 'Target',
-    (SELECT COUNT(id) FROM xformrecord WHERE xformrecord.PSU = PSUList.PSU AND xformrecord.UserID=userinfo.id AND xformrecord.FormId = ?) AS Collected 
-    FROM PSUList JOIN userinfo ON PSUList.PSUUserID = userinfo.id WHERE PSUList.PSUUserID = ? AND PSUList.FarmName = ''";
-    } else if ($FormID == $formIdFarmData) {
-        $QueryDataCollectionStatus = "SELECT DISTINCT PSUList.PSUUserID, PSUList.PSU, userinfo.FullName, PSUList.NumberOfRecordForMainSurvey as 'Target',
-    (SELECT COUNT(id) FROM xformrecord WHERE xformrecord.PSU = PSUList.PSU and xformrecord.UserID=userinfo.id AND xformrecord.FormId = ?) as Collected 
-    FROM PSUList JOIN userinfo ON PSUList.PSUUserID = userinfo.id WHERE PSUList.PSUUserID = ? AND PSUList.FarmName <> ''";
+        $QueryDataCollectionStatus = "SELECT COUNT(DISTINCT ii.id) AS Target, COUNT(xfr.id) AS Collected FROM InstituteInfo ii LEFT JOIN xformrecord xfr ON xfr.SampleHHNo = ii.id AND xfr.UserID = ii.UserID AND xfr.FormId = ? WHERE ii.UserID = ? AND ii.Type = '$InstType'";
+        $FindMissingAndDuplicateQuery = "EXEC find_Duplicate_Missing_Inst_For_User $FormID, '$columnNameToUpdateValueForListingData', '$InstType', $UserID;";
     }
+
     //echo $QueryDataCollectionStatus;
     $QueryDataCollectionStatusRS = $app->getDBConnection()->fetchAll($QueryDataCollectionStatus, $FormID, $UserID);
+
+    //$FindMissingAndDuplicateQuery = "EXEC find_Duplicate_Missing_Inst_For_User $FormID, '$columnNameToUpdateValueForListingData', $UserID;";
+    $FindMissingAndDuplicateQueryRS = $app->getDBConnection()->fetchAll($FindMissingAndDuplicateQuery);
 
     $DataSendingDateQuery = " SELECT CONVERT(date, EntryDate) AS DataDate, COUNT(*) AS Number FROM xformrecord WHERE UserID= ? AND FormId = ? GROUP BY CONVERT(date, EntryDate) ORDER BY DataDate DESC";
     $DataSendingDateRS = $app->getDBConnection()->fetchAll($DataSendingDateQuery, $UserID, $FormID);
@@ -139,7 +127,6 @@ if ($_REQUEST['show'] === "Show") {
                             <table class="table table-responsive-lg table-bordered table-striped table-sm mb-0">
                                 <thead>
                                 <tr style="text-align: center">
-                                    <th>PSU</th>
                                     <th>Target</th>
                                     <th>Collected</th>
                                     <th>Remaining</th>
@@ -152,7 +139,6 @@ if ($_REQUEST['show'] === "Show") {
                                 $CollectedData = 0;
 
                                 foreach ($QueryDataCollectionStatusRS as $row) {
-                                    $PsuID = $row->PSU;
                                     $UserTargetData = $row->Target;
                                     $UserCollectedData = $row->Collected;
                                     $UserNotCollectedData = $UserTargetData - $UserCollectedData;
@@ -164,7 +150,6 @@ if ($_REQUEST['show'] === "Show") {
                                     $reqVar = "$UserID, $PsuID, $FormID"
                                     ?>
                                     <tr style="text-align: center">
-                                        <td><?php echo $PsuID; ?></td>
                                         <td><?php echo $UserTargetData; ?></td>
                                         <td><?php echo $UserCollectedData; ?></td>
                                         <td><?php echo $UserNotCollectedData; ?></td>
@@ -173,13 +158,6 @@ if ($_REQUEST['show'] === "Show") {
                                     <?php
                                 }
                                 ?>
-                                <tr style="text-align: center;">
-                                    <td style="font-weight: bold">Total</td>
-                                    <td><?php echo $TargetData; ?></td>
-                                    <td><?php echo $CollectedData; ?></td>
-                                    <td><?php echo $TargetData - $CollectedData; ?></td>
-                                    <td><?php echo Ratio($CollectedData, $TargetData); ?></td>
-                                </tr>
 
                                 </tbody>
                             </table>
@@ -188,28 +166,6 @@ if ($_REQUEST['show'] === "Show") {
                     </div>
                 </section>
             </div>
-            <script type="text/javascript">
-                function SendSamplingRequest(userid, psu, formid, data) {
-                    if (confirm("Are you sure to send sampling request?")) {
-                        //alert(userid + ',' + psu + ',' + formid);
-                        $.ajax({
-                            url: "send-sampling-request-to-supervisor.php",
-                            method: "GET",
-                            datatype: "json",
-                            data: {
-                                userid: userid,
-                                psu: psu,
-                                formid: formid
-                            },
-                            success: function (response) {
-                                alert(response);
-                                window.location.reload();
-                            }
-                        });
-                    }
-                    return false;
-                }
-            </script>
             <script type="text/javascript">
                 const morrisDonutData = [{
                     label: "Collected",
@@ -222,63 +178,57 @@ if ($_REQUEST['show'] === "Show") {
             <div class="col-lg-1"></div>
         </div>
         <br>
-        <?php
-        if ($FormID == $formIdMainData) {
-            ?>
-            <div class="row" style="text-align: center">
-                <div class="col-lg-1"></div>
-                <div class="col-lg-10">
-                    <section class="card">
-                        <header class="card-header">
-                            <h2 class="card-title">Missing and Duplicate Data</h2>
-                            <p class="card-subtitle">User: <?php echo $SelectedUserNameWithFullName; ?></p>
-                        </header>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <p class="card-title" style="text-align: left; padding: 5px">
-                                    Survey: <?php echo $FormName; ?></p>
-                                <table class="table table-responsive-lg table-bordered table-striped table-sm mb-0">
-                                    <thead>
-                                    <tr style="text-align: center">
-                                        <th>PSU</th>
-                                        <th>Unique Data</th>
-                                        <th>Missing Data</th>
-                                        <th>Duplicate Data</th>
-                                        <th>Collected Data</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <?php
-                                    foreach ($FindMissingAndDuplicateQueryRS as $row) {
-                                        $PsuID = $row->PSU;
-                                        $UniqueData = $row->UniqueData;
-                                        $Missing = $row->Missing;
-                                        $Duplicate = $row->Duplicate;
-                                        $Collected = $row->Collected;
-                                        ?>
-                                        <tr>
-                                            <td><?php echo $PsuID; ?></td>
-                                            <td><?php echo $UniqueData; ?></td>
-                                            <td><?php echo $Missing; ?></td>
-                                            <td><?php echo $Duplicate; ?></td>
-                                            <td><?php echo $Collected; ?></td>
-                                        </tr>
-                                        <?php
-                                    }
-                                    ?>
-                                    </tbody>
-                                </table>
-                            </div>
 
+        <div class="row" style="text-align: center">
+            <div class="col-lg-1"></div>
+            <div class="col-lg-10">
+                <section class="card">
+                    <header class="card-header">
+                        <h2 class="card-title">Missing and Duplicate Data</h2>
+                        <p class="card-subtitle">User: <?php echo $SelectedUserNameWithFullName; ?></p>
+                    </header>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <p class="card-title" style="text-align: left; padding: 5px">
+                                Survey: <?php echo $FormName; ?></p>
+                            <table class="table table-responsive-lg table-bordered table-striped table-sm mb-0">
+                                <thead>
+                                <tr style="text-align: center">
+                                    <th>Total Collected</th>
+                                    <th>Total Unique</th>
+                                    <th>Missing Data</th>
+                                    <th>Duplicate Data</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php
+                                foreach ($FindMissingAndDuplicateQueryRS as $row) {
+                                    $Collected = $row->Total_Collected;
+                                    $UniqueData = $row->Unique_Data;
+                                    $Missing = $row->Missing_Data;
+                                    $Duplicate = $row->Duplicate_Data;
+
+                                    ?>
+                                    <tr>
+                                        <td><?php echo $Collected; ?></td>
+                                        <td><?php echo $UniqueData; ?></td>
+                                        <td><?php echo $Missing; ?></td>
+                                        <td><?php echo $Duplicate; ?></td>
+                                    </tr>
+                                    <?php
+                                }
+                                ?>
+                                </tbody>
+                            </table>
                         </div>
-                    </section>
-                </div>
-                <div class="col-lg-1"></div>
+
+                    </div>
+                </section>
             </div>
-            <br>
-            <?php
-        }
-        ?>
+            <div class="col-lg-1"></div>
+        </div>
+        <br>
+
 
         <div class="row">
             <div class="col-lg-1"></div>

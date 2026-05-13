@@ -21,28 +21,18 @@ $NumberOfRecordUnApproved = $resXFormsQueryUnApproved->NumberUnApproved;
 $resXFormsQueryRejected = $app->getDBConnection()->fetch("SELECT COUNT(id) AS NumberRejected FROM deletedxformrecord WHERE UserID = ? AND FormId = ?", $UserID, $FormID);
 $NumberOfRecordRejected = $resXFormsQueryRejected->NumberRejected;
 
-$resQryDataCollection = $app->getDBConnection()->fetch("SELECT SUM(NumberOfRecordForMainSurvey) AS NumberOfRecordForMainSurvey, 
-    (SELECT COUNT(id) FROM xformrecord WHERE PSU IN(SELECT PSU FROM PSUList WHERE PSUUSerID = ? AND FormId = ?)) AS Collected FROM PSUList 
-    WHERE PSUUserID = ?", $UserID, $FormID, $UserID);
-$NumberOfRecordForMainSurvey = $resQryDataCollection->NumberOfRecordForMainSurvey;
-$Collected = $resQryDataCollection->Collected;
-$NotCollectedData = $NumberOfRecordForMainSurvey - $Collected;
-
 if ($FormID == $formIdMainData) {
     $QueryDataCollectionStatus = "SELECT COUNT(DISTINCT ii.id) AS Target, COUNT(xfr.id) AS Collected FROM InstituteInfo ii LEFT JOIN xformrecord xfr ON xfr.SampleHHNo = ii.id AND xfr.UserID = ii.UserID AND xfr.FormId = ? WHERE ii.UserID = ? AND ii.Type = '$MunType'";
-
-    $FindMissingAndDuplicateQuery = "EXEC find_Duplicate_Missing_HH_For_User $FormID, '$columnNameToUpdateValueForMainData', $maxNumberOfHHForSampling, $UserID;";
-    $FindMissingAndDuplicateQueryRS = $app->getDBConnection()->fetchAll($FindMissingAndDuplicateQuery);
-
+    $FindMissingAndDuplicateQuery = "EXEC find_Duplicate_Missing_Inst_For_User $FormID, '$columnNameToUpdateValueForListingData', '$MunType', $UserID;";
 } else if ($FormID == $formIdSamplingData) {
     $QueryDataCollectionStatus = "SELECT COUNT(DISTINCT ii.id) AS Target, COUNT(xfr.id) AS Collected FROM InstituteInfo ii LEFT JOIN xformrecord xfr ON xfr.SampleHHNo = ii.id AND xfr.UserID = ii.UserID AND xfr.FormId = ? WHERE ii.UserID = ? AND ii.Type = '$InstType'";
-
-} else if ($FormID == $formIdFarmData) {
-    $QueryDataCollectionStatus = "SELECT DISTINCT PSUList.PSUUserID, PSUList.PSU, userinfo.FullName, PSUList.NumberOfRecordForMainSurvey as 'Target',
-    (SELECT COUNT(id) FROM xformrecord WHERE xformrecord.PSU = PSUList.PSU and xformrecord.UserID=userinfo.id AND xformrecord.FormId = ?) as Collected 
-    FROM PSUList JOIN userinfo ON PSUList.PSUUserID = userinfo.id WHERE PSUList.FarmName <> '' AND PSUList.PSUUserID = ?";
+    $FindMissingAndDuplicateQuery = "EXEC find_Duplicate_Missing_Inst_For_User $FormID, '$columnNameToUpdateValueForListingData', '$InstType', $UserID;";
 }
+//echo $QueryDataCollectionStatus;
 $QueryDataCollectionStatusRS = $app->getDBConnection()->fetchAll($QueryDataCollectionStatus, $FormID, $UserID);
+
+//$FindMissingAndDuplicateQuery = "EXEC find_Duplicate_Missing_HH_For_User $FormID, '$columnNameToUpdateValueForMainData', $maxNumberOfHHForSampling, $UserID;";
+$FindMissingAndDuplicateQueryRS = $app->getDBConnection()->fetchAll($FindMissingAndDuplicateQuery);
 
 $DataSendingDateQuery = " SELECT CONVERT(date, EntryDate) AS DataDate, COUNT(*) AS Number FROM xformrecord WHERE UserID= ? AND FormId = ? GROUP BY CONVERT(date, EntryDate) ORDER BY DataDate DESC";
 $DataSendingDateRS = $app->getDBConnection()->fetchAll($DataSendingDateQuery, $UserID, $FormID);
@@ -67,7 +57,6 @@ $DataSendingDateRS = $app->getDBConnection()->fetchAll($DataSendingDateQuery, $U
                     <div class="card-body">
                         <!-- Morris: Donut -->
                         <div class="chart chart-md" id="morrisDonut"></div>
-
 
                         <div class="table-responsive">
                             <table class="table table-responsive-lg table-bordered table-striped table-sm mb-0">
@@ -191,68 +180,61 @@ $DataSendingDateRS = $app->getDBConnection()->fetchAll($DataSendingDateQuery, $U
             </div>
         </div>
 
-        <?php
-        if ($FormID == $formIdMainData) {
-            ?>
-            <div class="row">
-                <div class="col-lg-12">
-                    <section class="card">
-                        <header class="card-header">
-                            <h2 class="card-title">Missing and Duplicate Data</h2>
-                            <p class="card-subtitle">User: <?php echo $SelectedUserNameWithFullName; ?></p>
-                        </header>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-responsive-lg table-bordered table-striped table-sm mb-0">
-                                    <thead>
-                                    <tr>
-                                        <th>PSU</th>
-                                        <th>Unique Data</th>
-                                        <th>Missing Data</th>
-                                        <th>Duplicate Data</th>
-                                        <th>Collected Data</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <?php
-                                    foreach ($FindMissingAndDuplicateQueryRS as $row) {
-                                        $PsuID = $row->PSU;
-                                        $UniqueData = $row->UniqueData;
-                                        $Missing = $row->Missing;
-                                        $Duplicate = $row->Duplicate;
-                                        $Collected = $row->Collected;
-                                        ?>
-                                        <tr>
-                                            <td><?php echo $PsuID; ?></td>
-                                            <td><?php echo $UniqueData; ?></td>
-                                            <td><?php echo $Missing; ?></td>
-                                            <td><?php echo $Duplicate; ?></td>
-                                            <td><?php echo $Collected; ?></td>
-                                        </tr>
-                                        <?php
-                                    }
+        <div class="row">
+            <div class="col-lg-12">
+                <section class="card">
+                    <header class="card-header">
+                        <h2 class="card-title">Missing and Duplicate Data</h2>
+                        <p class="card-subtitle">User: <?php echo $SelectedUserNameWithFullName; ?></p>
+                    </header>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-responsive-lg table-bordered table-striped table-sm mb-0">
+                                <thead>
+                                <tr>
+                                    <th>Total Collected</th>
+                                    <th>Total Unique</th>
+                                    <th>Missing Data</th>
+                                    <th>Duplicate Data</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php
+                                foreach ($FindMissingAndDuplicateQueryRS as $row) {
+                                    $Collected = $row->Total_Collected;
+                                    $UniqueData = $row->Unique_Data;
+                                    $Missing = $row->Missing_Data;
+                                    $Duplicate = $row->Duplicate_Data;
+
                                     ?>
+                                    <tr>
+                                        <td><?php echo $Collected; ?></td>
+                                        <td><?php echo $UniqueData; ?></td>
+                                        <td><?php echo $Missing; ?></td>
+                                        <td><?php echo $Duplicate; ?></td>
+                                    </tr>
+                                    <?php
+                                }
+                                ?>
 
-                                    </tbody>
-                                </table>
-                            </div>
-
+                                </tbody>
+                            </table>
                         </div>
-                    </section>
-                </div>
-                <script type="text/javascript">
-                    var morrisDonutData = [{
-                        label: "Collected",
-                        value: <?php echo $CollectedData; ?>
-                    }, {
-                        label: "Not Collected",
-                        value: <?php echo $TargetData - $CollectedData; ?>
-                    }];
-                </script>
+
+                    </div>
+                </section>
             </div>
-            <?php
-        }
-        ?>
+            <script type="text/javascript">
+                var morrisDonutData = [{
+                    label: "Collected",
+                    value: <?php echo $CollectedData; ?>
+                }, {
+                    label: "Not Collected",
+                    value: <?php echo $TargetData - $CollectedData; ?>
+                }];
+            </script>
+        </div>
+
 
         <div class="row">
             <div class="col-lg-12">
