@@ -32,7 +32,7 @@ $conn = PDOConnectDB();
 $cn = ConnectDB();
 
 $odkClient = new ODKAPIClient("sse1.sakib@gmail.com", 'DkPas@12345678');
-$projectId = 4;  // ← your active ODK project
+$projectId = 8;  // ← your active ODK project
 
 $odkClient->getDataFromServer("projects/$projectId/forms/$xmlFormId/submissions/uuid:$instance_id.xml", "");
 
@@ -49,10 +49,6 @@ if ($xml === false) {
 
 $xmlAry = json_decode(json_encode(simplexml_load_string($odkClient->result)), true);
 $xFormRecordId = $xmlAry["@attributes"]['xFormRecordId'];
-
-//echo "<pre>";
-//var_dump($xFormRecordId);
-//echo "</pre>";exit;
 
 $sql = "SELECT xfr.UserID, 
 			xfr.FormId, 
@@ -80,55 +76,6 @@ $fileName = $dirPath . "xFormrecordID_".$xFormRecordId."_".$CurrentDateTime.".xm
 $myfile = fopen($fileName, "w") or die("Unable to create file!");
 fwrite($myfile, $xml->AsXML());
 fclose($myfile);
-
-//echo "<pre>";
-//var_dump($xFormRecordId, $row->UserID, $row->FormId);
-//echo "</pre>";exit;
-
-//MsgBox('Change is ready to update.');
-/*
-$backupQry = "SET IDENTITY_INSERT Edit_masterdatarecord ON;
-				INSERT INTO Edit_masterdatarecord 
-					(
-						id, 
-						XFormRecordId, 
-						UserID, 
-						FormId, 
-						DataName, 
-						FormGroupId, 
-						CompanyId, 
-						ColumnTitle, 
-						ColumnName, 
-						ColumnValue, 
-						EntryDate, 
-						IsApproved, 
-						PSU, 
-						Comments,
-						IsCorrected,
-						IsEdited 
-					)
-				SELECT id, 
-					XFormRecordId, 
-					UserID, 
-					FormId, 
-					DataName, 
-					FormGroupId, 
-					CompanyId, 
-					ColumnTitle, 
-					ColumnName, 
-					ColumnValue, 
-					EntryDate, 
-					IsApproved, 
-					PSU, 
-					Comments, 
-					IsCorrected,
-					IsEdited												
-				FROM masterdatarecord_UnApproved 
-				WHERE XFormRecordId = $xFormRecordId;
-			SET IDENTITY_INSERT Edit_masterdatarecord OFF;";
-			*/
-
-
 			
 $backupQry = "INSERT INTO Edit_masterdatarecord 
 					(			 
