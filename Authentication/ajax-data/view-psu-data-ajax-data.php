@@ -85,8 +85,10 @@ if (!empty($searchValue)) {
     $search = $app->getDBConnection()->quote('%' . $searchValue . '%');
     $where[] = "(DIVISION_NAME LIKE $search 
                  OR DISTRICT_NAME LIKE $search 
+                 OR Type LIKE $search 
                  OR BSIC_CODE LIKE $search 
                  OR Q4A LIKE $search 
+                 OR id LIKE $search 
                  OR ADDRESS LIKE $search 
                  OR UserID LIKE $search 
                  OR MOBILE_NO LIKE $search)";
