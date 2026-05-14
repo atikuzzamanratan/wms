@@ -258,7 +258,6 @@ if ($_REQUEST['show'] === 'Show') {
                                             <th>Division Name</th>
                                             <th>District Name</th>
                                             <th>User</th>
-                                            <th>Mobile</th>
 											<th>Data Name</th>
                                             <th>Entry Date</th>
                                             <th>Status</th>

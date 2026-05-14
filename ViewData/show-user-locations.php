@@ -24,25 +24,6 @@ if(isset($_REQUEST['show']) && $_REQUEST['show'] === 'Show') {
                 <section class="card">
                     <div class="card-body">
                         <form class="form-horizontal form-bordered" action="" method="post">
-                            <!--<div class="form-group row pb-3">
-                                <label class="col-lg-3 control-label text-sm-end pt-2">Form Select<span
-                                            class="required">*</span></label>
-                                <div class="col-lg-6">
-                                    <select data-plugin-selectTwo id="SelectedFormID" name="SelectedFormID"
-                                            class="form-control populate" required>
-                                        <optgroup label="Choose form">
-                                            <?PHP
-/*                                            $qryForm = $app->getDBConnection()->query("SELECT id, FormName FROM datacollectionform WHERE CompanyID = ? AND Status = '$formActiveStatus'", $loggedUserCompanyID);
-
-                                            foreach ($qryForm as $row) {
-                                                echo '<option value="' . $row->id . '"' . (isset($SelectedFormID) && !empty($SelectedFormID) && $row->id == $SelectedFormID ? ' selected' : '') . '>' . $row->FormName . '</option>';
-                                            }
-                                            */?>
-                                        </optgroup>
-                                    </select>
-                                </div>
-                            </div>-->
-
                             <div class="form-group row pb-3">
                                 <label class="col-lg-3 control-label text-sm-end pt-2">User Select<span
                                             class="required">*</span></label>
@@ -130,6 +111,7 @@ if(isset($_REQUEST['show']) && $_REQUEST['show'] === 'Show') {
                     } elseif ($SelectedLocationType === "allLocation") {
                         $selQuery = "SELECT * FROM UserLiveLocation WHERE UserId = ? ORDER BY DateTime DESC";
                     }
+                    //echo $selQuery;
                     $resQry = $app->getDBConnection()->fetchAll($selQuery, $SelectedUserID);
 
                     $locationArray = array();
@@ -155,9 +137,6 @@ if(isset($_REQUEST['show']) && $_REQUEST['show'] === 'Show') {
                     ?>
                     <section class="card">
                         <div class="card-header">
-                            <!--<div class="card-title">Form
-                                : <?php /*echo getValue('datacollectionform', 'FormName', "id = $SelectedFormID"); */?>
-                            </div>-->
                             <div class="card-title">User: <?php echo $UserData; ?></div>
                             <div class="card-subtitle"></div>
                         </div>
@@ -169,6 +148,7 @@ if(isset($_REQUEST['show']) && $_REQUEST['show'] === 'Show') {
 
                                 var initLocLat = locations[0][0];
                                 var initLocLon = locations[0][1];
+                                alert(initLocLat);
 
                                 var map = new google.maps.Map(document.getElementById('map'), {
                                     zoom: 10,

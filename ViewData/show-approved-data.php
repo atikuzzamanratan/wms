@@ -258,7 +258,7 @@ if ($_REQUEST['show'] === 'Show') {
                                             <th>Division Name</th>
                                             <th>District Name</th>
                                             <th>User</th>
-                                            <th>Mobile</th>
+                                            <!--<th>Mobile</th>-->
 											<th>Data Name</th>
                                             <th>Entry Date</th>
                                             <th>Status</th>
@@ -309,7 +309,7 @@ if ($_REQUEST['show'] === 'Show') {
             ],
             "processing": true,
             "serverSide": true,
-            "columnDefs": [{ "visible": false, "targets": 13 }],
+            "columnDefs": [{ "visible": false, "targets": 11 }],
             "ajax": {
                 data: {
                     DataFromID: DataFromID,

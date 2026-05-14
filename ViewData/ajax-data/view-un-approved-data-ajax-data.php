@@ -116,13 +116,15 @@ if (!empty($_POST)) {
         $HhNo = $row->SampleHHNo;
         $PSU = $row->PSU;
 
+        $UserMobileNo = $row->MobileNumber;
+        $UserMobileNo = whatsAppLink($UserMobileNo);
+
         $UserID = $row->userid;
         $UserName = $row->UserName;
         $UserFullName = $row->FullName;
-        $UserData = "$UserFullName ($UserName/$UserID)";
+        $UserData = "$UserFullName<br>($UserName)<br>$UserMobileNo";
 
-        $UserMobileNo = $row->MobileNumber;
-        $UserMobileNo = whatsAppLink($UserMobileNo);
+
 
         $DataName = $row->DataName;
         $XFormsFilePath = $row->XFormsFilePath;
@@ -180,17 +182,17 @@ if (!empty($_POST)) {
 		
 		$SubData = array();
 
-        $actions = "<div style= \"display: flex; align-items: center; justify-content: center;\">
+        $actions = "<div style= \"display: flex; flex-wrap: wrap; gap: 5px; align-items: center; justify-content: center;\">
 
-                    <button title=\"$btnTitleView\" type=\"button\" class=\"simple-ajax-modal btn btn-outline-dark\" style=\"display: inline-block;margin: 0 1px;\" data-bs-toggle=\"modal\" data-bs-target=\"#viewDataModalForViewOnly\" onclick=\"ShowDataDetailForViewOnly('$DataFromID','$RecordID', '$IsApproved', '$PSU', '$LoggedUserID', '$UserID', '$XFormsFilePath')\" onmouseover=\"this.style.backgroundColor='#e0e0e0'; this.querySelector('img').style.filter='grayscale(0%)';\" onmouseout=\"this.style.backgroundColor='transparent'; this.querySelector('img').style.filter='grayscale(100%)';\"><img src=\"../../img/view-files.png\" alt=\"View\" style=\"width:16px; height:16px; filter: grayscale(100%); transition: filter 0.3s ease;\"></button>
+                    <button title=\"$btnTitleView\" type=\"button\" class=\"simple-ajax-modal btn btn-outline-dark\" style=\"width: 100%; display: inline-block;margin: 0 1px;\" data-bs-toggle=\"modal\" data-bs-target=\"#viewDataModalForViewOnly\" onclick=\"ShowDataDetailForViewOnly('$DataFromID','$RecordID', '$IsApproved', '$PSU', '$LoggedUserID', '$UserID', '$XFormsFilePath')\" onmouseover=\"this.style.backgroundColor='#e0e0e0'; this.querySelector('img').style.filter='grayscale(0%)';\" onmouseout=\"this.style.backgroundColor='transparent'; this.querySelector('img').style.filter='grayscale(100%)';\"><img src=\"../../img/view-files.png\" alt=\"View\" style=\"width:16px; height:16px; filter: grayscale(100%); transition: filter 0.3s ease;\"></button>
 
-                    <button title=\"$btnTitleView\" type=\"button\" class=\"simple-ajax-modal btn btn-outline-primary\" style=\"display: inline-block;margin: 0 1px;\" data-bs-toggle=\"modal\" data-bs-target=\"#viewDataModal\" onclick=\"ShowDataDetail('$DataFromID', '$RecordID', '$IsApproved', '$PSU', '$LoggedUserID', '$UserID', '$XFormsFilePath')\"><i class=\"fas fa-eye\"></i></button>";
+                    <button title=\"$btnTitleView\" type=\"button\" class=\"simple-ajax-modal btn btn-outline-primary\" style=\"width: 100%; display: inline-block;margin: 0 1px;\" data-bs-toggle=\"modal\" data-bs-target=\"#viewDataModal\" onclick=\"ShowDataDetail('$DataFromID', '$RecordID', '$IsApproved', '$PSU', '$LoggedUserID', '$UserID', '$XFormsFilePath')\"><i class=\"fas fa-eye\"></i></button>";
 
         if (((strpos($LoggedUserName, 'admin') !== false) || (strpos($LoggedUserName, 'cd') !== false)) and (strpos($LoggedUserName, 'dist') === false)) {
-            $actions .= "<a href=\"#\" title=\"$btnTitleEdit\" type=\"button\" class=\"btn btn-outline-warning\" style=\"display: inline-block;margin: 0 1px;\" onClick='window.open(\"webhookURLs/review.php?xFormId=$encrypRecordID\", \"_blank\").focus(); return false;'><i class=\"fas fa-pencil-alt\"></i></a>";
+            $actions .= "<a href=\"#\" title=\"$btnTitleEdit\" type=\"button\" class=\"btn btn-outline-warning\" style=\"width: 100%; display: inline-block;margin: 0 1px;\" onClick='window.open(\"webhookURLs/review.php?xFormId=$encrypRecordID\", \"_blank\").focus(); return false;'><i class=\"fas fa-pencil-alt\"></i></a>";
         }
 
-        $actions .= "<button title=\"$btnTitleNotice\" type=\"button\" class=\"btn btn-outline-secondary\" style=\"display: inline-block;margin: 0 1px;\" data-bs-toggle=\"modal\" data-bs-target=\"#sendNoticeModal$RecordID\"><i class=\"fas fa-bell\"></i></button>
+        $actions .= "<button title=\"$btnTitleNotice\" type=\"button\" class=\"btn btn-outline-secondary\" style=\"width: 100%; display: inline-block;margin: 0 1px;\" data-bs-toggle=\"modal\" data-bs-target=\"#sendNoticeModal$RecordID\"><i class=\"fas fa-bell\"></i></button>
                 </div>
                 <script type=\"text/javascript\">
                     function ShowDataDetail(DataFromID, recordID, isAproved, psu, loggedUserID, agentID, XFormsFilePath, data) {
@@ -330,13 +332,13 @@ if (!empty($_POST)) {
 		$SubData[] = $DivisionName;
 		$SubData[] = $DistrictName;
         $SubData[] = $UserData;
-        $SubData[] = $UserMobileNo;
+        //$SubData[] = $UserMobileNo;
 		$SubData[] = $DataName;
         $SubData[] = $EntryDate;
         $SubData[] = $DataStatus;
 		$SubData[] = $Duration;
         $SubData[] = $DeviceID;
-        $SubData[] = '';
+        //$SubData[] = '';
 
         $data[] = $SubData;
     }
