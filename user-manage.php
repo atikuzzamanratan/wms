@@ -3,7 +3,7 @@ require 'vendor/autoload.php';
 
 /* START code to execute for password encryption */
 
-$dsn = "sqlsrv:server=127.0.01 ; Database=DataCollector";
+$dsn = "sqlsrv:server=127.0.01 ; Database=wms";
 $user = "sa";
 $password = "bmWfjg88";
 

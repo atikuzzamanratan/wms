@@ -32,17 +32,18 @@ $ApprovePermission = $RowSupervisorPermission->ApprovePermission;
 //$Permissions = "A: $ApprovePermission | E: $EditPermission | D:$DeletePermission";
 
 if ($IsApproved == 0) {
-    $MasterDataQuery = "EXEC ViewDetailDataWithLabelPending $RecordID";
+    //$MasterDataQuery = "EXEC ViewDetailDataWithLabelPending $RecordID";
+    $MasterDataQuery = "EXEC ViewDetailDataWithLabelPendingUpdated $RecordID";
 
     $MasterDataTimeQuery = "SELECT ColumnName, ColumnValue FROM masterdatarecord_Pending WHERE XFormRecordId = ? AND (ColumnName = 'surveyStartDate' OR ColumnName = 'surveyEndDate') ORDER BY ColumnName ASC  ";
     $MasterDataTimeRS = $app->getDBConnection()->fetchAll($MasterDataTimeQuery, $RecordID);
 } elseif ($IsApproved == 1) {
-    $MasterDataQuery = "EXEC ViewDetailDataWithLabelApproved $RecordID";
+    $MasterDataQuery = "EXEC ViewDetailDataWithLabelApprovedUpdated $RecordID";
 
     $MasterDataTimeQuery = "SELECT ColumnName, ColumnValue FROM masterdatarecord_Approved WHERE XFormRecordId = ? AND (ColumnName = 'surveyStartDate' OR ColumnName = 'surveyEndDate') ORDER BY ColumnName ASC  ";
     $MasterDataTimeRS = $app->getDBConnection()->fetchAll($MasterDataTimeQuery, $RecordID);
 } elseif ($IsApproved == 2) {
-    $MasterDataQuery = "EXEC ViewDetailDataWithLabelUnApproved $RecordID";
+    $MasterDataQuery = "EXEC ViewDetailDataWithLabelUnApprovedUpdated $RecordID";
 
     $MasterDataTimeQuery = "SELECT ColumnName, ColumnValue FROM masterdatarecord_UnApproved WHERE XFormRecordId = ? AND (ColumnName = 'surveyStartDate' OR ColumnName = 'surveyEndDate') ORDER BY ColumnName ASC  ";
     $MasterDataTimeRS = $app->getDBConnection()->fetchAll($MasterDataTimeQuery, $RecordID);
