@@ -148,7 +148,7 @@ if(isset($_REQUEST['show']) && $_REQUEST['show'] === 'Show') {
 
                                 var initLocLat = locations[0][0];
                                 var initLocLon = locations[0][1];
-                                alert(initLocLat);
+                                //alert(initLocLat);
 
                                 var map = new google.maps.Map(document.getElementById('map'), {
                                     zoom: 10,
