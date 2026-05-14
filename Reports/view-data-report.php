@@ -6,25 +6,24 @@ $rsSupervisor = $app->getDBConnection()->fetch($qrySupervisor, $loggedUserID);
 $SuperID = $rsSupervisor->id;
 
 if (strpos($loggedUserName, 'dist') !== false) {
-    $divQuery = "SELECT DISTINCT p.DivisionName, p.DivisionCode FROM PSUList AS p 
-    JOIN assignsupervisor AS a ON p.PSUUserID = a.UserID 
-    WHERE  p.CompanyID = ? AND a.DistCoordinatorID = ?";
-    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery, $loggedUserCompanyID, $loggedUserID);
+    $divQuery = "SELECT DISTINCT p.Division_Name as DivisionName, p.Division_Code as DivisionCode FROM InstituteInfo AS p 
+    JOIN assignsupervisor AS a ON p.UserID = a.UserID 
+    WHERE a.DistCoordinatorID = ?";
+    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery, $loggedUserID);
 } elseif (strpos($loggedUserName, 'val') !== false) {
-    $divQuery = "SELECT DISTINCT p.DivisionName, p.DivisionCode FROM PSUList AS p 
-    JOIN assignsupervisor AS a ON p.PSUUserID = a.UserID 
-    WHERE  p.CompanyID = ? AND a.ValidatorID = ?";
-    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery, $loggedUserCompanyID, $loggedUserID);
+    $divQuery = "SELECT DISTINCT p.Division_Name as DivisionName, p.Division_Code as DivisionCode FROM InstituteInfo AS p 
+    JOIN assignsupervisor AS a ON p.UserID = a.UserID 
+    WHERE a.ValidatorID = ?";
+    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery, $loggedUserID);
 } else {
-    $divQuery = "SELECT DISTINCT DivisionName , DivisionCode FROM PSUList WHERE CompanyID = ? ORDER BY DivisionName ASC";
-    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery, $loggedUserCompanyID);
+    $divQuery = "SELECT DISTINCT Division_Name as DivisionName, Division_Code as DivisionCode FROM InstituteInfo ORDER BY DivisionName ASC";
+    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery);
 }
 
 if (strpos($loggedUserName, 'cval') !== false) {
-    $divQuery = "SELECT DISTINCT p.DivisionName, p.DivisionCode FROM PSUList AS p 
-    JOIN assignsupervisor AS a ON p.PSUUserID = a.UserID 
-    WHERE  p.CompanyID = ?";
-    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery, $loggedUserCompanyID);
+    $divQuery = "SELECT DISTINCT p.Division_Name as DivisionName, p.Division_Code as DivisionCode FROM InstituteInfo AS p 
+    JOIN assignsupervisor AS a ON p.PSUUserID = a.UserID";
+    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery);
 }
 
 if (isset($_REQUEST['show']) && $_REQUEST['show'] === 'Show') {
@@ -153,7 +152,7 @@ if (isset($_REQUEST['show']) && $_REQUEST['show'] === 'Show') {
                                             $qryDistUser = "SELECT id, UserName, FullName FROM userinfo WHERE IsActive = 1 AND UserName LIKE '$dataCollectorNamePrefix%' ORDER BY UserName ASC";
                                             $resQryDistUser = $app->getDBConnection()->fetchAll($qryDistUser);
                                         } else if (strpos($loggedUserName, 'admin') !== false) {
-                                            $qryDistUser = "SELECT id, UserName, FullName FROM userinfo WHERE IsActive = 1 AND UserName LIKE '$dataCollectorNamePrefix%' AND CompanyID = ? ORDER BY UserName ASC";
+                                            $qryDistUser = "SELECT id, UserName, FullName FROM userinfo WHERE IsActive = 1 AND UserName LIKE '$dataCollectorNamePrefix%' AND CompanyID = ? $assignedIDFilter ORDER BY UserName ASC";
                                             $resQryDistUser = $app->getDBConnection()->fetchAll($qryDistUser, $loggedUserCompanyID);
                                         } else if ($SuperID) {
                                             $qryDistUser = "SELECT u.id, u.UserName, u.FullName FROM assignsupervisor as a JOIN userinfo as u ON a.UserID = u.id WHERE u.IsActive = 1 AND u.UserName LIKE '$dataCollectorNamePrefix%' AND a.SupervisorID = ?";
@@ -252,22 +251,22 @@ if (isset($_REQUEST['show']) && $_REQUEST['show'] === 'Show') {
                                 Module Name:<?php echo $moduleName ?> ->DataStatus:<?php echo $DataStatus ?> </h3>
                                 <?php
                                 if ($DivisionCode) {
-                                    echo "->Division: " . getValue('PSUList', 'DivisionName', "DivisionCode = $DivisionCode");
+                                    echo "->Division: " . getValue('InstituteInfo', 'Division_Name', "Division_Code = '$DivisionCode'");
                                 }
                                 if ($DistrictCode) {
-                                    echo "->District: " . getValue('PSUList', 'DistrictName', "DistrictCode = $DistrictCode");
+                                    echo "->District: " . getValue('InstituteInfo', 'District_Name', "District_Code = '$DistrictCode'");
                                 }
                                 if ($UpazilaCode) {
-                                    echo "->UpazilaName: " . getValue('PSUList', 'UpazilaName', "DistrictCode = $DistrictCode AND UpazilaCode = $UpazilaCode");
+                                    echo "->UpazilaName: " . getValue('InstituteInfo', 'Upazila_Name', "District_Code = '$DistrictCode' AND Upazila_Code = '$UpazilaCode'");
                                 }
                                 if ($UnionWardCode) {
-                                    echo "->UnionWardName: " . getValue('PSUList', 'UnionWardName', "DistrictCode = $DistrictCode AND UpazilaCode = $UpazilaCode AND UnionWardCode = $UnionWardCode");
+                                    echo "->UnionWardName: " . getValue('InstituteInfo', 'Union_Name', "District_Code = '$DistrictCode' AND Upazila_Code = '$UpazilaCode' AND Union_Code = '$UnionWardCode'");
                                 }
                                 if ($MauzaCode) {
-                                    echo "->MauzaName: " . getValue('PSUList', 'MauzaName', "DistrictCode = $DistrictCode AND UpazilaCode = $UpazilaCode AND UnionWardCode = $UnionWardCode AND MauzaCode = $MauzaCode");
+                                    echo "->MauzaName: " . getValue('InstituteInfo', 'Mouza_Name', "District_Code = '$DistrictCode' AND Upazila_Code = '$UpazilaCode' AND Union_Code = '$UnionWardCode' AND Mouza_Code = '$MauzaCode'");
                                 }
                                 if ($VillageCode) {
-                                    echo "->VillageName: " . getValue('PSUList', 'VillageName', "DistrictCode = $DistrictCode AND UpazilaCode = $UpazilaCode AND UnionWardCode = $UnionWardCode AND MauzaCode = $MauzaCode AND VillageCode = $VillageCode");
+                                    echo "->VillageName: " . getValue('InstituteInfo', 'Village_Name', "District_Code = '$DistrictCode' AND Upazila_Code = '$UpazilaCode' AND Union_Code = '$UnionWardCode' AND Mouza_Code = '$MauzaCode' AND Village_Code = '$VillageCode'");
                                 }
                                 ?>
                             </div>
@@ -295,7 +294,6 @@ if (isset($_REQUEST['show']) && $_REQUEST['show'] === 'Show') {
                                     <tr>
                                         <th>SL</th>
                                         <th>Record ID</th>
-                                        <th>PSU</th>
                                         <th>User</th>
                                         <?php
                                         foreach ($MasterDataRS as $rowMD) {
@@ -323,7 +321,6 @@ if (isset($_REQUEST['show']) && $_REQUEST['show'] === 'Show') {
                                             echo "<tr>";
                                             echo "<td>" . $i++ . "</td>";
                                             echo "<td>" . $row['FinalxID'] . "</td>";
-                                            echo "<td>" . $row['FPSU'] . "</td>";
                                             echo "<td>" . $dataUserInfo . "</td>";
 
 

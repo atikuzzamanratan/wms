@@ -56,10 +56,6 @@ $dataViewTable = "
     <tr align=\"left\" class=\"textRpt\">
         <td width=\"50%\"><b>Record ID</b></td>
         <td width=\"50%\"><b>$RecordID</b></td>
-    </tr>
-    <tr align=\"left\" class=\"textRpt\">
-        <td width=\"50%\"><b>PSU</b></td>
-        <td width=\"50%\"><b>$PSU</b></td>
     </tr>";
 
 $MasterDataQueryRS = $app->getDBConnection()->fetchAll($MasterDataQuery);

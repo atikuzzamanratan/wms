@@ -287,7 +287,6 @@ if (!empty($_POST)) {
 		
 		$SubData[] = $RecordID;
         $SubData[] = $HhNo;
-        $SubData[] = $PSU;
 		$SubData[] = $DivisionName;
 		$SubData[] = $DistrictName;
         $SubData[] = $UserData;
@@ -298,6 +297,7 @@ if (!empty($_POST)) {
 		$SubData[] = $Duration;
         $SubData[] = $DeviceID;
 		$SubData[] = $IsEdited;
+		$SubData[] = '';
 
         $data[] = $SubData;
     }

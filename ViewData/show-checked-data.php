@@ -255,7 +255,6 @@ if ($_REQUEST['show'] === 'Show') {
 											<th>Actions</th>
                                             <th>Record ID</th>
                                             <th>HH No</th>
-                                            <th>PSU</th>
                                             <th>Division Name</th>
                                             <th>District Name</th>
                                             <th>User</th>

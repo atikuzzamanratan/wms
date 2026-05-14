@@ -46,8 +46,8 @@ if (!empty($_POST)) {
 					xfr.FormGroupId, 
 					xfr.IsApproved, 
 					xfr.XFormsFilePath, 
-					pl.DivisionName, 
-					pl.DistrictName,
+					pl.Division_Name, 
+					pl.District_Name,
 					(
 						SELECT mdp.ColumnValue 
 						FROM masterdatarecord_Approved mdp 
@@ -55,7 +55,6 @@ if (!empty($_POST)) {
 							AND mdp.FormId = xfr.FormId 
 							AND mdp.UserID = xfr.UserID 
 							AND mdp.CompanyId = xfr.CompanyId 
-							AND mdp.PSU = xfr.PSU 
 							AND mdp.SampleHHNo = xfr.SampleHHNo 
 							AND mdp.ColumnName = N'surveyEndDate'
 					) AS StartTime,
@@ -66,13 +65,12 @@ if (!empty($_POST)) {
 							AND mdp.FormId = xfr.FormId 
 							AND mdp.UserID = xfr.UserID 
 							AND mdp.CompanyId = xfr.CompanyId 
-							AND mdp.PSU = xfr.PSU 
 							AND mdp.SampleHHNo = xfr.SampleHHNo 
 							AND mdp.ColumnName = N'surveyStartDate'
 					) AS EndTime 
 			FROM xformrecord xfr 
 				JOIN userinfo ui ON xfr.UserID = ui.id 
-				JOIN PSUList pl ON pl.PSUUserID = ui.id AND xfr.PSU = pl.PSU ";
+				JOIN InstituteInfo pl ON pl.UserID = ui.id AND xfr.SampleHHNo = pl.id ";
 	if (strpos($LoggedUserName, 'cs') !== false) {
 		$qry .= " JOIN assignsupervisor a ON a.UserID = ui.id AND a.SupervisorID = $LoggedUserID ";
 	}
@@ -101,22 +99,22 @@ if (!empty($_POST)) {
 	$VillageCode = xss_clean($_REQUEST['VillageCode']);
 	
 	if (!empty($DivisionCode)) {
-		$qry .= " AND ( pl.DivisionCode = '" . $DivisionCode . "') ";
+		$qry .= " AND ( pl.Division_Code = '" . $DivisionCode . "') ";
 	}
 	if (!empty($DistrictCode)) {
-		$qry .= " AND ( pl.DistrictCode = '" . $DistrictCode . "') ";
+		$qry .= " AND ( pl.District_Code = '" . $DistrictCode . "') ";
 	}
 	if (!empty($UpazilaCode)) {
-		$qry .= " AND ( pl.UpazilaCode = '" . $UpazilaCode . "') ";
+		$qry .= " AND ( pl.Upazila_Code = '" . $UpazilaCode . "') ";
 	}
 	if (!empty($UnionWardCode)) {
-		$qry .= " AND ( pl.UnionWardCode = '" . $UnionWardCode . "') ";
+		$qry .= " AND ( pl.Union_Code = '" . $UnionWardCode . "') ";
 	}
 	if (!empty($MauzaCode)) {
-		$qry .= " AND ( pl.MauzaCode = '" . $MauzaCode . "') ";
+		$qry .= " AND ( pl.Mouza_Code = '" . $MauzaCode . "') ";
 	}
 	if (!empty($VillageCode)) {
-		$qry .= " AND ( pl.VillageCode = '" . $VillageCode . "') ";
+		$qry .= " AND ( pl.Village_Code = '" . $VillageCode . "') ";
 	}
 
     if (!empty($request['search']['value'])) {
@@ -129,8 +127,8 @@ if (!empty($_POST)) {
         $qry .= " OR xfr.SampleHHNo like'%" . $request['search']['value'] . "%'";
         $qry .= " OR xfr.DeviceID like'%" . $request['search']['value'] . "%'";
         $qry .= " OR xfr.EntryDate like'%" . $request['search']['value'] . "%'";
-		$qry .= " OR pl.DivisionName like'%" . $request['search']['value'] . "%'";
-		$qry .= " OR pl.DistrictName like'%" . $request['search']['value'] . "%')";
+		$qry .= " OR pl.Division_Name like'%" . $request['search']['value'] . "%'";
+		$qry .= " OR pl.District_Name like'%" . $request['search']['value'] . "%')";
     }
 
     $rs = db_query($qry, $cn);
@@ -291,7 +289,6 @@ if (!empty($_POST)) {
 		
 		$SubData[] = $RecordID;
         $SubData[] = $HhNo;
-        $SubData[] = $PSU;
 		$SubData[] = $DivisionName;
 		$SubData[] = $DistrictName;
         $SubData[] = $UserData;
@@ -301,6 +298,7 @@ if (!empty($_POST)) {
         $SubData[] = $DataStatus;
 		$SubData[] = $Duration;
         $SubData[] = $DeviceID;
+        $SubData[] = '';
 
         $data[] = $SubData;
     }

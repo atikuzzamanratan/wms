@@ -40,7 +40,7 @@ if (!empty($_POST)) {
 
     $col[] = "id";
     $col[] = "id";
-    /*$col[] = "PSU";*/
+    $col[] = "PSU";
     $col[] = "SampleHHNo";
     $col[] = "DivisionName";
     $col[] = "DistrictName";
@@ -152,6 +152,7 @@ if (!empty($_POST)) {
     foreach ($resQry as $row) {
         $RecordID = $row->id;
         $HhNo = $row->SampleHHNo;
+        $PSU = $row->PSU;
 
         $UserID = $row->userid;
         $UserName = $row->UserName;
@@ -323,7 +324,6 @@ if (!empty($_POST)) {
 
         $SubData[] = $RecordID;
         $SubData[] = $HhNo;
-        $SubData[] = $PSU;
         $SubData[] = $DivisionName;
         $SubData[] = $DistrictName;
         $SubData[] = $UserData;
@@ -334,6 +334,7 @@ if (!empty($_POST)) {
         $SubData[] = $Duration;
         $SubData[] = $DeviceID;
         $SubData[] = $IsEdited;
+        $SubData[] = '';
 
         $data[] = $SubData;
     }

@@ -177,7 +177,6 @@ if ($_REQUEST['show'] === 'Show') {
                                 <thead>
                                     <tr>
                                         <th>Record ID</th>
-                                        <th>PSU</th>
                                         <th>Division Name</th>
                                         <th>District Name</th>
                                         <th>User</th>
@@ -199,7 +198,7 @@ if ($_REQUEST['show'] === 'Show') {
                 ?>
 
                 <script>
-                    function ShowDataDetail(dataFromID, recordID, isAproved, psu, loggedUserID, agentID, XFormsFilePath) {
+                    function ShowDataDetail(dataFromID, recordID, isAproved, loggedUserID, agentID, XFormsFilePath) {
                         $.ajax({
                             url: "ViewData/ajax-data/data-detail-view.php",
                             method: "GET",
@@ -207,7 +206,6 @@ if ($_REQUEST['show'] === 'Show') {
                                 dataFromID: dataFromID,
                                 id: recordID,
                                 status: isAproved,
-                                psu: psu,
                                 loggedUserID: loggedUserID,
                                 agentID: agentID,
                                 XFormsFilePath: XFormsFilePath

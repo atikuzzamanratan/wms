@@ -6,25 +6,24 @@ $rsSupervisor = $app->getDBConnection()->fetch($qrySupervisor, $loggedUserID);
 $SuperID = $rsSupervisor->id;
 
 if (strpos($loggedUserName, 'dist') !== false) {
-    $divQuery = "SELECT DISTINCT p.DivisionName, p.DivisionCode FROM PSUList AS p 
-    JOIN assignsupervisor AS a ON p.PSUUserID = a.UserID 
-    WHERE  p.CompanyID = ? AND a.DistCoordinatorID = ?";
-    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery, $loggedUserCompanyID, $loggedUserID);
+    $divQuery = "SELECT DISTINCT p.Division_Name as DivisionName, p.Division_Code as DivisionCode FROM InstituteInfo AS p 
+    JOIN assignsupervisor AS a ON p.UserID = a.UserID 
+    WHERE a.DistCoordinatorID = ?";
+    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery, $loggedUserID);
 } elseif (strpos($loggedUserName, 'val') !== false) {
-    $divQuery = "SELECT DISTINCT p.DivisionName, p.DivisionCode FROM PSUList AS p 
-    JOIN assignsupervisor AS a ON p.PSUUserID = a.UserID 
-    WHERE  p.CompanyID = ? AND a.ValidatorID = ?";
-    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery, $loggedUserCompanyID, $loggedUserID);
+    $divQuery = "SELECT DISTINCT p.Division_Name as DivisionName, p.Division_Code as DivisionCode FROM InstituteInfo AS p 
+    JOIN assignsupervisor AS a ON p.UserID = a.UserID 
+    WHERE a.ValidatorID = ?";
+    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery, $loggedUserID);
 } else {
-    $divQuery = "SELECT DISTINCT DivisionName , DivisionCode FROM PSUList WHERE CompanyID = ? ORDER BY DivisionName ASC";
-    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery, $loggedUserCompanyID);
+    $divQuery = "SELECT DISTINCT Division_Name as DivisionName, Division_Code as DivisionCode FROM InstituteInfo ORDER BY DivisionName ASC";
+    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery);
 }
 
 if (strpos($loggedUserName, 'cval') !== false) {
-    $divQuery = "SELECT DISTINCT p.DivisionName, p.DivisionCode FROM PSUList AS p 
-    JOIN assignsupervisor AS a ON p.PSUUserID = a.UserID 
-    WHERE  p.CompanyID = ?";
-    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery, $loggedUserCompanyID);
+    $divQuery = "SELECT DISTINCT p.Division_Name as DivisionName, p.Division_Code as DivisionCode FROM InstituteInfo AS p 
+    JOIN assignsupervisor AS a ON p.PSUUserID = a.UserID";
+    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery);
 }
 
 if ($_REQUEST['show'] === 'Show') {
@@ -128,7 +127,7 @@ if ($_REQUEST['show'] === 'Show') {
                                         if ($loggedUserName == 'admin') {
                                             $qryDistUser = $app->getDBConnection()->query("SELECT id, UserName, FullName FROM userinfo WHERE IsActive = 1 AND UserName <> '$loggedUserName' ORDER BY UserName ASC");
                                         } else if (strpos($loggedUserName, 'admin') !== false) {
-                                            $qryDistUser = $app->getDBConnection()->query("SELECT id, UserName, FullName FROM userinfo WHERE IsActive = 1 AND UserName LIKE '%$dataCollectorNamePrefix%' AND CompanyID = ? ORDER BY UserName ASC", $loggedUserCompanyID);
+                                            $qryDistUser = $app->getDBConnection()->query("SELECT id, UserName, FullName FROM userinfo WHERE IsActive = 1 AND UserName LIKE '%$dataCollectorNamePrefix%' AND CompanyID = ? $assignedIDFilter ORDER BY UserName ASC", $loggedUserCompanyID);
                                         } else if ($SuperID) {
                                             $qryDistUser = $app->getDBConnection()->query("SELECT u.id, u.UserName, u.FullName FROM assignsupervisor AS a JOIN userinfo as u ON a.UserID = u.id WHERE u.IsActive = 1 AND a.SupervisorID = ?", $loggedUserID);
                                         } else if (strpos($loggedUserName, 'dist') !== false) {

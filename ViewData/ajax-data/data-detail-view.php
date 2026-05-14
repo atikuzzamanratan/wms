@@ -14,7 +14,6 @@ include "../../Lib/lib.php";
 $RecordID = xss_clean($_REQUEST['id']);
 $DataFromID = xss_clean($_REQUEST['dataFromID']);
 $IsApproved = xss_clean($_REQUEST['status']);
-$PSU = xss_clean($_REQUEST['psu']);
 $LoggedUserID = xss_clean($_REQUEST['loggedUserID']);
 $AgentID = xss_clean($_REQUEST['agentID']);
 $XFormsFilePath = xss_clean($_REQUEST['XFormsFilePath']);
@@ -89,112 +88,6 @@ if ($since_start->d) {
 }elseif ($since_start->s) {
     $Duration = $since_start->s . ' seconds ';
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * ------------------------------------------------------------
- *  Number-to-Label Conversion Helpers (Final Behavior Version)
- * ------------------------------------------------------------
- *
- * These functions convert numeric codes inside comment text into
- * human-readable labels taken from the ChoiceInfo table. The
- * system works WITHOUT adding any artificial numbering. Labels
- * are displayed exactly as they appear in the database.
- *
- * NEW BEHAVIOR:
- * -------------
- * ✔ If a ChoiceLabel already begins with a number (e.g., "1- শ্রমিক…")
- *      → That number is kept and shown.
- * ✔ If a ChoiceLabel does NOT contain any numeric prefix
- *      → No number is added from ChoiceValue.
- *
- * This prevents unintended prefixing (e.g., "1- শ্রমিক…") and
- * ensures the system always reflects the exact text stored in
- * ChoiceLabel.
- *
- *
- * FUNCTION PURPOSES:
- * ------------------
- *
- * 1. isUnicodeLetterOrMark($ch)
- *    Detects whether a character is a Unicode letter or combining
- *    mark using raw codepoint ranges. This is needed to simulate
- *    the original regex lookaround logic and avoid matching
- *    numbers that are attached to letters.
- *
- *    Examples:
- *      কমর1  → number ignored
- *      A1    → number ignored
- *      1     → number matched
- *
- *
- * 2. replaceStandaloneNumbers()
- *    Scans the given text character-by-character and replaces only
- *    standalone numeric tokens (1, 2, 101, etc.) with the final
- *    mapped labels. This avoids all heavy regex usage and prevents
- *    environment-specific regex failures.
- *
- *
- * 3. convertNumbersToLabels()
- *    - Loads ChoiceLabel values for the requested ChoiceListName.
- *    - Builds a mapping based ONLY on the actual label text from DB.
- *      (No numbering is added automatically.)
- *    - Replaces standalone numbers in comments via the map.
- *    - Adds line breaks between multiple selected labels using a
- *      small, safe regex (the only regex allowed).
- *
- *
- * WHY THIS APPROACH EXISTS:
- * -------------------------
- * - Some servers failed on Unicode-aware regex, causing UI modals
- *   to freeze or block.
- * - The Intl extension may not be available everywhere, so all
- *   Unicode detection is done manually.
- * - The system must support Bengali, English, and other scripts
- *   without depending on environment-specific features.
- *
- *
- * IMPORTANT FOR FUTURE DEVELOPERS:
- * --------------------------------
- * ✔ Do NOT reintroduce automatic "ChoiceValue-" prefixing —
- *   numbering must come from the database label only.
- *
- * ✔ Do NOT depend on IntlChar unless all production servers are
- *   guaranteed to support it.
- *
- * ✔ The standalone number detection logic is sensitive; ensure any
- *   modification still prevents replacing numbers embedded inside
- *   text.
- *
- * ✔ Only ONE regex is allowed: the final line-break insertion.
- *
- * ------------------------------------------------------------
- */
-
-
 
 function isUnicodeLetterOrMark($ch)
 {
@@ -293,31 +186,6 @@ function replaceStandaloneNumbers($text, $map)
 
             $number = implode('', array_slice($chars, $start, $i - $start));
 
-            // $prev = ($start > 0) ? $chars[$start - 1] : '';
-            // $next = ($i < $len) ? $chars[$i] : '';
-
-            // $validBefore = !$isLetter($prev);
-            // $validAfter  = !$isLetter($next);
-
-            // if ($validBefore && $validAfter) {
-            //     if (isset($map[$number])) {
-            //         $out .= $map[$number];
-            //     } else {
-            //         $out .= $number;
-            //     }
-            // } else {
-            //     $out .= $number;
-            // }
-
-
-
-
-
-
-
-
-
-
             $prev = ($start > 0) ? $chars[$start - 1] : '';
             $next = ($i < $len) ? $chars[$i] : '';
             $next2 = ($i + 1 < $len) ? $chars[$i + 1] : '';
@@ -347,16 +215,6 @@ function replaceStandaloneNumbers($text, $map)
             } else {
                 $out .= $number;
             }
-
-
-
-
-
-
-
-
-
-
 
         } else {
             $out .= $chars[$i];
@@ -422,26 +280,6 @@ function convertNumbersToLabels($comment, $columnName, $formId, $app)
     return $comment;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 $dataViewTable = "
 <div class=\"modal-header\">
     <h5 class=\"modal-title\" id=\"editDataModalLabel\">Data Detail View</h5>
@@ -465,11 +303,7 @@ if ($EditPermission == 1 || (strpos($LoggedUserName, 'val') !== false && $IsAppr
         <td><b>$RecordID</b></td>
 		<td>&nbsp;</td>
     </tr>
-    <tr align=\"left\" class=\"textRpt\">
-        <td><b>PSU</b></td>
-        <td><b>$PSU</b></td>
-		<td>&nbsp;</td>
-    </tr>
+    
     <tr align=\"left\" class=\"textRpt\">
         <td style='color: red'><b>Data Collection Duration</b></td>
         <td style='color: red'><b>$Duration</b></td>
@@ -486,10 +320,7 @@ if ($EditPermission == 1 || (strpos($LoggedUserName, 'val') !== false && $IsAppr
         <td><b>Record ID</b></td>
         <td><b>$RecordID</b></td>
     </tr>
-    <tr align=\"left\" class=\"textRpt\">
-        <td><b>PSU</b></td>
-        <td><b>$PSU</b></td>
-    </tr>
+    
     <tr align=\"left\" class=\"textRpt\">
         <td style='color: red'><b>Data Collection Duration</b></td>
         <td style='color: red'><b>$Duration</b></td>

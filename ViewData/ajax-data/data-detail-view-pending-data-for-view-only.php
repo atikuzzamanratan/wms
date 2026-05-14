@@ -277,11 +277,7 @@ if ($EditPermission == 1 || (strpos($LoggedUserName, 'val') !== false) || strpos
         <td><b>$RecordID</b></td>
 		<td>&nbsp;</td>
     </tr>
-    <tr align=\"left\" class=\"textRpt\">
-        <td><b>PSU</b></td>
-        <td><b>$PSU</b></td>
-		<td>&nbsp;</td>
-    </tr>
+
     <tr align=\"left\" class=\"textRpt\">
         <td style='color: red'><b>Data Collection Duration</b></td>
         <td style='color: red'><b>$Duration</b></td>
@@ -298,10 +294,7 @@ if ($EditPermission == 1 || (strpos($LoggedUserName, 'val') !== false) || strpos
         <td><b>Record ID</b></td>
         <td><b>$RecordID</b></td>
     </tr>
-    <tr align=\"left\" class=\"textRpt\">
-        <td><b>PSU</b></td>
-        <td><b>$PSU</b></td>
-    </tr>
+
     <tr align=\"left\" class=\"textRpt\">
         <td style='color: red'><b>Data Collection Duration</b></td>
         <td style='color: red'><b>$Duration</b></td>

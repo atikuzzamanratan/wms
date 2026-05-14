@@ -253,7 +253,6 @@ if ($_REQUEST['show'] === 'Show') {
                                             <th>Actions</th>
                                             <th>Record ID</th>
                                             <th>Institute ID</th>
-                                            <th> </th>
                                             <th>Division Name</th>
                                             <th>District Name</th>
                                             <th>User</th>
@@ -264,6 +263,7 @@ if ($_REQUEST['show'] === 'Show') {
                                             <th>Duration</th>
                                             <th>Device ID</th>
 											<th>Is Edited</th>
+
                                         </tr>
                                     </thead>
                                     <tbody>
