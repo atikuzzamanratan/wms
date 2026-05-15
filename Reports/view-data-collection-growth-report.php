@@ -15,10 +15,16 @@ if (strpos($loggedUserName, 'dist') !== false) {
     JOIN assignsupervisor AS a ON p.UserID = a.UserID 
     WHERE a.ValidatorID = ?";
     $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery, $loggedUserID);
+} elseif (strpos($loggedUserName, 'div') !== false) {
+    $divQuery = "SELECT DISTINCT p.Division_Name as DivisionName, p.Division_Code as DivisionCode FROM InstituteInfo AS p 
+    JOIN assignsupervisor AS a ON p.UserID = a.UserID 
+    WHERE a.UserID>0 AND a.DivCoordinatorID = ?";
+    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery, $loggedUserID);
 } else {
     $divQuery = "SELECT DISTINCT Division_Name as DivisionName, Division_Code as DivisionCode FROM InstituteInfo ORDER BY DivisionName ASC";
     $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery);
 }
+echo $divQuery;
 
 if (strpos($loggedUserName, 'cval') !== false) {
     $divQuery = "SELECT DISTINCT p.Division_Name as DivisionName, p.Division_Code as DivisionCode FROM InstituteInfo AS p 
@@ -60,11 +66,11 @@ if ($_REQUEST['show'] === 'Show') {
                                     <select data-plugin-selectTwo class="form-control populate" name="FormID"
                                             id="FormID" required>
                                         <option value="">Select Form</option>
-                                            <?PHP
-                                            foreach ($rsQryFormName as $row) {
-                                                echo '<option value="' . $row->id . '"' . (isset($FormID) && !empty($FormID) && $row->id == $FormID ? ' selected' : '') . '>' . $row->FormName . '</option>';
-                                            }
-                                            ?>
+                                        <?PHP
+                                        foreach ($rsQryFormName as $row) {
+                                            echo '<option value="' . $row->id . '"' . (isset($FormID) && !empty($FormID) && $row->id == $FormID ? ' selected' : '') . '>' . $row->FormName . '</option>';
+                                        }
+                                        ?>
                                     </select>
                                 </div>
                             </div>

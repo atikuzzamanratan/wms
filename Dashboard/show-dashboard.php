@@ -12,7 +12,12 @@ if (strpos($loggedUserName, 'dist') !== false) {
     JOIN assignsupervisor AS a ON p.UserID = a.UserID 
     WHERE a.DistCoordinatorID = $loggedUserID";
     $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery);
-} else {
+} elseif (strpos($loggedUserName, 'div') !== false) {
+    $divQuery = "SELECT DISTINCT p.Division_Name as DivisionName, p.Division_Code as DivisionCode FROM InstituteInfo AS p 
+    JOIN assignsupervisor AS a ON p.UserID = a.UserID 
+    WHERE a.UserID>0 AND a.DivCoordinatorID = ?";
+    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery, $loggedUserID);
+}  else {
     $divQuery = "SELECT DISTINCT Division_Name as DivisionName, Division_Code as DivisionCode FROM InstituteInfo ORDER BY Division_Name ASC";
     $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery);
 }
@@ -269,8 +274,8 @@ if($_REQUEST['show'] === 'Show'){
 
 
         if (strpos($loggedUserName, 'dist') !== false) {
-            $distUserIdSelectCodition = " IN(SELECT UserID FROM assignsupervisor WHERE DistCoordinatorID = $loggedUserID) ";
-            $distUserIdSelectCodition2 = " IN(SELECT UserID FROM assignsupervisor WHERE DistCoordinatorID = $loggedUserID  AND UserID <> 0) ";
+            $distUserIdSelectCodition = " IN(SELECT UserID FROM assignsupervisor WHERE DistCoordinatorID = $loggedUserID AND UserID > 0) ";
+            $distUserIdSelectCodition2 = " IN(SELECT UserID FROM assignsupervisor WHERE DistCoordinatorID = $loggedUserID  AND UserID > 0) ";
 
             $xFormsQuery = "SELECT COUNT(id) AS Number FROM xformrecord WHERE UserID NOT IN $testingUserIDs AND UserID $distUserIdSelectCodition AND CompanyId=? AND FormId = ?";
             $xFormsQuery .= $qryCreate;
@@ -317,17 +322,161 @@ if($_REQUEST['show'] === 'Show'){
                 $TotalDataLast7DaysQry = "SELECT COUNT(*) AS TotalData FROM xformrecord WHERE UserID $distUserIdSelectCodition AND FormId = ? AND CompanyId = ? AND (EntryDate BETWEEN DATEADD(day, -7,'$todayDate 00:00:00') AND '$todayDate 23:59:59')";
                 $TotalDataLast7DaysQry .= $qryCreate;
                 $result_TotalDataLast7DaysQry = $app->getDBConnection()->fetch($TotalDataLast7DaysQry, $formIdMainData, $loggedUserCompanyID);
-            } else if ($FormID == $formIdFarmData) {
-                $TotalTergetQry = "SELECT SUM(NumberOfRecordForMainSurvey) as TotalTerget FROM PSUList where PSUUserID $distUserIdSelectCodition AND CompanyID = ? and PSUUserID <>'' and FarmName<>'' and PSUUserID>0";
+            }
+
+            $TotalUserTodayQry = "SELECT count(distinct(UserID)) as TotalUser FROM UserLogStatus WHERE UserId in (SELECT id FROM userinfo where UserName like 'cd%' and IsActive=1)  and [DateTime] BETWEEN '$todayDate 00:00:00' AND '$todayDate 23:59:59'";
+            $TotalUserTodayQry .= $qryCreate;
+            $result_TotalUserTodayQry = $app->getDBConnection()->fetch($TotalUserTodayQry);
+            $TotalUserToday = $result_TotalUserToday->TotalUser;
+
+            $TotalDataToday = $result_TotalDataTodayQry->TotalData;
+            $TotalDataLast7Days = $result_TotalDataLast7DaysQry->TotalData;
+
+            $result_TotalTergetQry = $app->getDBConnection()->fetch($TotalTergetQry);
+            $TotalTerget = $result_TotalTergetQry->TotalTerget;
+
+            $DataCollectionPercentage = Ratio($NumberOfRecord, $TotalTerget);
+
+            $TotalRejectQry = "SELECT COUNT(id) as TotalReject FROM deletedxformrecord where UserID $distUserIdSelectCodition AND CompanyID = ? AND FormId = ?";
+            $TotalRejectQry .= $qryCreate;
+            $result_TotalRejectQry = $app->getDBConnection()->fetch($TotalRejectQry, $loggedUserCompanyID, $FormID);
+            $TotalReject = $result_TotalRejectQry->TotalReject;
+
+            $TotalDataCollectorQry = "SELECT COUNT(id) AS TotalUser FROM userinfo WHERE id $distUserIdSelectCodition AND IsActive = ? AND CompanyID = ? AND UserName LIKE '%$dataCollectorNamePrefix%' ";
+            $TotalDataCollectorQry .= $qryCreate3;
+            $result_TotalDataCollectorQry = $app->getDBConnection()->fetch($TotalDataCollectorQry, 1, $loggedUserCompanyID);
+            $TotalUser = $result_TotalDataCollectorQry->TotalUser;
+
+            $TotalDataCollectorOnlineQry = "SELECT COUNT(id) AS TotalUser FROM userinfo WHERE id $distUserIdSelectCodition AND IsActive = ? AND IsOnline = ? AND CompanyID = ? AND UserName LIKE '%$dataCollectorNamePrefix%' ";
+            $TotalDataCollectorOnlineQry .= $qryCreate3;
+            $result_TotalDataCollectorOnlineQry = $app->getDBConnection()->fetch($TotalDataCollectorOnlineQry, 1, 1, $loggedUserCompanyID);
+            $TotalUserOnline = $result_TotalDataCollectorOnlineQry->TotalUser;
+
+            $TotalSupervisorQry = "SELECT COUNT( DISTINCT SupervisorID) Supervisor FROM assignsupervisor WHERE UserID $distUserIdSelectCodition2 AND CompanyID = ?";
+            $TotalSupervisorQry .= $qryCreate;
+            //$TotalSupervisorQry;
+            $result_TotalSupervisorQry = $app->getDBConnection()->fetch($TotalSupervisorQry, $loggedUserCompanyID);
+            $TotalSupervisor = $result_TotalSupervisorQry->Supervisor;
+
+            $TotalSupervisorOnlineQry = "SELECT COUNT( DISTINCT assignsupervisor.SupervisorID) SupervisorOnline FROM assignsupervisor join userinfo on assignsupervisor.SupervisorID = userinfo.id WHERE UserID $distUserIdSelectCodition AND assignsupervisor.CompanyID = ? AND userinfo.IsOnline = ?";
+            $TotalSupervisorOnlineQry .= $qryCreate4;
+            $result_TotalSupervisorOnlineQry = $app->getDBConnection()->fetch($TotalSupervisorOnlineQry, $loggedUserCompanyID, 1);
+            $TotalSupervisorOnline = $result_TotalSupervisorOnlineQry->SupervisorOnline;
+
+
+            $TypeString = "";
+            if ($FormID == $formIdMainData) {
+                $TypeString = "Type='$MunType'";
+            } elseif ($FormID == $formIdSamplingData) {
+                $TypeString = "Type='$InstType'";
+            }
+
+            $LastSenderQuery = "SELECT TOP 10
+                                xfr.UserID,
+                                ui.UserName,
+                                COUNT(*) AS Collected,
+                                ISNULL(pl.SumTarget, 0) AS Target,
+                                CAST(
+                                    ROUND(
+                                        100.0 * COUNT(*) / NULLIF(pl.SumTarget, 0),
+                                        2
+                                    ) AS DECIMAL(5,2)
+                                ) AS Ratio
+                            FROM xformrecord xfr
+                            JOIN userinfo ui ON xfr.UserID = ui.id
+                            LEFT JOIN (
+                                SELECT 
+                                    UserID,
+                                    COUNT(id) AS SumTarget
+                                FROM InstituteInfo WHERE $TypeString
+                                GROUP BY UserID
+                            ) pl ON xfr.UserID = pl.UserID
+                            WHERE xfr.CompanyId = ?
+                              AND xfr.UserID $distUserIdSelectCodition
+                              AND xfr.FormId = ? $qryCreate5
+                              AND ui.id NOT IN $testingUserIDs
+                            GROUP BY 
+                                xfr.UserID,
+                                ui.UserName,
+                                pl.SumTarget
+                            ORDER BY 
+                                Ratio ASC;";
+
+            $result_LastSender = $app->getDBConnection()->fetchAll($LastSenderQuery, $loggedUserCompanyID, $FormID);
+
+            $TopSenderQuery = "SELECT top 10 xfr.UserID, ui.UserName, COUNT(*) AS Number FROM xformrecord xfr JOIN userinfo ui ON xfr.UserID = ui.id WHERE xfr.UserID $distUserIdSelectCodition AND  xfr.CompanyId = ?  AND xfr.FormId = ? AND ui.id NOT IN $testingUserIDs";
+            $TopSenderQuery .= $qryCreate;
+            //$TopSenderQuery .= " GROUP BY xfr.UserID,ui.UserName ORDER BY Number DESC";
+            $TopSenderQuery .= " GROUP BY xfr.UserID,ui.UserName";
+            //$TopSenderQuery .= " HAVING COUNT(*)<49";
+            $TopSenderQuery .= " ORDER BY Number DESC";
+            $result_TopSender = $app->getDBConnection()->fetchAll($TopSenderQuery, $loggedUserCompanyID, $FormID);
+
+            /*$LastSenderQuery = "SELECT top 10 xfr.UserID, ui.UserName, COUNT(*) AS Number FROM xformrecord xfr JOIN userinfo ui ON xfr.UserID = ui.id WHERE xfr.UserID $distUserIdSelectCodition AND  xfr.CompanyId = ?  AND xfr.FormId = ? AND ui.id NOT IN(68, 69)";
+            $LastSenderQuery .= $qryCreate;
+            $LastSenderQuery .= " GROUP BY xfr.UserID,ui.UserName ORDER BY Number ASC";
+            $result_LastSender = $app->getDBConnection()->fetchAll($LastSenderQuery, $loggedUserCompanyID, $FormID);*/
+
+            $DataSendingDateQuery = " Select CONVERT(date, EntryDate) as DataDate, count(*) as Number from xformrecord where UserID $distUserIdSelectCodition AND  CompanyId = ? AND FormId = ?";
+            $DataSendingDateQuery .= $qryCreate;
+            $DataSendingDateQuery .= " group by CONVERT(date, EntryDate) order by DataDate desc";
+            $DataSendingDateRS = $app->getDBConnection()->fetchAll($DataSendingDateQuery, $loggedUserCompanyID, $FormID);
+
+            $QueryDistLavel = "SELECT DISTINCT p.DistrictName, p.DistrictCode, (SELECT SUM(SQ.Target)
+            FROM (SELECT DISTINCT PSU, NumberOfRecordForMainSurvey as Target FROM PSUList WHERE CompanyID = ? and DistrictCode = p.DistrictCode) SQ) as Target ,
+            (SELECT COUNT(id) FROM xformrecord WHERE FormId = ? and xformrecord.UserID IN(SELECT PSUUserID FROM PSUList WHERE CompanyID = ?
+            and DistrictCode = p.DistrictCode)) as Collected FROM PSUList as  p WHERE p.PSUUserID $distUserIdSelectCodition AND p.PSUUserID IS NOT NULL
+            GROUP BY p.DistrictCode,p.DistrictName ORDER BY p.DistrictName asc;";
+            $QueryDistLavelRS = $app->getDBConnection()->fetchAll($QueryDistLavel, $loggedUserCompanyID, $FormID, $loggedUserCompanyID);
+        }elseif (strpos($loggedUserName, 'div') !== false) {
+            $distUserIdSelectCodition = " IN(SELECT UserID FROM assignsupervisor WHERE DivCoordinatorID = $loggedUserID) ";
+            $distUserIdSelectCodition2 = " IN(SELECT UserID FROM assignsupervisor WHERE DivCoordinatorID = $loggedUserID  AND UserID <> 0) ";
+
+            $xFormsQuery = "SELECT COUNT(id) AS Number FROM xformrecord WHERE UserID NOT IN $testingUserIDs AND UserID $distUserIdSelectCodition AND CompanyId=? AND FormId = ?";
+            $xFormsQuery .= $qryCreate;
+            $result_LastExpence = $app->getDBConnection()->fetch($xFormsQuery, $loggedUserCompanyID, $FormID);
+            $NumberOfRecord = $result_LastExpence->Number;
+
+            $TotalDataQry = "SELECT count(id) as TotalHouseHold, 
+								SUM(CASE WHEN IsApproved= 1 AND (IsChecked = 0 OR IsChecked IS NULL) THEN 1 ELSE 0 END) as ApprovedData, 
+								SUM(CASE WHEN IsApproved= 1 AND IsChecked=1 THEN 1 ELSE 0 END) as CheckedData, 
+								SUM(CASE WHEN IsApproved = 0 THEN 1 ELSE 0 END) as Pending, 
+								SUM(CASE WHEN IsApproved = 2 THEN 1 ELSE 0 END) as UnApprovedData 
+							FROM xformrecord 
+							WHERE UserID NOT IN $testingUserIDs AND UserID $distUserIdSelectCodition 
+									AND CompanyID = ?  
+									AND FormId = ?";
+            $TotalDataQry .= $qryCreate;
+            $result_TotalDataQry = $app->getDBConnection()->fetch($TotalDataQry, $loggedUserCompanyID, $FormID);
+            $TotalData = $result_TotalDataQry->TotalHouseHold;
+            $ApprovedData = $result_TotalDataQry->ApprovedData;
+            $CheckedData = $result_TotalDataQry->CheckedData;
+            $UnApprovedData = $result_TotalDataQry->UnApprovedData;
+            $PendingData = $result_TotalDataQry->Pending;
+
+            if ($FormID == $formIdSamplingData) {
+                $TotalTergetQry = "SELECT COUNT(id) as TotalTerget FROM InstituteInfo where UserID $distUserIdSelectCodition AND UserID <>'' and UserID>0  and Type = '$InstType'";
                 $TotalTergetQry .= $qryCreate2;
 
                 $TotalDataTodayQry = "SELECT COUNT(*) AS TotalData FROM xformrecord WHERE UserID $distUserIdSelectCodition AND FormId = ? AND CompanyId = ? AND (EntryDate BETWEEN '$todayDate 00:00:00' AND '$todayDate 23:59:59')";
                 $TotalDataTodayQry .= $qryCreate;
-                $result_TotalDataTodayQry = $app->getDBConnection()->fetch($TotalDataTodayQry, $formIdFarmData, $loggedUserCompanyID);
+                $result_TotalDataTodayQry = $app->getDBConnection()->fetch($TotalDataTodayQry, $formIdSamplingData, $loggedUserCompanyID);
 
                 $TotalDataLast7DaysQry = "SELECT COUNT(*) AS TotalData FROM xformrecord WHERE UserID $distUserIdSelectCodition AND FormId = ? AND CompanyId = ? AND (EntryDate BETWEEN DATEADD(day, -7,'$todayDate 00:00:00') AND '$todayDate 23:59:59')";
                 $TotalDataLast7DaysQry .= $qryCreate;
-                $result_TotalDataLast7DaysQry = $app->getDBConnection()->fetch($TotalDataLast7DaysQry, $formIdFarmData, $loggedUserCompanyID);
+                $result_TotalDataLast7DaysQry = $app->getDBConnection()->fetch($TotalDataLast7DaysQry, $formIdSamplingData, $loggedUserCompanyID);
+
+            } else if ($FormID == $formIdMainData) {
+                $TotalTergetQry = "SELECT COUNT(id) as TotalTerget FROM InstituteInfo where UserID $distUserIdSelectCodition AND UserID <>'' and UserID>0  and Type = '$MunType'";
+                $TotalTergetQry .= $qryCreate2;
+
+                $TotalDataTodayQry = "SELECT COUNT(*) AS TotalData FROM xformrecord WHERE UserID $distUserIdSelectCodition AND FormId = ? AND CompanyId = ? AND (EntryDate BETWEEN '$todayDate 00:00:00' AND '$todayDate 23:59:59')";
+                $TotalDataTodayQry .= $qryCreate;
+                $result_TotalDataTodayQry = $app->getDBConnection()->fetch($TotalDataTodayQry, $formIdMainData, $loggedUserCompanyID);
+
+                $TotalDataLast7DaysQry = "SELECT COUNT(*) AS TotalData FROM xformrecord WHERE UserID $distUserIdSelectCodition AND FormId = ? AND CompanyId = ? AND (EntryDate BETWEEN DATEADD(day, -7,'$todayDate 00:00:00') AND '$todayDate 23:59:59')";
+                $TotalDataLast7DaysQry .= $qryCreate;
+                $result_TotalDataLast7DaysQry = $app->getDBConnection()->fetch($TotalDataLast7DaysQry, $formIdMainData, $loggedUserCompanyID);
             }
 
             $TotalUserTodayQry = "SELECT count(distinct(UserID)) as TotalUser FROM UserLogStatus WHERE UserId in (SELECT id FROM userinfo where UserName like 'cd%' and IsActive=1)  and [DateTime] BETWEEN '$todayDate 00:00:00' AND '$todayDate 23:59:59'";

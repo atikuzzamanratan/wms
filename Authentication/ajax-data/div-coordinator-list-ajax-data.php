@@ -36,7 +36,7 @@ if ($_REQUEST['lun'] != '') {
 }
 
 
-$qryGetData = "SELECT DISTINCT assup.id, 
+/*$qryGetData = "SELECT DISTINCT assup.id,
 	assup.DivCoordinatorID, 
 	assup.DistCoordinatorID, 
 	ui.UserName, 
@@ -50,7 +50,13 @@ FROM assignsupervisor assup
 	LEFT JOIN PSUList pl ON pl.PSUUserID = assup.UserID 
 	LEFT JOIN xformrecord xfr ON xfr.PSU = pl.PSU AND xfr.UserID = assup.UserID
 WHERE assup.DivCoordinatorID <> '' AND assup.CompanyID = ?";
-$rsQryGetData = $app->getDBConnection()->fetchAll($qryGetData, $SelectedCompanyId);
+$rsQryGetData = $app->getDBConnection()->fetchAll($qryGetData, $SelectedCompanyId);*/
+
+$qryGetData = "SELECT DISTINCT a.id, a.DivCoordinatorID, a.DistCoordinatorID, a.SupervisorID, a.UserID, ui.UserName, ui.FullName, ii.DISTRICT_NAME as DistrictName, ii.DIVISION_NAME as DivisionName FROM assignsupervisor a
+JOIN userinfo ui ON ui.id = a.DivCoordinatorID
+JOIN InstituteInfo ii ON ii.UserID = a.UserID
+WHERE a.DivCoordinatorID > 0 AND a.UserID > 0 Order by a.DivCoordinatorID";
+$rsQryGetData = $app->getDBConnection()->fetchAll($qryGetData);
 
 $data = array();
 $il = 1;
