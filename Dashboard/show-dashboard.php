@@ -606,27 +606,27 @@ if($_REQUEST['show'] === 'Show'){
             $PendingData = $result_TotalDataQry->Pending;
 
             if ($FormID == $formIdSamplingData) {
-                $TotalTergetQry = "SELECT COUNT(ID) as TotalTerget FROM InstituteInfo where UserID <>'' and UserID>0 and Type = '$InstType'";
+                $TotalTergetQry = "SELECT COUNT(ID) as TotalTerget FROM InstituteInfo where UserID NOT IN $testingUserIDs AND UserID <>'' and UserID>0 and Type = '$InstType'";
                 $TotalTergetQry .= $qryCreate2;
                 //echo $TotalTergetQry;
 
-                $TotalDataTodayQry = "SELECT COUNT(*) AS TotalData FROM xformrecord WHERE FormId = ? AND CompanyId = ? AND (EntryDate BETWEEN '$todayDate 00:00:00' AND '$todayDate 23:59:59')";
+                $TotalDataTodayQry = "SELECT COUNT(*) AS TotalData FROM xformrecord WHERE UserID NOT IN $testingUserIDs AND FormId = ? AND CompanyId = ? AND (EntryDate BETWEEN '$todayDate 00:00:00' AND '$todayDate 23:59:59')";
                 $TotalDataTodayQry .= $qryCreate;
                 $result_TotalDataTodayQry = $app->getDBConnection()->fetch($TotalDataTodayQry, $formIdSamplingData, $loggedUserCompanyID);
 
-                $TotalDataLast7DaysQry = "SELECT COUNT(*) AS TotalData FROM xformrecord WHERE FormId = ? AND CompanyId = ? AND (EntryDate BETWEEN DATEADD(day, -7,'$todayDate 00:00:00') AND '$todayDate 23:59:59')";
+                $TotalDataLast7DaysQry = "SELECT COUNT(*) AS TotalData FROM xformrecord WHERE UserID NOT IN $testingUserIDs AND FormId = ? AND CompanyId = ? AND (EntryDate BETWEEN DATEADD(day, -7,'$todayDate 00:00:00') AND '$todayDate 23:59:59')";
                 $TotalDataLast7DaysQry .= $qryCreate;
                 $result_TotalDataLast7DaysQry = $app->getDBConnection()->fetch($TotalDataLast7DaysQry, $formIdSamplingData, $loggedUserCompanyID);
 
             } else if ($FormID == $formIdMainData) {
-                $TotalTergetQry = "SELECT COUNT(ID) as TotalTerget FROM InstituteInfo where UserID <>'' and UserID>0 and Type = '$MunType'";
+                $TotalTergetQry = "SELECT COUNT(ID) as TotalTerget FROM InstituteInfo where UserID NOT IN $testingUserIDs AND UserID <>'' and UserID>0 and Type = '$MunType'";
                 $TotalTergetQry .= $qryCreate2;
 
-                $TotalDataTodayQry = "SELECT COUNT(*) AS TotalData FROM xformrecord WHERE FormId = ? AND CompanyId = ? AND (EntryDate BETWEEN '$todayDate 00:00:00' AND '$todayDate 23:59:59')";
+                $TotalDataTodayQry = "SELECT COUNT(*) AS TotalData FROM xformrecord WHERE UserID NOT IN $testingUserIDs AND FormId = ? AND CompanyId = ? AND (EntryDate BETWEEN '$todayDate 00:00:00' AND '$todayDate 23:59:59')";
                 $TotalDataTodayQry .= $qryCreate;
                 $result_TotalDataTodayQry = $app->getDBConnection()->fetch($TotalDataTodayQry, $formIdMainData, $loggedUserCompanyID);
 
-                $TotalDataLast7DaysQry = "SELECT COUNT(*) AS TotalData FROM xformrecord WHERE FormId = ? AND CompanyId = ? AND (EntryDate BETWEEN DATEADD(day, -7,'$todayDate 00:00:00') AND '$todayDate 23:59:59')";
+                $TotalDataLast7DaysQry = "SELECT COUNT(*) AS TotalData FROM xformrecord WHERE UserID NOT IN $testingUserIDs AND FormId = ? AND CompanyId = ? AND (EntryDate BETWEEN DATEADD(day, -7,'$todayDate 00:00:00') AND '$todayDate 23:59:59')";
                 $TotalDataLast7DaysQry .= $qryCreate;
                 $result_TotalDataLast7DaysQry = $app->getDBConnection()->fetch($TotalDataLast7DaysQry, $formIdMainData, $loggedUserCompanyID);
             }

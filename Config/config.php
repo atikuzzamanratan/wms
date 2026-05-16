@@ -45,8 +45,8 @@ $formTypeFarm = 'Farm';
 $supervisorNamePrefix = 'cs';
 $testSupervisorLastDBId = 839;
 
-//$testingUserIDs = "(68, 69)";
-$testingUserIDs = "(0)";
+$testingUserIDs = "(68, 69)";
+//$testingUserIDs = "(0)";
 
 $assignedIDFilter = " and id IN(SELECT UserID FROM InstituteInfo)";
 
