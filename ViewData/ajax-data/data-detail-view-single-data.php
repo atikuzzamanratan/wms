@@ -14,7 +14,6 @@ include "../../Lib/lib.php";
 $RecordID = xss_clean($_REQUEST['id']);
 $AgentID = getValue('xformrecord', 'UserID', "id = $RecordID");
 $IsApproved = xss_clean($_REQUEST['status']);
-$PSU = xss_clean($_REQUEST['psu']);
 $DataFromID = xss_clean($_REQUEST['formID']);
 
 $LoggedUserID = xss_clean($_REQUEST['loggedUserID']);
@@ -22,17 +21,17 @@ $LoggedUserName = getValue('userinfo', 'UserName', "id = $LoggedUserID");
 
 
 if ($IsApproved == 0) {
-    $MasterDataQuery = "EXEC ViewDetailDataWithLabelPending $RecordID";
+    $MasterDataQuery = "EXEC ViewDetailDataWithLabelPendingUpdated $RecordID";
 
     $MasterDataTimeQuery = "SELECT ColumnName, ColumnValue FROM masterdatarecord_Pending WHERE XFormRecordId = ? AND (ColumnName = 'surveyStartDate' OR ColumnName = 'surveyEndDate') ORDER BY ColumnName ASC  ";
     $MasterDataTimeRS = $app->getDBConnection()->fetchAll($MasterDataTimeQuery, $RecordID);
 } elseif ($IsApproved == 1) {
-    $MasterDataQuery = "EXEC ViewDetailDataWithLabelApproved $RecordID";
+    $MasterDataQuery = "EXEC ViewDetailDataWithLabelApprovedUpdated $RecordID";
 
     $MasterDataTimeQuery = "SELECT ColumnName, ColumnValue FROM masterdatarecord_Approved WHERE XFormRecordId = ? AND (ColumnName = 'surveyStartDate' OR ColumnName = 'surveyEndDate') ORDER BY ColumnName ASC  ";
     $MasterDataTimeRS = $app->getDBConnection()->fetchAll($MasterDataTimeQuery, $RecordID);
 } elseif ($IsApproved == 2) {
-    $MasterDataQuery = "EXEC ViewDetailDataWithLabelUnApproved $RecordID";
+    $MasterDataQuery = "EXEC ViewDetailDataWithLabelUnApprovedUpdated $RecordID";
 
     $MasterDataTimeQuery = "SELECT ColumnName, ColumnValue FROM masterdatarecord_UnApproved WHERE XFormRecordId = ? AND (ColumnName = 'surveyStartDate' OR ColumnName = 'surveyEndDate') ORDER BY ColumnName ASC  ";
     $MasterDataTimeRS = $app->getDBConnection()->fetchAll($MasterDataTimeQuery, $RecordID);
@@ -92,10 +91,6 @@ $dataViewTable .= "<tr role=\"row\">
 <tr align=\"left\" class=\"textRpt\">
 	<td><b>Record ID</b></td>
 	<td><b>$RecordID</b></td>
-</tr>
-<tr align=\"left\" class=\"textRpt\">
-	<td><b>PSU</b></td>
-	<td><b>$PSU</b></td>
 </tr>
 <tr align=\"left\" class=\"textRpt\">
 	<td style='color: red'><b>Data Collection Duration</b></td>

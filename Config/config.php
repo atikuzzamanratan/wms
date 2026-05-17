@@ -38,9 +38,8 @@ $btnTitleNotice = 'Send Message';
 $dataCollectorNamePrefix = 'cd';
 $testDataCollectorLastDBId = 840;
 
-$formTypeMain = 'Main';
-$formTypeListing = 'Listing';
-$formTypeFarm = 'Farm';
+$formTypeListing = 'EPER & WM Survey';
+$formTypeMain = 'Municipality Survey';
 
 $supervisorNamePrefix = 'cs';
 $testSupervisorLastDBId = 839;

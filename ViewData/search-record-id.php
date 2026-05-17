@@ -33,7 +33,7 @@
                 if ($_REQUEST['btnSearchRecord'] === 'Search') {
                     $RecordID = $_REQUEST['recordID'];
 
-                    if (empty($RecordID) && empty($RecordID)) {
+                    if (empty($RecordID)) {
                         MsgBox('Please select an option.');
                         ReloadPage();
                     } else {
@@ -51,16 +51,11 @@
                                         <th>User</th>
                                         <th>Mobile</th>
                                         <th>Survey</th>
-                                        <th>HH No</th>
-                                        <th>PSU</th>
+                                        <th>Institute ID</th>
                                         <th>Division</th>
                                         <th>District</th>
                                         <th>Entry Date</th>
                                         <th>Device ID</th>
-                                    <!--    <th>Is Checked</th>
-                                        <th>Validator</th>
-                                        <th>Validation Date</th>
-                                        <th>Is Edited</th>-->
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -96,7 +91,7 @@
                     sendFrom: '<?php echo $loggedUserID; ?>',
                     companyID: '<?php echo $loggedUserCompanyID; ?>',
                 },
-                success: function(response) {
+                success: function (response) {
                     alert(response);
                     window.location.reload();
                 }
@@ -108,21 +103,21 @@
 
 <script type="text/javascript">
     function SendNotification(senderID, toID, message, companyID, data) {
-            $.ajax({
-                url: "ViewData/send-notification.php",
-                method: "POST",
-                datatype: "json",
-                data: {
-                    senderID: senderID,
-                    toID: toID,
-                    message: message,
-                    companyID: companyID
-                },
-                success: function(response) {
-                    alert(response);
-                    window.location.reload();
-                }
-            });
+        $.ajax({
+            url: "ViewData/send-notification.php",
+            method: "POST",
+            datatype: "json",
+            data: {
+                senderID: senderID,
+                toID: toID,
+                message: message,
+                companyID: companyID
+            },
+            success: function (response) {
+                alert(response);
+                window.location.reload();
+            }
+        });
         return false;
     }
 </script>

@@ -11,8 +11,8 @@ if ($_REQUEST['recordid'] != '') {
     $recordid = $app->cleanInput($_REQUEST['recordid']);
     $LoggedUserID = xss_clean($_REQUEST["LoggedUserID"]);
 }
-$qry = "SELECT xfr.id, xfr.FormId, xfr.SampleHHNo, xfr.PSU, psl.DivisionName, psl.DistrictName, xfr.UserID, xfr.DataName, xfr.XFormsFilePath, 
-					COALESCE(xfr.IsEdited, 0) AS IsRowEdited, xfr.EntryDate, xfr.IsApproved, xfr.DeviceID FROM xformrecord xfr JOIN PSUList psl ON xfr.PSU=psl.PSU WHERE xfr.id = ?";
+$qry = "SELECT xfr.id, xfr.FormId, xfr.SampleHHNo, psl.Division_Name as DivisionName, psl.District_Name as DistrictName, xfr.UserID, xfr.DataName, xfr.XFormsFilePath, 
+					COALESCE(xfr.IsEdited, 0) AS IsRowEdited, xfr.EntryDate, xfr.IsApproved, xfr.DeviceID FROM xformrecord xfr JOIN InstituteInfo psl ON xfr.SampleHHNo=psl.id WHERE xfr.id = ?";
 $resQry = $app->getDBConnection()->fetchAll($qry, $recordid);
 //$resQry = $app->getDBConnection()->fetchAll($qry);
 
@@ -21,7 +21,6 @@ $data = array();
 foreach ($resQry as $row) {
     $RecordID = $row->id;
     $HhNo = $row->SampleHHNo;
-    $PSU = $row->PSU;
     $DivisionName = $row->DivisionName;
     $DistrictName = $row->DistrictName;
 
@@ -37,11 +36,9 @@ foreach ($resQry as $row) {
 
     $FormId = $row->FormId;
     if ($FormId == $formIdSamplingData) {
-        $Survey = "$formTypeListing Survey";
+        $Survey = "$formTypeListing";
     } elseif ($FormId == $formIdMainData) {
-        $Survey = "$formTypeMain Survey";
-    } elseif ($FormId == $formIdFarmData){
-        $Survey = "$formTypeFarm Survey";
+        $Survey = "$formTypeMain";
     }
 
     $DataName = $row->DataName;
@@ -59,13 +56,13 @@ foreach ($resQry as $row) {
     $SubData = array();
 
     $actions = "<div style= \"display: flex; align-items: center; justify-content: center;\">
-                    <button title=\"$btnTitleView\" type=\"button\" class=\"simple-ajax-modal btn btn-outline-primary\" style=\"display: inline-block;margin: 0 1px;\" data-bs-toggle=\"modal\" data-bs-target=\"#viewDataModal\" onclick=\"ShowDataDetail('$RecordID', '$LoggedUserID', '$IsApproved', '$PSU', '$FormId')\"><i class=\"fas fa-eye\"></i></button>
+                    <button title=\"$btnTitleView\" type=\"button\" class=\"simple-ajax-modal btn btn-outline-primary\" style=\"display: inline-block;margin: 0 1px;\" data-bs-toggle=\"modal\" data-bs-target=\"#viewDataModal\" onclick=\"ShowDataDetail('$RecordID', '$LoggedUserID', '$IsApproved', '$FormId')\"><i class=\"fas fa-eye\"></i></button>
                     
                      <button title=\"$btnTitleNotice\" type=\"button\" class=\"btn btn-outline-secondary\" style=\"display: inline-block;margin: 0 1px;\" data-bs-toggle=\"modal\" data-bs-target=\"#sendNoticeModal$RecordID\"><i class=\"fas fa-bell\"></i></button>
                     
                 </div>
                 <script type=\"text/javascript\">
-                    function ShowDataDetail(recordID, loggedUserID, status, psu, formID, data) {
+                    function ShowDataDetail(recordID, loggedUserID, status, formID, data) {
                             $.ajax({
                                 url: 'ViewData/ajax-data/data-detail-view-single-data.php',
                                 method: 'GET',
@@ -74,7 +71,6 @@ foreach ($resQry as $row) {
                                     id: recordID,
                                     loggedUserID: loggedUserID,
                                     status: status,
-                                    psu: psu,
                                     formID: formID
                                 },
                                 success: function (response) {
@@ -144,7 +140,6 @@ foreach ($resQry as $row) {
     $SubData[] = $UserMobileNo;
     $SubData[] = $Survey;
     $SubData[] = $HhNo;
-    $SubData[] = $PSU;
     $SubData[] = $DivisionName;
     $SubData[] = $DistrictName;
     $SubData[] = $EntryDate;
