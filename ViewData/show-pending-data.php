@@ -169,7 +169,7 @@ if ($_REQUEST['show'] === 'Show') {
 
 
                             <?php
-                            if (strpos($loggedUserName, 'cs') === false) {
+                            if (strpos($loggedUserName, 'cs') === false and strpos($loggedUserName, 'div') === false and strpos($loggedUserName, 'dist') === false) {
                             ?>
                                 <div class="form-group row pb-3">
                                     <label class="col-lg-3 control-label text-sm-end pt-2"></label>
