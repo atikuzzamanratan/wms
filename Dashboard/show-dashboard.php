@@ -324,10 +324,10 @@ if($_REQUEST['show'] === 'Show'){
                 $result_TotalDataLast7DaysQry = $app->getDBConnection()->fetch($TotalDataLast7DaysQry, $formIdMainData, $loggedUserCompanyID);
             }
 
-            $TotalUserTodayQry = "SELECT count(distinct(UserID)) as TotalUser FROM UserLogStatus WHERE UserId in (SELECT id FROM userinfo where UserName like 'cd%' and IsActive=1)  and [DateTime] BETWEEN '$todayDate 00:00:00' AND '$todayDate 23:59:59'";
+            $TotalUserTodayQry = "SELECT count(distinct(UserID)) as TotalUser FROM UserLogStatus WHERE UserId $distUserIdSelectCodition2  and [DateTime] BETWEEN '$todayDate 00:00:00' AND '$todayDate 23:59:59'";
             $TotalUserTodayQry .= $qryCreate;
             $result_TotalUserTodayQry = $app->getDBConnection()->fetch($TotalUserTodayQry);
-            $TotalUserToday = $result_TotalUserToday->TotalUser;
+            $TotalUserToday = $result_TotalUserTodayQry->TotalUser;
 
             $TotalDataToday = $result_TotalDataTodayQry->TotalData;
             $TotalDataLast7Days = $result_TotalDataLast7DaysQry->TotalData;
@@ -430,7 +430,7 @@ if($_REQUEST['show'] === 'Show'){
             $QueryDistLavelRS = $app->getDBConnection()->fetchAll($QueryDistLavel, $loggedUserCompanyID, $FormID, $loggedUserCompanyID);
         }elseif (strpos($loggedUserName, 'div') !== false) {
             $distUserIdSelectCodition = " IN(SELECT UserID FROM assignsupervisor WHERE DivCoordinatorID = $loggedUserID) ";
-            $distUserIdSelectCodition2 = " IN(SELECT UserID FROM assignsupervisor WHERE DivCoordinatorID = $loggedUserID  AND UserID <> 0) ";
+            $distUserIdSelectCodition2 = " IN(SELECT UserID FROM assignsupervisor WHERE DivCoordinatorID = $loggedUserID  AND UserID > 0) ";
 
             $xFormsQuery = "SELECT COUNT(id) AS Number FROM xformrecord WHERE UserID NOT IN $testingUserIDs AND UserID $distUserIdSelectCodition AND CompanyId=? AND FormId = ?";
             $xFormsQuery .= $qryCreate;
@@ -479,13 +479,14 @@ if($_REQUEST['show'] === 'Show'){
                 $result_TotalDataLast7DaysQry = $app->getDBConnection()->fetch($TotalDataLast7DaysQry, $formIdMainData, $loggedUserCompanyID);
             }
 
-            $TotalUserTodayQry = "SELECT count(distinct(UserID)) as TotalUser FROM UserLogStatus WHERE UserId in (SELECT id FROM userinfo where UserName like 'cd%' and IsActive=1)  and [DateTime] BETWEEN '$todayDate 00:00:00' AND '$todayDate 23:59:59'";
-            $TotalUserTodayQry .= $qryCreate;
-            $result_TotalUserTodayQry = $app->getDBConnection()->fetch($TotalUserTodayQry);
-            $TotalUserToday = $result_TotalUserToday->TotalUser;
-
             $TotalDataToday = $result_TotalDataTodayQry->TotalData;
             $TotalDataLast7Days = $result_TotalDataLast7DaysQry->TotalData;
+
+            //$TotalUserTodayQry = "SELECT count(distinct(UserID)) as TotalUser FROM UserLogStatus WHERE UserId in (SELECT id FROM userinfo where UserName like 'cd%' and IsActive=1)  and [DateTime] BETWEEN '$todayDate 00:00:00' AND '$todayDate 23:59:59'";
+            $TotalUserTodayQry = "SELECT count(distinct(UserID)) as TotalUser FROM UserLogStatus WHERE UserId $distUserIdSelectCodition2  and [DateTime] BETWEEN '$todayDate 00:00:00' AND '$todayDate 23:59:59'";
+            $TotalUserTodayQry .= $qryCreate;
+            $result_TotalUserTodayQry = $app->getDBConnection()->fetch($TotalUserTodayQry);
+            $TotalUserToday = $result_TotalUserTodayQry->TotalUser;
 
             $result_TotalTergetQry = $app->getDBConnection()->fetch($TotalTergetQry);
             $TotalTerget = $result_TotalTergetQry->TotalTerget;
