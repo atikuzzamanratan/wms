@@ -816,7 +816,7 @@ if($_REQUEST['show'] === 'Show'){
                                     </div>
                                     <div class="widget-summary-col">
                                         <div class="summary">
-                                            <h4 class="title">Total Data Collector</h4>
+                                            <h4 class="title">Total Enumerator</h4>
                                             <div class="info">
                                                 <strong class="amount"><?php echo $TotalUser; ?></strong>
                                                 <!--<span class="text-primary">(<?php /*echo $TotalUserOnline; */ ?> online)</span>-->
