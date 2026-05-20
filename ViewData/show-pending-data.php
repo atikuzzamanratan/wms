@@ -261,7 +261,6 @@ if ($_REQUEST['show'] === 'Show') {
                                             <th>Division Name</th>
                                             <th>District Name</th>
                                             <th>User</th>
-                                            <!--<th>Mobile</th>-->
                                             <th>Data Name</th>
                                             <th>Entry Date</th>
                                             <th>Status</th>
@@ -335,7 +334,7 @@ if ($_REQUEST['show'] === 'Show') {
                 type: "POST"
             },
 			"fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
-				if ( aData[13] > 0 )
+				if ( aData[11] > 0 )
 				{
 					$('td', nRow).css('background-color', '#FBC6C2');
 				}
