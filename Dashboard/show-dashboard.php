@@ -732,7 +732,7 @@ if($_REQUEST['show'] === 'Show'){
 
             $result_LastSender = $app->getDBConnection()->fetchAll($LastSenderQuery, $loggedUserCompanyID, $FormID);
 
-            $DataSendingDateQuery = " Select CONVERT(date, EntryDate) as DataDate, count(*) as Number from xformrecord where CompanyId = ? AND FormId = ?";
+            $DataSendingDateQuery = " Select CONVERT(date, EntryDate) as DataDate, count(*) as Number from xformrecord where UserID NOT IN $testingUserIDs and CompanyId = ? AND FormId = ?";
             $DataSendingDateQuery .= $qryCreate;
             $DataSendingDateQuery .= " group by CONVERT(date, EntryDate) order by DataDate desc";
             $DataSendingDateRS = $app->getDBConnection()->fetchAll($DataSendingDateQuery, $loggedUserCompanyID, $FormID);
