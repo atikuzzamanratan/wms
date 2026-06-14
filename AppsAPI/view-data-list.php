@@ -56,7 +56,7 @@ foreach ($sqlResult as $row) {
     $actions = "<div style= \"display: flex; align-items: center; justify-content: center;\">
                     <button title=\"$btnTitleView\" type=\"button\" class=\"btn btn-outline-primary\" style=\"display: inline-block;margin: 0 1px;\" data-bs-toggle=\"modal\" data-bs-target=\"#viewDataModal\" onclick=\"ShowDataDetail('$RecordID');\"><i class=\"fas fa-eye\"></i></button>";
     if ($ShowStatus == '2') {
-        $actions .= "<a href=\"#\" title=\"$btnTitleEdit\" type=\"button\" class=\"btn btn-outline-warning\" style=\"display: inline-block;margin: 0 1px;\" onClick='NewWindow(\"../webhookURLs/review.php?xFormId=$encrypRecordID\", \"name\", \"600\", \"600\", \"Yes\"); return false;'><i class=\"fas fa-pencil-alt\"></i></a>";
+        $actions .= "<a href=\"#\" title=\"$btnTitleEdit\" type=\"button\" class=\"btn btn-outline-warning\" style=\"display: inline-block;margin: 0 1px;\" onClick=''><i class=\"fas fa-pencil-alt\"></i></a>";
     }
     $actions .="</div>
                 
