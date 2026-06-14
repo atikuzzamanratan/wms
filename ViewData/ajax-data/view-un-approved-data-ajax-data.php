@@ -189,7 +189,7 @@ if (!empty($_POST)) {
                     <button title=\"$btnTitleView\" type=\"button\" class=\"simple-ajax-modal btn btn-outline-primary\" style=\"width: 100%; display: inline-block;margin: 0 1px;\" data-bs-toggle=\"modal\" data-bs-target=\"#viewDataModal\" onclick=\"ShowDataDetail('$DataFromID', '$RecordID', '$IsApproved', '$PSU', '$LoggedUserID', '$UserID', '$XFormsFilePath')\"><i class=\"fas fa-eye\"></i></button>";
 
         if (((strpos($LoggedUserName, 'admin') !== false) || (strpos($LoggedUserName, 'cd') !== false)) and (strpos($LoggedUserName, 'dist') === false)) {
-            $actions .= "<a href=\"#\" title=\"$btnTitleEdit\" type=\"button\" class=\"btn btn-outline-warning\" style=\"width: 100%; display: inline-block;margin: 0 1px;\" onClick='window.open(\"webhookURLs/review.php?xFormId=$encrypRecordID\", \"_blank\").focus(); return false;'><i class=\"fas fa-pencil-alt\"></i></a>";
+            $actions .= "<a href=\"#\" title=\"$btnTitleEdit\" type=\"button\" class=\"btn btn-outline-warning\" style=\"width: 100%; display: inline-block;margin: 0 1px;\" onClick=''><i class=\"fas fa-pencil-alt\"></i></a>";
         }
 
         $actions .= "<button title=\"$btnTitleNotice\" type=\"button\" class=\"btn btn-outline-secondary\" style=\"width: 100%; display: inline-block;margin: 0 1px;\" data-bs-toggle=\"modal\" data-bs-target=\"#sendNoticeModal$RecordID\"><i class=\"fas fa-bell\"></i></button>
