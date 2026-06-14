@@ -307,7 +307,8 @@ foreach ($resQry as $row) {
 
     $UserName = getValue('userinfo', 'UserName', "id = $UserID");
     $UserFullName = getValue('userinfo', 'FullName', "id = $UserID");
-    $UserData = "$UserFullName ($UserName/$UserID)";
+    //$UserData = "$UserFullName ($UserName/$UserID)";
+    $UserData = "$UserFullName ($UserName)";
 
     $subData = [
         $actions,
