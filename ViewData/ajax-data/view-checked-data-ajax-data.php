@@ -33,44 +33,8 @@ if (!empty($_POST)) {
 	$col[] = "IsApproved";
 	$col[] = "DeviceID";
 	
-	$qry = "SELECT xfr.id, 
-					xfr.SampleHHNo, 
-					xfr.PSU, 
-					ui.UserName, 
-					ui.id as userid, 
-					ui.FullName, 
-					ui.MobileNumber, 
-					xfr.DataName, 
-					xfr.DeviceID, 
-					xfr.EntryDate, 
-					xfr.FormGroupId, 
-					xfr.IsApproved, 
-					xfr.XFormsFilePath, 
-					pl.Division_Name, 
-					pl.District_Name,
-					(
-						SELECT mdp.ColumnValue 
-						FROM masterdatarecord_Approved mdp 
-						WHERE mdp.XFormRecordId = xfr.id 
-							AND mdp.FormId = xfr.FormId 
-							AND mdp.UserID = xfr.UserID 
-							AND mdp.CompanyId = xfr.CompanyId 
-							AND mdp.SampleHHNo = xfr.SampleHHNo 
-							AND mdp.ColumnName = N'surveyEndDate'
-					) AS StartTime,
-					(
-						SELECT mdp.ColumnValue 
-						FROM masterdatarecord_Approved mdp 
-						WHERE mdp.XFormRecordId = xfr.id 
-							AND mdp.FormId = xfr.FormId 
-							AND mdp.UserID = xfr.UserID 
-							AND mdp.CompanyId = xfr.CompanyId 
-							AND mdp.SampleHHNo = xfr.SampleHHNo 
-							AND mdp.ColumnName = N'surveyStartDate'
-					) AS EndTime 
-			FROM xformrecord xfr 
-				JOIN userinfo ui ON xfr.UserID = ui.id 
-				JOIN InstituteInfo pl ON pl.UserID = ui.id AND xfr.SampleHHNo = pl.id ";
+	$qry = "SELECT xfr.id, xfr.SampleHHNo, xfr.PSU, ui.UserName, ui.id as userid, ui.FullName, ui.MobileNumber, xfr.DataName, xfr.DeviceID, xfr.EntryDate, xfr.FormGroupId, xfr.IsApproved, xfr.XFormsFilePath, COALESCE(xfr.IsEdited, 0) AS IsRowEdited, pl.DIVISION_NAME DivisionName, pl.DISTRICT_NAME DistrictName,
+	(SELECT TOP 1 mdp.ColumnValue FROM masterdatarecord_Pending mdp WHERE mdp.XFormRecordId = xfr.id AND mdp.FormId = xfr.FormId AND mdp.UserID = xfr.UserID AND mdp.CompanyId = xfr.CompanyId AND mdp.SampleHHNo = xfr.SampleHHNo AND mdp.ColumnName = N'surveyEndDate') AS StartTime, (SELECT TOP 1 mdp.ColumnValue FROM masterdatarecord_Pending mdp WHERE mdp.XFormRecordId = xfr.id AND mdp.FormId = xfr.FormId AND mdp.UserID = xfr.UserID AND mdp.SampleHHNo = xfr.SampleHHNo AND mdp.ColumnName = N'surveyStartDate') AS EndTime FROM xformrecord xfr JOIN userinfo ui ON xfr.UserID = ui.id JOIN InstituteInfo pl ON pl.id = xfr.SampleHHNo ";
 	if (strpos($LoggedUserName, 'cs') !== false) {
 		$qry .= " JOIN assignsupervisor a ON a.UserID = ui.id AND a.SupervisorID = $LoggedUserID ";
 	}
