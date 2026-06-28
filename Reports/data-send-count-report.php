@@ -202,38 +202,6 @@ if ($_REQUEST['show'] === 'Show') {
 
 <script type="text/javascript">
     $(document).ready(function() {
-        
-        // var dataTable = $('#DataSendCountReport').DataTable({
-		// 	dom: '<"row"<"col-lg-6"l><"col-lg-6"f>><"table-responsive"t>p',
-		// 	bProcessing: true,
-		// 	sAjaxSource: "<?php echo $dataURL; ?>",
-        //     "columns": [
-        //         { "data": null },
-        //         { "data": 0 },
-        //         { "data": 1 },
-        //         { "data": 2 },
-        //         { "data": 3 },
-        //         { "data": 4 },
-        //         { "data": 5 },
-        //         { "data": 6 },
-        //         { "data": 7 },
-        //         { "data": 8 },
-        //     ],
-        //     columnDefs: [{ orderable: false, targets: 0 }],
-        //     "rowCallback": function(row, data, index) {
-        //         var pageInfo = dataTable.page.info();
-        //         var slNumber = pageInfo.start + index + 1;
-        //         $('td:eq(0)', row).html(slNumber);
-        //     }
-		// });
-
-
-
-
-
-
-
-
 
         var dataTable = $('#DataSendCountReport').DataTable({
             dom: '<"row"<"col-lg-6"l><"col-lg-6"f>><"table-responsive"t>p',
@@ -263,16 +231,6 @@ if ($_REQUEST['show'] === 'Show') {
                 $('td:eq(0)', row).html(slNumber);
             }
         });
-
-
-
-
-
-
-
-
-
-
 
     });
 </script>

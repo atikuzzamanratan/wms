@@ -86,7 +86,9 @@ if (!empty($DivisionCode)) {
 	$qryCreate .= ")";
 }
 
-$qryCreate .= "GROUP BY ui.id, 
+$qryCreate .= " AND ui.id NOT IN $testingUserIDs";
+
+$qryCreate .= " GROUP BY ui.id, 
 				ui.UserName, 
 				ui.FullName, 
 				ui.MobileNumber, 
