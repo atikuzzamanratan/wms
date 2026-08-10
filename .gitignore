@@ -57,6 +57,7 @@ web.config
 /GetForms/
 /Uploads/
 /EditForms/*/*
+/AppsAPI/submission.php
 /AppsAPI/CurrentFormVersion.txt
 webhookURLs/generated.xml
 webhookURLs/last_instance.xml
