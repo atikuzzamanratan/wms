@@ -6,6 +6,7 @@ if (!empty($_POST)) {
 $UserName = $_POST['username'];
 $Password = $_POST['password'];
 
+//db Connection
 $cn = ConnectDB();
 
 $UserQuery = "SELECT id,UserName,Password, (SELECT TOP (1) id FROM PSUList WHERE PSUUserID IN(SELECT id FROM userinfo WHERE UserName='$UserName')) as PSUUserID FROM [dbo].[userinfo] WHERE UserName='$UserName' AND IsActive = '1'";
@@ -39,7 +40,6 @@ else {
     $response["success"] = 0;
     $response["message"] = "Login Failed! Invalid User Name or User not active!";
 }
-
 
 
 die(json_encode($response));
